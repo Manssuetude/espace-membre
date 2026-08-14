@@ -1,0 +1,21 @@
+{
+  "id": "manssuetude",
+  "title": "Manssuétude",
+  "description": "Manssuétude est une plateforme web complète de gestion d'association qui centralise l'organisation des sessions, la collecte de thèmes, la gestion des sondages multi-questions, et la distribution de ressources documentaires. Conçue avec React et TypeScript, elle offre des espaces dédiés aux membres et administrateurs avec des tableaux de bord personnalisés, un système de votes avancé, une gestion de calendrier, et un workflow d'approbation pour les propositions de thèmes et ressources. La plateforme intègre une authentification sécurisée par OTP, des sondages en temps réel avec visualisations graphiques, et un système de feedback anonyme ou identifié.",
+  "video": null,
+  "type": "web",
+  "link": "#",
+  "date": "2024",
+  "client": "Manssuétude",
+  "industry": "Éducation & Associations",
+  "logo": null,
+  "features": ["Dashboard", "Sondages Multi-Questions", "Gestion de Sessions", "Ressources Documentaires", "Thèmes & Propositions", "Feedback", "Calendrier", "Gestion de Membres"],
+  "themeColor": "from-red-600/90 to-orange-500/90",
+  "bgPattern": "",
+  "background": "https://unsplash.com/photos/Q1p7bh3SHj8/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8NXx8Y29tbXVuaXR5fGVufDB8fHx8MTczMTY0NDY1N3ww&force=true",
+  "stores": {
+    "apple": null,
+    "google": null,
+    "web": "#"
+  }
+}

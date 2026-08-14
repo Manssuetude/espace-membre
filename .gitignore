@@ -1,0 +1,5 @@
+# Sensitive local data (env files, DB dumps/backups)
+database/
+
+# OS
+.DS_Store
