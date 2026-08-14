@@ -1,10 +1,10 @@
 interface FeedbackFormFieldsProps {
-  subject: string
-  message: string
-  anonymous: boolean
-  onSubjectChange: (value: string) => void
-  onMessageChange: (value: string) => void
-  onAnonymousChange: (checked: boolean) => void
+  subject: string;
+  message: string;
+  anonymous: boolean;
+  onSubjectChange: (value: string) => void;
+  onMessageChange: (value: string) => void;
+  onAnonymousChange: (checked: boolean) => void;
 }
 
 const FeedbackFormFields = ({
@@ -61,8 +61,7 @@ const FeedbackFormFields = ({
         </label>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default FeedbackFormFields
-
+export default FeedbackFormFields;

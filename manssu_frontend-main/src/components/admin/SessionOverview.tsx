@@ -1,17 +1,24 @@
-import { Session } from '../../types/session'
+import { Session } from "../../types/session";
 
 interface SessionOverviewProps {
-  session: Session
-  formattedDate: string
-  formattedTime: string
-  onEditClick: () => void
-  onDeleteClick: () => void
-  onCancelClick?: () => void
+  session: Session;
+  formattedDate: string;
+  formattedTime: string;
+  onEditClick: () => void;
+  onDeleteClick: () => void;
+  onCancelClick?: () => void;
 }
 
-const SessionOverview = ({ session, formattedDate, formattedTime, onEditClick, onDeleteClick, onCancelClick }: SessionOverviewProps) => {
-  const isPastSession = session.status === 'completed' || (session.date && new Date(session.date) < new Date())
-  const isOngoing = session.status === 'ongoing'
+const SessionOverview = ({
+  session,
+  formattedDate,
+  formattedTime,
+  onEditClick,
+  onDeleteClick,
+  onCancelClick,
+}: SessionOverviewProps) => {
+  const isPastSession = session.status === "completed" || (session.date && new Date(session.date) < new Date());
+  const isOngoing = session.status === "ongoing";
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6">
@@ -48,7 +55,7 @@ const SessionOverview = ({ session, formattedDate, formattedTime, onEditClick, o
           </div>
         )}
       </div>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-3 sm:space-y-4">
           <div className="flex items-start">
@@ -77,7 +84,9 @@ const SessionOverview = ({ session, formattedDate, formattedTime, onEditClick, o
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm text-gray-500">Participants</p>
-              <p className="font-semibold text-sm sm:text-base text-gray-900 break-words">{session.registered} / {session.maxParticipants} inscrits</p>
+              <p className="font-semibold text-sm sm:text-base text-gray-900 break-words">
+                {session.registered} / {session.maxParticipants} inscrits
+              </p>
             </div>
           </div>
           <div className="flex items-start">
@@ -87,7 +96,7 @@ const SessionOverview = ({ session, formattedDate, formattedTime, onEditClick, o
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm text-gray-500">Lieu</p>
               <p className="font-semibold text-sm sm:text-base text-gray-900 break-words">
-                {session.location?.address || 'non défini'}
+                {session.location?.address || "non défini"}
               </p>
             </div>
           </div>
@@ -114,13 +123,15 @@ const SessionOverview = ({ session, formattedDate, formattedTime, onEditClick, o
       {session.description && (
         <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
           <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Description</h3>
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">{session.description}</p>
+          <p className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">
+            {session.description}
+          </p>
         </div>
       )}
 
       <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
         <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Thème</h3>
-        <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{session.theme || 'non défini'}</p>
+        <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{session.theme || "non défini"}</p>
       </div>
 
       {session.objectives && session.objectives.length > 0 && (
@@ -137,8 +148,7 @@ const SessionOverview = ({ session, formattedDate, formattedTime, onEditClick, o
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default SessionOverview
-
+export default SessionOverview;

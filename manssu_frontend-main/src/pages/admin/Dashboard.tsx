@@ -1,73 +1,85 @@
-import { Link } from 'react-router-dom'
-import { useAdminDashboard } from '../../services/hooks/useDashboard'
-import { useUpdateTheme } from '../../services/hooks/useThemes'
-import { useUpdateResourceStatus } from '../../services/hooks/useResources'
-import { useQueryClient } from '@tanstack/react-query'
-import { queryKeys } from '../../services/api/queryKeys'
-import { translateResourceType } from '../../utils/resourceUtils'
-import { formatDate } from '../../utils/dateUtils'
+import { Link } from "react-router-dom";
+import { useAdminDashboard } from "../../services/hooks/useDashboard";
+import { useUpdateTheme } from "../../services/hooks/useThemes";
+import { useUpdateResourceStatus } from "../../services/hooks/useResources";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "../../services/api/queryKeys";
+import { translateResourceType } from "../../utils/resourceUtils";
+import { formatDate } from "../../utils/dateUtils";
 
 const Dashboard = () => {
-  const { data: dashboardData, isLoading } = useAdminDashboard()
-  const updateTheme = useUpdateTheme()
-  const updateResourceStatus = useUpdateResourceStatus()
-  const queryClient = useQueryClient()
+  const { data: dashboardData, isLoading } = useAdminDashboard();
+  const updateTheme = useUpdateTheme();
+  const updateResourceStatus = useUpdateResourceStatus();
+  const queryClient = useQueryClient();
 
   const handleApproveTheme = (themeId: string) => {
-    updateTheme.mutate({
-      id: themeId,
-      data: { status: 'approved' },
-    }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard })
+    updateTheme.mutate(
+      {
+        id: themeId,
+        data: { status: "approved" },
       },
-    })
-  }
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard });
+        },
+      },
+    );
+  };
 
   const handleRejectTheme = (themeId: string) => {
-    updateTheme.mutate({
-      id: themeId,
-      data: { status: 'rejected' },
-    }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard })
+    updateTheme.mutate(
+      {
+        id: themeId,
+        data: { status: "rejected" },
       },
-    })
-  }
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard });
+        },
+      },
+    );
+  };
 
   const handleApproveResource = (resourceId: string) => {
-    updateResourceStatus.mutate({
-      id: resourceId,
-      data: { status: 'approved' },
-    }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard })
+    updateResourceStatus.mutate(
+      {
+        id: resourceId,
+        data: { status: "approved" },
       },
-    })
-  }
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard });
+        },
+      },
+    );
+  };
 
   const handleRejectResource = (resourceId: string) => {
-    updateResourceStatus.mutate({
-      id: resourceId,
-      data: { status: 'rejected' },
-    }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard })
+    updateResourceStatus.mutate(
+      {
+        id: resourceId,
+        data: { status: "rejected" },
       },
-    })
-  }
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard });
+        },
+      },
+    );
+  };
 
   // Format time ago
   const formatTimeAgo = (dateStr: string | null) => {
-    return formatDate(dateStr, { includeTime: false, showRelative: true })
-  }
+    return formatDate(dateStr, { includeTime: false, showRelative: true });
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   const stats = dashboardData?.stats || {
@@ -75,12 +87,12 @@ const Dashboard = () => {
     pendingResources: 0,
     recentFeedbacks: 0,
     totalMembers: 0,
-  }
+  };
 
-  const pendingThemes = dashboardData?.pendingThemes || []
-  const activePolls = dashboardData?.activePolls || []
-  const pendingResources = dashboardData?.pendingResources || []
-  const recentFeedbacks = dashboardData?.recentFeedbacks || []
+  const pendingThemes = dashboardData?.pendingThemes || [];
+  const activePolls = dashboardData?.activePolls || [];
+  const pendingResources = dashboardData?.pendingResources || [];
+  const recentFeedbacks = dashboardData?.recentFeedbacks || [];
 
   return (
     <div>
@@ -145,7 +157,9 @@ const Dashboard = () => {
                 <i className="fa-solid fa-lightbulb text-warning mr-2"></i>
                 Propositions de thèmes en attente
               </h3>
-              <span className="bg-gradient-to-r from-warning to-yellow-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{stats.pendingThemes} en attente</span>
+              <span className="bg-gradient-to-r from-warning to-yellow-500 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                {stats.pendingThemes} en attente
+              </span>
             </div>
             <div className="space-y-4">
               {pendingThemes.length === 0 ? (
@@ -158,14 +172,21 @@ const Dashboard = () => {
                 </div>
               ) : (
                 pendingThemes.map((theme) => (
-                  <div key={theme.id} className="p-3 sm:p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-warning/20 hover:shadow-md transition-all">
+                  <div
+                    key={theme.id}
+                    className="p-3 sm:p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-warning/20 hover:shadow-md transition-all"
+                  >
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{theme.title}</h4>
                         <p className="text-xs sm:text-sm text-gray-600 mt-1">Proposé par {theme.proposedBy.name}</p>
                         <p className="text-xs text-gray-500 mt-2">
-                          {theme.daysAgo !== undefined 
-                            ? (theme.daysAgo === 0 ? "Aujourd'hui" : theme.daysAgo === 1 ? 'Hier' : `Il y a ${theme.daysAgo} jours`)
+                          {theme.daysAgo !== undefined
+                            ? theme.daysAgo === 0
+                              ? "Aujourd'hui"
+                              : theme.daysAgo === 1
+                                ? "Hier"
+                                : `Il y a ${theme.daysAgo} jours`
                             : formatTimeAgo(theme.createdAt)}
                         </p>
                       </div>
@@ -228,59 +249,61 @@ const Dashboard = () => {
                 </div>
               ) : (
                 activePolls.map((poll) => {
-                  const roundedParticipation = Math.round(poll.participation || 0)
+                  const roundedParticipation = Math.round(poll.participation || 0);
                   const formatEndDate = (dateStr?: string | null) => {
-                    if (!dateStr) return ''
-                    const date = new Date(dateStr)
-                    return date.toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                  }
-                  
+                    if (!dateStr) return "";
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    });
+                  };
+
                   return (
-                  <div key={poll.id} className="p-4 sm:p-5 border border-gray-200 rounded-xl bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">{poll.title}</h4>
-                        <div className="flex flex-wrap items-center gap-3 sm:space-x-4 text-xs sm:text-sm text-gray-600 mt-2">
-                          <span className="flex items-center">
-                            <i className="fa-solid fa-users mr-1 text-accent"></i>
-                            {poll.totalResponses} réponses
-                          </span>
-                          {poll.daysLeft !== undefined && poll.daysLeft !== null && (
+                    <div
+                      key={poll.id}
+                      className="p-4 sm:p-5 border border-gray-200 rounded-xl bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all"
+                    >
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">{poll.title}</h4>
+                          <div className="flex flex-wrap items-center gap-3 sm:space-x-4 text-xs sm:text-sm text-gray-600 mt-2">
                             <span className="flex items-center">
-                              <i className="fa-solid fa-clock mr-1 text-warning"></i>
-                              {poll.daysLeft === 0 
-                                ? 'Dernier jour pour voter'
-                                : poll.daysLeft < 0
-                                ? `Terminé le ${formatEndDate(poll.endDate)}`
-                                : `Se termine dans ${poll.daysLeft} jour${poll.daysLeft > 1 ? 's' : ''}`
-                              }
+                              <i className="fa-solid fa-users mr-1 text-accent"></i>
+                              {poll.totalResponses} réponses
                             </span>
-                          )}
+                            {poll.daysLeft !== undefined && poll.daysLeft !== null && (
+                              <span className="flex items-center">
+                                <i className="fa-solid fa-clock mr-1 text-warning"></i>
+                                {poll.daysLeft === 0
+                                  ? "Dernier jour pour voter"
+                                  : poll.daysLeft < 0
+                                    ? `Terminé le ${formatEndDate(poll.endDate)}`
+                                    : `Se termine dans ${poll.daysLeft} jour${poll.daysLeft > 1 ? "s" : ""}`}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                          <Link
+                            to={`/admin/sondages/${poll.id}`}
+                            className="flex-1 sm:flex-initial px-3 py-1.5 bg-gradient-to-r from-accent to-blue-600 text-white text-xs sm:text-sm rounded-lg hover:shadow-lg transition-all text-center"
+                          >
+                            <i className="fa-solid fa-chart-bar mr-1"></i>
+                            Résultats
+                          </Link>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                        <Link
-                          to={`/admin/sondages/${poll.id}`}
-                          className="flex-1 sm:flex-initial px-3 py-1.5 bg-gradient-to-r from-accent to-blue-600 text-white text-xs sm:text-sm rounded-lg hover:shadow-lg transition-all text-center"
-                        >
-                          <i className="fa-solid fa-chart-bar mr-1"></i>
-                          Résultats
-                        </Link>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-gradient-to-r from-accent to-blue-600 h-2 rounded-full"
+                          style={{ width: `${roundedParticipation}%` }}
+                        ></div>
                       </div>
+                      <p className="text-xs text-gray-500 mt-2">{roundedParticipation}% de participation</p>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-gradient-to-r from-accent to-blue-600 h-2 rounded-full"
-                        style={{ width: `${roundedParticipation}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">{roundedParticipation}% de participation</p>
-                  </div>
-                )
+                  );
                 })
               )}
             </div>
@@ -296,7 +319,9 @@ const Dashboard = () => {
                 <i className="fa-solid fa-file-circle-exclamation text-secondary mr-2"></i>
                 Ressources en attente
               </h3>
-              <span className="bg-gradient-to-r from-secondary to-orange-600 text-white px-2 py-1 rounded-full text-xs font-medium">{stats.pendingResources}</span>
+              <span className="bg-gradient-to-r from-secondary to-orange-600 text-white px-2 py-1 rounded-full text-xs font-medium">
+                {stats.pendingResources}
+              </span>
             </div>
             <div className="space-y-3">
               {pendingResources.length === 0 ? (
@@ -309,18 +334,27 @@ const Dashboard = () => {
                 </div>
               ) : (
                 pendingResources.map((resource) => (
-                  <div key={resource.id} className="p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-secondary/20 hover:shadow-md transition-all">
+                  <div
+                    key={resource.id}
+                    className="p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-secondary/20 hover:shadow-md transition-all"
+                  >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <h5 className="font-medium text-gray-900 text-sm">{resource.title}</h5>
                         <p className="text-xs text-gray-500">
                           {translateResourceType(resource.type)} • Soumis par {resource.submittedBy.name}
                         </p>
-                                {resource.daysAgo !== undefined && (
-                                  <p className="text-xs text-gray-400 mt-1">
-                                    {resource.daysAgo === 0 ? "Aujourd'hui" : resource.daysAgo === 1 ? 'Hier' : resource.daysAgo > 0 ? `Il y a ${resource.daysAgo} jour${resource.daysAgo > 1 ? 's' : ''}` : formatTimeAgo(resource.createdAt)}
-                                  </p>
-                                )}
+                        {resource.daysAgo !== undefined && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            {resource.daysAgo === 0
+                              ? "Aujourd'hui"
+                              : resource.daysAgo === 1
+                                ? "Hier"
+                                : resource.daysAgo > 0
+                                  ? `Il y a ${resource.daysAgo} jour${resource.daysAgo > 1 ? "s" : ""}`
+                                  : formatTimeAgo(resource.createdAt)}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex space-x-2">
@@ -376,12 +410,12 @@ const Dashboard = () => {
               ) : (
                 recentFeedbacks.map((feedback) => {
                   const authorName = feedback.anonymous
-                    ? 'Anonyme'
+                    ? "Anonyme"
                     : feedback.submittedBy
-                    ? 'Utilisateur'
-                    : 'Utilisateur'
-                  
-                  const authorAvatar = feedback.anonymous ? null : null
+                      ? "Utilisateur"
+                      : "Utilisateur";
+
+                  const authorAvatar = feedback.anonymous ? null : null;
 
                   return (
                     <Link
@@ -403,12 +437,14 @@ const Dashboard = () => {
                         )}
                         <div className="flex-1 min-w-0">
                           <h5 className="font-medium text-gray-900 text-sm truncate">{authorName}</h5>
-                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{feedback.message || feedback.subject}</p>
+                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                            {feedback.message || feedback.subject}
+                          </p>
                           <p className="text-xs text-gray-400 mt-1">{formatTimeAgo(feedback.submittedAt)}</p>
                         </div>
                       </div>
                     </Link>
-                  )
+                  );
                 })
               )}
             </div>
@@ -416,8 +452,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
-
+export default Dashboard;

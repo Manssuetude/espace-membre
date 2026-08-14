@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 const PastResourcesHeader = () => {
   return (
@@ -15,8 +15,7 @@ const PastResourcesHeader = () => {
         Exporter
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default PastResourcesHeader
-
+export default PastResourcesHeader;

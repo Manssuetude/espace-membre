@@ -1,12 +1,12 @@
-import FormInput from '../FormInput'
+import FormInput from "../FormInput";
 
 interface PollGeneralInfoProps {
-  title: string
-  description: string
-  question: string
-  onTitleChange: (value: string) => void
-  onDescriptionChange: (value: string) => void
-  onQuestionChange: (value: string) => void
+  title: string;
+  description: string;
+  question: string;
+  onTitleChange: (value: string) => void;
+  onDescriptionChange: (value: string) => void;
+  onQuestionChange: (value: string) => void;
 }
 
 const PollGeneralInfo = ({
@@ -54,8 +54,7 @@ const PollGeneralInfo = ({
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollGeneralInfo
-
+export default PollGeneralInfo;

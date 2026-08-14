@@ -1,89 +1,83 @@
-import { useState, useMemo, useEffect } from 'react'
-import FormInput from '../FormInput'
-import Dropdown from '../Dropdown'
-import { useCreateInvitationRequest } from '../../services/hooks/useInvitations'
-import { useSessions } from '../../services/hooks/useSessions'
+import { useState, useMemo, useEffect } from "react";
+import FormInput from "../FormInput";
+import Dropdown from "../Dropdown";
+import { useCreateInvitationRequest } from "../../services/hooks/useInvitations";
+import { useSessions } from "../../services/hooks/useSessions";
 
 interface CreateInvitationRequestModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const CreateInvitationRequestModal = ({
-  isOpen,
-  onClose,
-  onSuccess,
-}: CreateInvitationRequestModalProps) => {
-  const [email, setEmail] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [reason, setReason] = useState('')
-  const [selectedSessionId, setSelectedSessionId] = useState('')
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const createInvitationRequest = useCreateInvitationRequest()
-  
+const CreateInvitationRequestModal = ({ isOpen, onClose, onSuccess }: CreateInvitationRequestModalProps) => {
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [reason, setReason] = useState("");
+  const [selectedSessionId, setSelectedSessionId] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const createInvitationRequest = useCreateInvitationRequest();
+
   // Fetch upcoming sessions for dropdown
   const { data: sessionsData } = useSessions({
-    status: 'upcoming',
+    status: "upcoming",
     limit: 100,
-  })
-  
-  const sessions = sessionsData?.data || []
-  
+  });
+
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
-      setEmail('')
-      setFullName('')
-      setReason('')
-      setSelectedSessionId('')
-      setErrors({})
+      setEmail("");
+      setFullName("");
+      setReason("");
+      setSelectedSessionId("");
+      setErrors({});
     }
-  }, [isOpen])
-  
-  const sessionOptions = useMemo(() => {
-    return sessions.map((session) => ({
-      value: session.id,
-      label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString('fr-FR')}` : ''}`,
-    }))
-  }, [sessions])
+  }, [isOpen]);
 
-  if (!isOpen) return null
+  const sessionOptions = useMemo(() => {
+    return (sessionsData?.data || []).map((session) => ({
+      value: session.id,
+      label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString("fr-FR")}` : ""}`,
+    }));
+  }, [sessionsData]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrors({})
+    e.preventDefault();
+    setErrors({});
 
     // Validation
     if (!email.trim()) {
-      setErrors({ email: 'L\'email est requis' })
-      return
+      setErrors({ email: "L'email est requis" });
+      return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setErrors({ email: 'Format d\'email invalide' })
-      return
+      setErrors({ email: "Format d'email invalide" });
+      return;
     }
 
     if (!fullName.trim()) {
-      setErrors({ fullName: 'Le nom complet est requis' })
-      return
+      setErrors({ fullName: "Le nom complet est requis" });
+      return;
     }
 
     if (fullName.trim().length < 1 || fullName.trim().length > 200) {
-      setErrors({ fullName: 'Le nom complet doit contenir entre 1 et 200 caractères' })
-      return
+      setErrors({ fullName: "Le nom complet doit contenir entre 1 et 200 caractères" });
+      return;
     }
 
     if (!reason.trim()) {
-      setErrors({ reason: 'La raison est requise' })
-      return
+      setErrors({ reason: "La raison est requise" });
+      return;
     }
 
     if (!selectedSessionId) {
-      setErrors({ sessionId: 'Veuillez sélectionner une session' })
-      return
+      setErrors({ sessionId: "Veuillez sélectionner une session" });
+      return;
     }
 
     try {
@@ -92,32 +86,29 @@ const CreateInvitationRequestModal = ({
         fullName: fullName.trim(),
         reason: reason.trim(),
         sessionId: selectedSessionId,
-      })
-      onSuccess?.()
-      onClose()
+      });
+      onSuccess?.();
+      onClose();
     } catch (error) {
       // Error is handled by the mutation hook
     }
-  }
+  };
 
   const handleClose = () => {
-    setEmail('')
-    setFullName('')
-    setReason('')
-    setSelectedSessionId('')
-    setErrors({})
-    onClose()
-  }
+    setEmail("");
+    setFullName("");
+    setReason("");
+    setSelectedSessionId("");
+    setErrors({});
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-gray-900">Inviter un membre</h3>
-          <button
-            onClick={handleClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
+          <button onClick={handleClose} className="text-gray-500 hover:text-gray-700 transition-colors">
             <i className="fa-solid fa-times text-xl"></i>
           </button>
         </div>
@@ -176,13 +167,11 @@ const CreateInvitationRequestModal = ({
               rows={4}
               className={`w-full px-4 py-3 rounded-xl border transition-all bg-gray-50 focus:bg-white appearance-none ${
                 errors.reason
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                  : 'border-gray-300 focus:border-primary focus:ring-primary'
+                  ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:border-primary focus:ring-primary"
               } focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-none`}
             />
-            {errors.reason && (
-              <p className="mt-1 text-sm text-red-600">{errors.reason}</p>
-            )}
+            {errors.reason && <p className="mt-1 text-sm text-red-600">{errors.reason}</p>}
           </div>
 
           <div className="flex gap-3 pt-4">
@@ -214,7 +203,7 @@ const CreateInvitationRequestModal = ({
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateInvitationRequestModal
+export default CreateInvitationRequestModal;

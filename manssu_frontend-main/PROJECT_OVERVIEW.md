@@ -17,10 +17,12 @@
 ## 👥 Rôles utilisateurs
 
 ### 1. **Guest** (Invité)
+
 - Accès limité : peut voir les sessions et sondages, mais pas le dashboard, feedback, ou propositions de thèmes
 - Statut temporaire avant validation par un admin
 
 ### 2. **Member** (Membre)
+
 - Accès complet à l'espace membre
 - Peut proposer des thèmes (quand la fenêtre est ouverte)
 - Peut répondre aux sondages
@@ -29,6 +31,7 @@
 - Peut consulter les ressources
 
 ### 3. **Admin** (Administrateur)
+
 - Accès à l'espace membre + espace admin
 - Peut gérer les membres (mais pas les autres admins)
 - Peut créer et gérer les sessions
@@ -38,6 +41,7 @@
 - Peut consulter les feedbacks
 
 ### 4. **Super Admin** (Super Administrateur)
+
 - Tous les droits d'admin
 - Peut gérer les autres administrateurs
 - Peut ouvrir/fermer les fenêtres de propositions de thèmes
@@ -46,6 +50,7 @@
 ## 📱 Pages et menus - Espace Membre
 
 ### Menu de navigation (Sidebar)
+
 1. **Tableau de bord** (`/`)
    - Statistiques (membres actifs, sessions effectuées, nouvelles ressources, taux de participation)
    - Prochaines sessions (2 prochaines)
@@ -95,6 +100,7 @@
    - Historique des feedbacks
 
 ### Restrictions pour les Guests
+
 - Pas d'accès au dashboard (`/`)
 - Pas d'accès au feedback (`/feedback`)
 - Pas d'accès à la proposition de thèmes (`/proposer-theme`)
@@ -102,6 +108,7 @@
 ## 🛠️ Pages et menus - Espace Admin
 
 ### Menu de navigation (AdminSidebar)
+
 1. **Tableau de bord** (`/admin`)
    - Statistiques globales
    - Thèmes en attente de validation
@@ -160,6 +167,7 @@
 ## 🔐 Authentification
 
 ### Flux d'authentification
+
 1. **Login** (`/auth/login`)
    - Saisie de l'email
    - Envoi d'un code OTP par email
@@ -179,6 +187,7 @@
 ## 📊 Fonctionnalités principales
 
 ### 1. Sessions
+
 - **Création** : Admins peuvent créer des sessions avec thème, date, lieu, objectifs
 - **Inscription** : Membres peuvent s'inscrire aux sessions
 - **Groupes de travail** : Organisation des participants en groupes
@@ -186,30 +195,35 @@
 - **Sondages** : Sondages liés aux sessions (dates, thèmes, etc.)
 
 ### 2. Thèmes
+
 - **Fenêtre de propositions** : Périodes où les membres peuvent proposer des thèmes
 - **Validation** : Admins valident ou rejettent les propositions
 - **Limite** : Nombre maximum de propositions par membre par fenêtre
 - **Statuts** : pending → approved/rejected → current (utilisé dans une session)
 
 ### 3. Sondages
+
 - **Types** : Anonyme ou avec identité
 - **Options** : Choix multiples possibles
 - **Résultats** : Visibles en temps réel ou cachés
 - **Liaison** : Peuvent être liés à une session ou indépendants
 
 ### 4. Ressources
+
 - **Types** : Fichiers, vidéos, audio, dossiers
 - **Liens externes** : Google Drive, YouTube, etc.
 - **Validation** : Admins valident les ressources proposées
 - **Catégories** : Organisation par catégories
 
 ### 5. Feedbacks
+
 - **Types** : Suggestion, Compliment, etc.
 - **Anonymat** : Option pour feedback anonyme
 - **Liaison** : Peut être lié à une session spécifique
 - **Gestion** : Admins peuvent marquer comme lu/résolu
 
 ### 6. Invitations
+
 - **Invitations directes** : Admins peuvent inviter directement
 - **Demandes d'invitation** : Membres peuvent demander à inviter quelqu'un
   - Le membre remplit un formulaire (email, nom, raison, session)
@@ -219,6 +233,7 @@
 ## 🎨 Design System
 
 ### Couleurs
+
 - **Primary**: `#dc2626` (Rouge)
 - **Secondary**: `#f97316` (Orange)
 - **Accent**: `#3b82f6` (Bleu)
@@ -226,9 +241,11 @@
 - **Success**: `#10b981` (Vert)
 
 ### Typographie
+
 - Police: **Inter** (Google Fonts)
 
 ### Composants réutilisables
+
 - `StatCard` : Cartes de statistiques
 - `SessionCard` : Cartes de sessions
 - `ResourceCard` : Cartes de ressources
@@ -269,11 +286,13 @@ src/
 ## 🚀 Routes principales
 
 ### Routes publiques
+
 - `/auth/login` - Connexion
 - `/auth/verify-otp` - Vérification OTP
 - `/invitation/:code` - Acceptation invitation
 
 ### Routes membres (protégées)
+
 - `/` - Dashboard
 - `/sessions` - Liste sessions
 - `/sessions/:id` - Détail session
@@ -285,6 +304,7 @@ src/
 - `/profil` - Profil
 
 ### Routes admin (protégées)
+
 - `/admin` - Dashboard admin
 - `/admin/sessions` - Gestion sessions
 - `/admin/sessions/create` - Créer session
@@ -315,5 +335,3 @@ src/
 5. **Sessions** : Les sessions peuvent être en ligne ou en présentiel, avec gestion des lieux via Google Places API.
 
 6. **Ressources** : Actuellement, les ressources utilisent des liens externes (Google Drive, YouTube, etc.) plutôt que des uploads de fichiers directs.
-
-

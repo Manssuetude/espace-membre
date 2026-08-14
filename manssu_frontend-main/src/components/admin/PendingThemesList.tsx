@@ -1,29 +1,31 @@
 interface PendingTheme {
-  id: string
-  title: string
-  description: string
-  author: string
-  days: number
+  id: string;
+  title: string;
+  description: string;
+  author: string;
+  days: number;
 }
 
 interface PendingThemesListProps {
-  themes: PendingTheme[]
-  onApprove: (themeId: string) => void
-  onReject: (themeId: string) => void
-  isLoading?: boolean
+  themes: PendingTheme[];
+  onApprove: (themeId: string) => void;
+  onReject: (themeId: string) => void;
+  isLoading?: boolean;
 }
 
 const PendingThemesList = ({ themes, onApprove, onReject, isLoading = false }: PendingThemesListProps) => {
-  const hasThemes = themes.length > 0
-  
+  const hasThemes = themes.length > 0;
+
   const formatDays = (days: number) => {
-    if (days === 0) return "Aujourd'hui"
-    if (days === 1) return 'Hier'
-    return `Il y a ${days} jours`
-  }
-  
+    if (days === 0) return "Aujourd'hui";
+    if (days === 1) return "Hier";
+    return `Il y a ${days} jours`;
+  };
+
   return (
-    <div className={`bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6 flex flex-col ${hasThemes ? 'h-auto sm:h-[500px] lg:h-[600px]' : 'h-auto'}`}>
+    <div
+      className={`bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6 flex flex-col ${hasThemes ? "h-auto sm:h-[500px] lg:h-[600px]" : "h-auto"}`}
+    >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6 flex-shrink-0">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center">
           <i className="fa-solid fa-clock text-warning mr-2 sm:mr-3"></i>
@@ -42,7 +44,10 @@ const PendingThemesList = ({ themes, onApprove, onReject, isLoading = false }: P
           </div>
         ) : (
           themes.map((theme) => (
-            <div key={theme.id} className="p-3 sm:p-5 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-warning/20 hover:shadow-lg transition-all">
+            <div
+              key={theme.id}
+              className="p-3 sm:p-5 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-warning/20 hover:shadow-lg transition-all"
+            >
               <div className="flex items-start justify-between mb-2 sm:mb-3">
                 <div className="flex-1 min-w-0 pr-2">
                   <h4 className="font-semibold text-gray-900 text-base sm:text-lg">{theme.title}</h4>
@@ -90,8 +95,7 @@ const PendingThemesList = ({ themes, onApprove, onReject, isLoading = false }: P
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PendingThemesList
-
+export default PendingThemesList;

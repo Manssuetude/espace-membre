@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 interface CollapsibleSectionProps {
-  title: string
-  icon: string
-  children: React.ReactNode
-  defaultOpen?: boolean
+  title: string;
+  icon: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
 const CollapsibleSection = ({ title, icon, children, defaultOpen = false }: CollapsibleSectionProps) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen)
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
     <div className="mb-2">
@@ -20,15 +20,11 @@ const CollapsibleSection = ({ title, icon, children, defaultOpen = false }: Coll
           <i className={`fa-solid ${icon} w-5 mr-3`}></i>
           <span className="font-medium">{title}</span>
         </div>
-        <i
-          className={`fa-solid fa-chevron-${isOpen ? 'up' : 'down'} text-sm transition-transform`}
-        ></i>
+        <i className={`fa-solid fa-chevron-${isOpen ? "up" : "down"} text-sm transition-transform`}></i>
       </button>
       {isOpen && <div className="mt-1 space-y-1 pl-4">{children}</div>}
     </div>
-  )
-}
+  );
+};
 
-export default CollapsibleSection
-
-
+export default CollapsibleSection;

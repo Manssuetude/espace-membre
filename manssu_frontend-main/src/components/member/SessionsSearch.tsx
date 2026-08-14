@@ -8,8 +8,7 @@ const SessionsSearch = () => {
       />
       <i className="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
     </div>
-  )
-}
+  );
+};
 
-export default SessionsSearch
-
+export default SessionsSearch;

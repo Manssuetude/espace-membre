@@ -1,39 +1,34 @@
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { toast } from 'sonner'
-import CollapsibleSection from './CollapsibleSection'
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { toast } from "sonner";
+import CollapsibleSection from "./CollapsibleSection";
 
 interface SidebarProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
-  const { logout, user } = useAuth()
-  const navigate = useNavigate()
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout()
-    toast.success('Déconnexion réussie')
-    navigate('/auth/login')
-  }
+    logout();
+    toast.success("Déconnexion réussie");
+    navigate("/auth/login");
+  };
 
-  const isGuest = user?.role === 'guest'
+  const isGuest = user?.role === "guest";
 
   return (
     <>
       {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />}
 
       {/* Sidebar */}
       <div
         className={`fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <div className="p-6 border-b border-gray-700 flex-shrink-0">
@@ -45,10 +40,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 <p className="text-sm text-gray-400">Espace membre</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="lg:hidden text-gray-400 hover:text-white transition-colors"
-            >
+            <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-white transition-colors">
               <i className="fa-solid fa-times text-xl"></i>
             </button>
           </div>
@@ -64,8 +56,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -82,8 +74,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -96,8 +88,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -110,8 +102,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -124,8 +116,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -139,8 +131,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   className={({ isActive }) =>
                     `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                       isActive
-                        ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                        : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                     }`
                   }
                 >
@@ -158,8 +150,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -173,8 +165,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   className={({ isActive }) =>
                     `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                       isActive
-                        ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                        : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                     }`
                   }
                 >
@@ -189,8 +181,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   className={({ isActive }) =>
                     `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                       isActive
-                        ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                        : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                     }`
                   }
                 >
@@ -204,8 +196,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -223,8 +215,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   className={({ isActive }) =>
                     `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                       isActive
-                        ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                        : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                     }`
                   }
                 >
@@ -238,8 +230,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -256,8 +248,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -273,8 +265,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               className={({ isActive }) =>
                 `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
                   isActive
-                    ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                 }`
               }
             >
@@ -284,7 +276,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </div>
         </nav>
         <div className="px-4 pb-4 border-t border-gray-700 pt-4 flex-shrink-0 space-y-2">
-          {(user?.role === 'admin' || user?.role === 'super_admin') && (
+          {(user?.role === "admin" || user?.role === "super_admin") && (
             <NavLink
               to="/admin"
               onClick={onClose}
@@ -304,7 +296,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

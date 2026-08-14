@@ -1,6 +1,6 @@
 interface PastResourcesStatsProps {
-  totalSessions: number
-  totalResources: number
+  totalSessions: number;
+  totalResources: number;
 }
 
 const PastResourcesStats = ({ totalSessions, totalResources }: PastResourcesStatsProps) => {
@@ -30,8 +30,7 @@ const PastResourcesStats = ({ totalSessions, totalResources }: PastResourcesStat
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PastResourcesStats
-
+export default PastResourcesStats;

@@ -1,34 +1,38 @@
-import { useParams } from 'react-router-dom'
-import { useRegisterForSession, useUnregisterFromSession } from '../../services/hooks/useSessions'
+import { useParams } from "react-router-dom";
+import { useRegisterForSession, useUnregisterFromSession } from "../../services/hooks/useSessions";
 
 interface ParticipationCardProps {
-  isMobile?: boolean
-  isRegistered?: boolean
-  isPastSession?: boolean
+  isMobile?: boolean;
+  isRegistered?: boolean;
+  isPastSession?: boolean;
 }
 
-const ParticipationCard = ({ isMobile = false, isRegistered = false, isPastSession = false }: ParticipationCardProps) => {
-  const { id } = useParams()
-  const registerForSession = useRegisterForSession()
-  const unregisterFromSession = useUnregisterFromSession()
+const ParticipationCard = ({
+  isMobile = false,
+  isRegistered = false,
+  isPastSession = false,
+}: ParticipationCardProps) => {
+  const { id } = useParams();
+  const registerForSession = useRegisterForSession();
+  const unregisterFromSession = useUnregisterFromSession();
 
-  const baseClasses = "bg-gradient-to-br from-primary via-red-500 to-secondary rounded-2xl shadow-2xl p-6 text-white"
-  const displayClasses = isMobile ? "lg:hidden mb-6" : "hidden lg:block"
+  const baseClasses = "bg-gradient-to-br from-primary via-red-500 to-secondary rounded-2xl shadow-2xl p-6 text-white";
+  const displayClasses = isMobile ? "lg:hidden mb-6" : "hidden lg:block";
 
   const handleRegister = () => {
-    if (!id || isPastSession) return
-    registerForSession.mutate(id)
-  }
+    if (!id || isPastSession) return;
+    registerForSession.mutate(id);
+  };
 
   const handleUnregister = () => {
-    if (!id || isPastSession) return
-    unregisterFromSession.mutate(id)
-  }
+    if (!id || isPastSession) return;
+    unregisterFromSession.mutate(id);
+  };
 
   return (
     <div className={`${baseClasses} ${displayClasses}`}>
       <h3 className="text-lg font-semibold mb-4 flex items-center">
-        <i className={`fa-solid ${isRegistered ? 'fa-user-check' : 'fa-user-plus'} mr-2`}></i>
+        <i className={`fa-solid ${isRegistered ? "fa-user-check" : "fa-user-plus"} mr-2`}></i>
         Ma participation
       </h3>
       {isRegistered ? (
@@ -43,7 +47,7 @@ const ParticipationCard = ({ isMobile = false, isRegistered = false, isPastSessi
             </div>
             <p className="text-xs text-white/80">Vous êtes inscrit à cette session</p>
           </div>
-          <button 
+          <button
             onClick={handleUnregister}
             disabled={unregisterFromSession.isPending || isPastSession}
             className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 text-white rounded-xl font-medium hover:bg-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -73,7 +77,7 @@ const ParticipationCard = ({ isMobile = false, isRegistered = false, isPastSessi
             </div>
             <p className="text-xs text-white/80">Vous n'êtes pas encore inscrit à cette session</p>
           </div>
-          <button 
+          <button
             onClick={handleRegister}
             disabled={registerForSession.isPending || isPastSession}
             className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 text-white rounded-xl font-medium hover:bg-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -93,8 +97,7 @@ const ParticipationCard = ({ isMobile = false, isRegistered = false, isPastSessi
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ParticipationCard
-
+export default ParticipationCard;

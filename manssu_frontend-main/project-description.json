@@ -9,7 +9,16 @@
   "client": "Manssuétude",
   "industry": "Éducation & Associations",
   "logo": null,
-  "features": ["Dashboard", "Sondages Multi-Questions", "Gestion de Sessions", "Ressources Documentaires", "Thèmes & Propositions", "Feedback", "Calendrier", "Gestion de Membres"],
+  "features": [
+    "Dashboard",
+    "Sondages Multi-Questions",
+    "Gestion de Sessions",
+    "Ressources Documentaires",
+    "Thèmes & Propositions",
+    "Feedback",
+    "Calendrier",
+    "Gestion de Membres"
+  ],
   "themeColor": "from-red-600/90 to-orange-500/90",
   "bgPattern": "",
   "background": "https://unsplash.com/photos/Q1p7bh3SHj8/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8NXx8Y29tbXVuaXR5fGVufDB8fHx8MTczMTY0NDY1N3ww&force=true",

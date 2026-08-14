@@ -1,28 +1,28 @@
-import FormInput from '../FormInput'
-import Dropdown from '../Dropdown'
+import FormInput from "../FormInput";
+import Dropdown from "../Dropdown";
 
 interface FormData {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  address: string
-  postalCode: string
-  city: string
-  country: string
-  bio: string
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  country: string;
+  bio: string;
 }
 
 interface PersonalInfoFormProps {
-  formData: FormData
-  onFormDataChange: (data: FormData) => void
-  onSubmit: (e: React.FormEvent) => void
+  formData: FormData;
+  onFormDataChange: (data: FormData) => void;
+  onSubmit: (e: React.FormEvent) => void;
 }
 
 const PersonalInfoForm = ({ formData, onFormDataChange, onSubmit }: PersonalInfoFormProps) => {
   const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    onFormDataChange({ ...formData, [field]: e.target.value })
-  }
+    onFormDataChange({ ...formData, [field]: e.target.value });
+  };
 
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 lg:p-8">
@@ -33,38 +33,20 @@ const PersonalInfoForm = ({ formData, onFormDataChange, onSubmit }: PersonalInfo
 
       <form onSubmit={onSubmit} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <FormInput
-            label="Prénom"
-            value={formData.firstName}
-            onChange={handleInputChange('firstName')}
-          />
-          <FormInput
-            label="Nom"
-            value={formData.lastName}
-            onChange={handleInputChange('lastName')}
-          />
+          <FormInput label="Prénom" value={formData.firstName} onChange={handleInputChange("firstName")} />
+          <FormInput label="Nom" value={formData.lastName} onChange={handleInputChange("lastName")} />
         </div>
 
-        <FormInput
-          label="Email"
-          type="email"
-          value={formData.email}
-          readOnly
-        />
+        <FormInput label="Email" type="email" value={formData.email} readOnly />
 
-        <FormInput
-          label="Téléphone"
-          type="tel"
-          value={formData.phone}
-          onChange={handleInputChange('phone')}
-        />
+        <FormInput label="Téléphone" type="tel" value={formData.phone} onChange={handleInputChange("phone")} />
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Adresse</label>
           <FormInput
             label=""
             value={formData.address}
-            onChange={handleInputChange('address')}
+            onChange={handleInputChange("address")}
             placeholder="Numéro et nom de rue"
             className="mb-3"
           />
@@ -72,24 +54,19 @@ const PersonalInfoForm = ({ formData, onFormDataChange, onSubmit }: PersonalInfo
             <FormInput
               label=""
               value={formData.postalCode}
-              onChange={handleInputChange('postalCode')}
+              onChange={handleInputChange("postalCode")}
               placeholder="Code postal"
             />
-            <FormInput
-              label=""
-              value={formData.city}
-              onChange={handleInputChange('city')}
-              placeholder="Ville"
-            />
+            <FormInput label="" value={formData.city} onChange={handleInputChange("city")} placeholder="Ville" />
             <Dropdown
               label=""
               value={formData.country}
               onChange={(e) => onFormDataChange({ ...formData, country: e.target.value })}
               options={[
-                { value: 'France', label: 'France' },
-                { value: 'Belgique', label: 'Belgique' },
-                { value: 'Suisse', label: 'Suisse' },
-                { value: 'Canada', label: 'Canada' },
+                { value: "France", label: "France" },
+                { value: "Belgique", label: "Belgique" },
+                { value: "Suisse", label: "Suisse" },
+                { value: "Canada", label: "Canada" },
               ]}
             />
           </div>
@@ -98,7 +75,7 @@ const PersonalInfoForm = ({ formData, onFormDataChange, onSubmit }: PersonalInfo
         <FormInput
           label="Bio"
           value={formData.bio}
-          onChange={handleInputChange('bio')}
+          onChange={handleInputChange("bio")}
           placeholder="Parlez-nous un peu de vous..."
           rows={4}
         />
@@ -119,8 +96,7 @@ const PersonalInfoForm = ({ formData, onFormDataChange, onSubmit }: PersonalInfo
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default PersonalInfoForm
-
+export default PersonalInfoForm;

@@ -1,71 +1,71 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { LibraryBook, LibraryBookCategory, LibraryBookRequest } from '../../../types/bibliotheque'
-import { LIBRARY_BOOK_CATEGORY_OPTIONS, getLibraryCategoryLabel } from '../../../utils/libraryUtils'
-import Dropdown from '../../Dropdown'
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { LibraryBook, LibraryBookCategory, LibraryBookRequest } from "../../../types/bibliotheque";
+import { LIBRARY_BOOK_CATEGORY_OPTIONS, getLibraryCategoryLabel } from "../../../utils/libraryUtils";
+import Dropdown from "../../Dropdown";
 
 const LANGUAGE_OPTIONS = [
-  { value: 'FR', label: 'Français (FR)' },
-  { value: 'EN', label: 'English (EN)' },
-  { value: 'AR', label: 'العربية (AR)' },
-  { value: 'ES', label: 'Español (ES)' },
-  { value: 'DE', label: 'Deutsch (DE)' },
-  { value: 'IT', label: 'Italiano (IT)' },
-  { value: 'PT', label: 'Português (PT)' },
-  { value: 'OTHER', label: 'Autre' },
-]
+  { value: "FR", label: "Français (FR)" },
+  { value: "EN", label: "English (EN)" },
+  { value: "AR", label: "العربية (AR)" },
+  { value: "ES", label: "Español (ES)" },
+  { value: "DE", label: "Deutsch (DE)" },
+  { value: "IT", label: "Italiano (IT)" },
+  { value: "PT", label: "Português (PT)" },
+  { value: "OTHER", label: "Autre" },
+];
 
 interface BookFormState {
-  title: string
-  author: string
-  category: LibraryBookCategory | ''
-  description: string
-  language: string
-  defaultLoanDays: number
-  pageCount: number | ''
-  image: File | null
+  title: string;
+  author: string;
+  category: LibraryBookCategory | "";
+  description: string;
+  language: string;
+  defaultLoanDays: number;
+  pageCount: number | "";
+  image: File | null;
 }
 
 interface LibraryBooksTabProps {
-  books: LibraryBook[]
-  myBooks: LibraryBook[]
-  loadingBooks: boolean
-  loadingMyBooks: boolean
-  isAdmin: boolean
-  currentUserId?: string
-  bookSearch: string
-  bookCategory: LibraryBookCategory | ''
-  showOnlyAvailable: boolean
-  showBookCreateForm: boolean
-  showBookEditForm: boolean
-  selectedRequestsBookId: string | null
-  selectedBookRequests: LibraryBookRequest[]
-  loadingBookRequests: boolean
-  newBookForm: BookFormState
-  editBookForm: BookFormState
-  dueDaysByRequest: Record<string, number>
-  statusColorMap: Record<string, string>
-  getStatusLabel: (status: string) => string
-  formatDate: (value?: string | null) => string
-  getOfferCountdown: (offerExpiresAt?: string | null) => string | null
-  onBookSearchChange: (value: string) => void
-  onBookCategoryChange: (value: LibraryBookCategory | '') => void
-  onToggleOnlyAvailable: () => void
-  onToggleCreateForm: () => void
-  onNewBookFieldChange: (field: keyof BookFormState, value: string | number | File | null) => void
-  onEditBookFieldChange: (field: keyof BookFormState, value: string | number | File | null) => void
-  onCreateBook: () => void
-  onOpenEditBook: (book: LibraryBook) => void
-  onUpdateBook: () => void
-  onCancelEditBook: () => void
-  onToggleBookRequests: (bookId: string) => void
-  onToggleBookAvailability: (book: LibraryBook) => void
-  onDeleteBook: (bookId: string) => void
-  onAcceptRequest: (requestId: string) => void
-  onCancelRequest: (requestId: string) => void
-  onExpireRequest: (requestId: string) => void
-  onDueDaysChange: (requestId: string, days: number) => void
-  onCreateLoan: (request: LibraryBookRequest, dueDays: number) => void
+  books: LibraryBook[];
+  myBooks: LibraryBook[];
+  loadingBooks: boolean;
+  loadingMyBooks: boolean;
+  isAdmin: boolean;
+  currentUserId?: string;
+  bookSearch: string;
+  bookCategory: LibraryBookCategory | "";
+  showOnlyAvailable: boolean;
+  showBookCreateForm: boolean;
+  showBookEditForm: boolean;
+  selectedRequestsBookId: string | null;
+  selectedBookRequests: LibraryBookRequest[];
+  loadingBookRequests: boolean;
+  newBookForm: BookFormState;
+  editBookForm: BookFormState;
+  dueDaysByRequest: Record<string, number>;
+  statusColorMap: Record<string, string>;
+  getStatusLabel: (status: string) => string;
+  formatDate: (value?: string | null) => string;
+  getOfferCountdown: (offerExpiresAt?: string | null) => string | null;
+  onBookSearchChange: (value: string) => void;
+  onBookCategoryChange: (value: LibraryBookCategory | "") => void;
+  onToggleOnlyAvailable: () => void;
+  onToggleCreateForm: () => void;
+  onNewBookFieldChange: (field: keyof BookFormState, value: string | number | File | null) => void;
+  onEditBookFieldChange: (field: keyof BookFormState, value: string | number | File | null) => void;
+  onCreateBook: () => void;
+  onOpenEditBook: (book: LibraryBook) => void;
+  onUpdateBook: () => void;
+  onCancelEditBook: () => void;
+  onToggleBookRequests: (bookId: string) => void;
+  onToggleBookAvailability: (book: LibraryBook) => void;
+  onDeleteBook: (bookId: string) => void;
+  onAcceptRequest: (requestId: string) => void;
+  onCancelRequest: (requestId: string) => void;
+  onExpireRequest: (requestId: string) => void;
+  onDueDaysChange: (requestId: string, days: number) => void;
+  onCreateLoan: (request: LibraryBookRequest, dueDays: number) => void;
 }
 
 const LibraryBooksTab = ({
@@ -109,58 +109,48 @@ const LibraryBooksTab = ({
   onDueDaysChange,
   onCreateLoan,
 }: LibraryBooksTabProps) => {
-  const navigate = useNavigate()
-  const [newImagePreviewUrl, setNewImagePreviewUrl] = useState<string | null>(null)
-  const [editImagePreviewUrl, setEditImagePreviewUrl] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [newImagePreviewUrl, setNewImagePreviewUrl] = useState<string | null>(null);
+  const [editImagePreviewUrl, setEditImagePreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!newBookForm.image) {
-      setNewImagePreviewUrl(null)
-      return
+      setNewImagePreviewUrl(null);
+      return;
     }
-    const previewUrl = URL.createObjectURL(newBookForm.image)
-    setNewImagePreviewUrl(previewUrl)
-    return () => URL.revokeObjectURL(previewUrl)
-  }, [newBookForm.image])
+    const previewUrl = URL.createObjectURL(newBookForm.image);
+    setNewImagePreviewUrl(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [newBookForm.image]);
 
   useEffect(() => {
     if (!editBookForm.image) {
-      setEditImagePreviewUrl(null)
-      return
+      setEditImagePreviewUrl(null);
+      return;
     }
-    const previewUrl = URL.createObjectURL(editBookForm.image)
-    setEditImagePreviewUrl(previewUrl)
-    return () => URL.revokeObjectURL(previewUrl)
-  }, [editBookForm.image])
+    const previewUrl = URL.createObjectURL(editBookForm.image);
+    setEditImagePreviewUrl(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [editBookForm.image]);
 
   const getBookImageUrl = (imageUrl?: string | null) => {
-    if (!imageUrl) return '/logo.png'
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl
-    const backend = import.meta.env.VITE_BACKEND_URL || ''
-    const normalized = imageUrl.startsWith('./') ? imageUrl.slice(1) : imageUrl
-    return `${backend}${normalized.startsWith('/') ? normalized : `/${normalized}`}`
-  }
+    if (!imageUrl) return "/logo.png";
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return imageUrl;
+    const backend = import.meta.env.VITE_BACKEND_URL || "";
+    const normalized = imageUrl.startsWith("./") ? imageUrl.slice(1) : imageUrl;
+    return `${backend}${normalized.startsWith("/") ? normalized : `/${normalized}`}`;
+  };
 
   const truncateDescription = (value?: string | null) => {
-    if (!value) return ''
-    return value.length > 50 ? `${value.slice(0, 50)}...` : value
-  }
+    if (!value) return "";
+    return value.length > 50 ? `${value.slice(0, 50)}...` : value;
+  };
 
-  const getMemberDisplayName = (member?: {
-    name?: string
-    firstName?: string
-    lastName?: string
-    email?: string
-  }) => {
-    return (
-      member?.name ||
-      `${member?.firstName || ''} ${member?.lastName || ''}`.trim() ||
-      member?.email ||
-      'Membre'
-    )
-  }
+  const getMemberDisplayName = (member?: { name?: string; firstName?: string; lastName?: string; email?: string }) => {
+    return member?.name || `${member?.firstName || ""} ${member?.lastName || ""}`.trim() || member?.email || "Membre";
+  };
 
-  const renderBookCard = (book: LibraryBook, mode: 'catalog' | 'mine') => {
+  const renderBookCard = (book: LibraryBook, mode: "catalog" | "mine") => {
     return (
       <div
         key={`${mode}-${book.id}`}
@@ -178,11 +168,11 @@ const LibraryBooksTab = ({
             <span
               className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
                 book.isAvailableNow
-                  ? 'bg-green-100/95 text-green-700 border border-green-200'
-                  : 'bg-amber-100/95 text-amber-700 border border-amber-200'
+                  ? "bg-green-100/95 text-green-700 border border-green-200"
+                  : "bg-amber-100/95 text-amber-700 border border-amber-200"
               }`}
             >
-              {book.isAvailableNow ? 'Disponible' : 'Indisponible'}
+              {book.isAvailableNow ? "Disponible" : "Indisponible"}
             </span>
             <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/90 text-gray-700 border border-gray-200">
               {getLibraryCategoryLabel(book.category)}
@@ -194,7 +184,7 @@ const LibraryBooksTab = ({
           <div className="text-xs text-gray-500 mt-2 flex flex-wrap gap-3">
             <span>
               <i className="fa-solid fa-language mr-1" title="Langue"></i>
-              {book.language || 'N/A'}
+              {book.language || "N/A"}
             </span>
             <span>
               <i className="fa-regular fa-clock mr-1" title="Durée de prêt"></i>
@@ -207,17 +197,15 @@ const LibraryBooksTab = ({
               </span>
             ) : null}
           </div>
-          {book.description && (
-            <p className="text-sm text-gray-600 mt-2">{truncateDescription(book.description)}</p>
-          )}
+          {book.description && <p className="text-sm text-gray-600 mt-2">{truncateDescription(book.description)}</p>}
 
           <div className="flex flex-wrap gap-2 mt-4">
-            {mode === 'mine' && (
+            {mode === "mine" && (
               <>
                 <button
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onToggleBookRequests(book.id)
+                    e.stopPropagation();
+                    onToggleBookRequests(book.id);
                   }}
                   className="w-8 h-8 rounded-lg text-xs bg-indigo-100 text-indigo-700 flex items-center justify-center"
                   title="Voir la file"
@@ -226,8 +214,8 @@ const LibraryBooksTab = ({
                 </button>
                 <button
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onOpenEditBook(book)
+                    e.stopPropagation();
+                    onOpenEditBook(book);
                   }}
                   className="w-8 h-8 rounded-lg text-xs bg-blue-100 text-blue-700 flex items-center justify-center"
                   title="Modifier"
@@ -236,23 +224,21 @@ const LibraryBooksTab = ({
                 </button>
                 <button
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onToggleBookAvailability(book)
+                    e.stopPropagation();
+                    onToggleBookAvailability(book);
                   }}
                   className="w-8 h-8 rounded-lg text-xs bg-gray-100 text-gray-700 flex items-center justify-center"
-                  title={book.availabilityMode === 'paused' ? 'Reprendre' : 'Mettre en pause'}
+                  title={book.availabilityMode === "paused" ? "Reprendre" : "Mettre en pause"}
                 >
                   <i
-                    className={`fa-solid ${
-                      book.availabilityMode === 'paused' ? 'fa-play' : 'fa-pause'
-                    }`}
-                    title={book.availabilityMode === 'paused' ? 'Reprendre la disponibilité' : 'Mettre en pause'}
+                    className={`fa-solid ${book.availabilityMode === "paused" ? "fa-play" : "fa-pause"}`}
+                    title={book.availabilityMode === "paused" ? "Reprendre la disponibilité" : "Mettre en pause"}
                   ></i>
                 </button>
                 <button
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onDeleteBook(book.id)
+                    e.stopPropagation();
+                    onDeleteBook(book.id);
                   }}
                   className="w-8 h-8 rounded-lg text-xs bg-red-100 text-red-700 flex items-center justify-center"
                   title="Supprimer"
@@ -264,8 +250,8 @@ const LibraryBooksTab = ({
           </div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <section className="space-y-6">
@@ -276,7 +262,7 @@ const LibraryBooksTab = ({
             <button
               onClick={onToggleOnlyAvailable}
               className={`px-3 py-2 rounded-lg text-sm ${
-                showOnlyAvailable ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                showOnlyAvailable ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
               }`}
             >
               Disponibles uniquement
@@ -293,18 +279,15 @@ const LibraryBooksTab = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <input
-            value={bookSearch ?? ''}
+            value={bookSearch ?? ""}
             onChange={(e) => onBookSearchChange(e.target.value)}
             placeholder="Rechercher par titre ou auteur"
             className="px-3 py-2 border border-gray-300 rounded-xl text-sm"
           />
           <Dropdown
-            value={bookCategory ?? ''}
-            onChange={(e) => onBookCategoryChange(e.target.value as LibraryBookCategory | '')}
-            options={[
-              { value: '', label: 'Toutes les catégories' },
-              ...LIBRARY_BOOK_CATEGORY_OPTIONS,
-            ]}
+            value={bookCategory ?? ""}
+            onChange={(e) => onBookCategoryChange(e.target.value as LibraryBookCategory | "")}
+            options={[{ value: "", label: "Toutes les catégories" }, ...LIBRARY_BOOK_CATEGORY_OPTIONS]}
             className="py-2 text-sm"
           />
         </div>
@@ -312,8 +295,8 @@ const LibraryBooksTab = ({
         {showBookCreateForm && (
           <form
             onSubmit={(e) => {
-              e.preventDefault()
-              onCreateBook()
+              e.preventDefault();
+              onCreateBook();
             }}
             className="mb-6 p-5 sm:p-6 bg-gradient-to-br from-white to-slate-50 rounded-2xl border border-gray-200 shadow-sm space-y-5"
           >
@@ -330,8 +313,8 @@ const LibraryBooksTab = ({
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Titre</label>
                   <input
                     required
-                    value={newBookForm.title ?? ''}
-                    onChange={(e) => onNewBookFieldChange('title', e.target.value)}
+                    value={newBookForm.title ?? ""}
+                    onChange={(e) => onNewBookFieldChange("title", e.target.value)}
                     placeholder="Ex: Clean Code"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -340,8 +323,8 @@ const LibraryBooksTab = ({
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Auteur</label>
                   <input
                     required
-                    value={newBookForm.author ?? ''}
-                    onChange={(e) => onNewBookFieldChange('author', e.target.value)}
+                    value={newBookForm.author ?? ""}
+                    onChange={(e) => onNewBookFieldChange("author", e.target.value)}
                     placeholder="Ex: Robert C. Martin"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -349,20 +332,17 @@ const LibraryBooksTab = ({
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Catégorie</label>
                   <Dropdown
-                    value={newBookForm.category ?? ''}
-                    onChange={(e) => onNewBookFieldChange('category', e.target.value as LibraryBookCategory | '')}
-                    options={[
-                      { value: '', label: 'Choisir une catégorie' },
-                      ...LIBRARY_BOOK_CATEGORY_OPTIONS,
-                    ]}
+                    value={newBookForm.category ?? ""}
+                    onChange={(e) => onNewBookFieldChange("category", e.target.value as LibraryBookCategory | "")}
+                    options={[{ value: "", label: "Choisir une catégorie" }, ...LIBRARY_BOOK_CATEGORY_OPTIONS]}
                     className="py-2 text-sm"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Langue</label>
                   <Dropdown
-                    value={newBookForm.language ?? 'FR'}
-                    onChange={(e) => onNewBookFieldChange('language', e.target.value)}
+                    value={newBookForm.language ?? "FR"}
+                    onChange={(e) => onNewBookFieldChange("language", e.target.value)}
                     options={LANGUAGE_OPTIONS}
                     className="py-2 text-sm"
                   />
@@ -372,8 +352,8 @@ const LibraryBooksTab = ({
                   <input
                     type="number"
                     min={1}
-                    value={newBookForm.pageCount ?? ''}
-                    onChange={(e) => onNewBookFieldChange('pageCount', e.target.value ? Number(e.target.value) : '')}
+                    value={newBookForm.pageCount ?? ""}
+                    onChange={(e) => onNewBookFieldChange("pageCount", e.target.value ? Number(e.target.value) : "")}
                     placeholder="Ex: 320"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -387,7 +367,7 @@ const LibraryBooksTab = ({
                     min={7}
                     max={90}
                     value={newBookForm.defaultLoanDays ?? 21}
-                    onChange={(e) => onNewBookFieldChange('defaultLoanDays', Number(e.target.value) || 21)}
+                    onChange={(e) => onNewBookFieldChange("defaultLoanDays", Number(e.target.value) || 21)}
                     placeholder="Entre 7 et 90"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -410,7 +390,7 @@ const LibraryBooksTab = ({
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => onNewBookFieldChange('image', e.target.files?.[0] || null)}
+                    onChange={(e) => onNewBookFieldChange("image", e.target.files?.[0] || null)}
                     className="w-full text-xs"
                   />
                 </div>
@@ -420,8 +400,8 @@ const LibraryBooksTab = ({
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Description</label>
               <textarea
-                value={newBookForm.description ?? ''}
-                onChange={(e) => onNewBookFieldChange('description', e.target.value)}
+                value={newBookForm.description ?? ""}
+                onChange={(e) => onNewBookFieldChange("description", e.target.value)}
                 placeholder="Résumé, points clés, état du livre..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm min-h-[90px] bg-white"
               />
@@ -441,8 +421,8 @@ const LibraryBooksTab = ({
         {showBookEditForm && (
           <form
             onSubmit={(e) => {
-              e.preventDefault()
-              onUpdateBook()
+              e.preventDefault();
+              onUpdateBook();
             }}
             className="mb-6 p-5 sm:p-6 bg-gradient-to-br from-white to-blue-50 rounded-2xl border border-blue-200 shadow-sm space-y-5"
           >
@@ -463,8 +443,8 @@ const LibraryBooksTab = ({
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Titre</label>
                   <input
                     required
-                    value={editBookForm.title ?? ''}
-                    onChange={(e) => onEditBookFieldChange('title', e.target.value)}
+                    value={editBookForm.title ?? ""}
+                    onChange={(e) => onEditBookFieldChange("title", e.target.value)}
                     placeholder="Ex: Clean Code"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -473,8 +453,8 @@ const LibraryBooksTab = ({
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Auteur</label>
                   <input
                     required
-                    value={editBookForm.author ?? ''}
-                    onChange={(e) => onEditBookFieldChange('author', e.target.value)}
+                    value={editBookForm.author ?? ""}
+                    onChange={(e) => onEditBookFieldChange("author", e.target.value)}
                     placeholder="Ex: Robert C. Martin"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -482,20 +462,17 @@ const LibraryBooksTab = ({
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Catégorie</label>
                   <Dropdown
-                    value={editBookForm.category ?? ''}
-                    onChange={(e) => onEditBookFieldChange('category', e.target.value as LibraryBookCategory | '')}
-                    options={[
-                      { value: '', label: 'Choisir une catégorie' },
-                      ...LIBRARY_BOOK_CATEGORY_OPTIONS,
-                    ]}
+                    value={editBookForm.category ?? ""}
+                    onChange={(e) => onEditBookFieldChange("category", e.target.value as LibraryBookCategory | "")}
+                    options={[{ value: "", label: "Choisir une catégorie" }, ...LIBRARY_BOOK_CATEGORY_OPTIONS]}
                     className="py-2 text-sm"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Langue</label>
                   <Dropdown
-                    value={editBookForm.language ?? 'FR'}
-                    onChange={(e) => onEditBookFieldChange('language', e.target.value)}
+                    value={editBookForm.language ?? "FR"}
+                    onChange={(e) => onEditBookFieldChange("language", e.target.value)}
                     options={LANGUAGE_OPTIONS}
                     className="py-2 text-sm"
                   />
@@ -505,8 +482,8 @@ const LibraryBooksTab = ({
                   <input
                     type="number"
                     min={1}
-                    value={editBookForm.pageCount ?? ''}
-                    onChange={(e) => onEditBookFieldChange('pageCount', e.target.value ? Number(e.target.value) : '')}
+                    value={editBookForm.pageCount ?? ""}
+                    onChange={(e) => onEditBookFieldChange("pageCount", e.target.value ? Number(e.target.value) : "")}
                     placeholder="Ex: 320"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -520,7 +497,7 @@ const LibraryBooksTab = ({
                     min={7}
                     max={90}
                     value={editBookForm.defaultLoanDays ?? 21}
-                    onChange={(e) => onEditBookFieldChange('defaultLoanDays', Number(e.target.value) || 21)}
+                    onChange={(e) => onEditBookFieldChange("defaultLoanDays", Number(e.target.value) || 21)}
                     placeholder="Entre 7 et 90"
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white"
                   />
@@ -543,7 +520,7 @@ const LibraryBooksTab = ({
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => onEditBookFieldChange('image', e.target.files?.[0] || null)}
+                    onChange={(e) => onEditBookFieldChange("image", e.target.files?.[0] || null)}
                     className="w-full text-xs"
                   />
                 </div>
@@ -553,8 +530,8 @@ const LibraryBooksTab = ({
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Description</label>
               <textarea
-                value={editBookForm.description ?? ''}
-                onChange={(e) => onEditBookFieldChange('description', e.target.value)}
+                value={editBookForm.description ?? ""}
+                onChange={(e) => onEditBookFieldChange("description", e.target.value)}
                 placeholder="Résumé, points clés, état du livre..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm min-h-[90px] bg-white"
               />
@@ -601,7 +578,7 @@ const LibraryBooksTab = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-            {books.map((book) => renderBookCard(book, 'catalog'))}
+            {books.map((book) => renderBookCard(book, "catalog"))}
           </div>
         )}
       </div>
@@ -618,9 +595,7 @@ const LibraryBooksTab = ({
               <i className="fa-solid fa-plus"></i>
             </div>
             <h3 className="text-sm font-semibold text-gray-900">Aucun livre publié</h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Ajoutez votre premier livre pour commencer les prêts.
-            </p>
+            <p className="text-sm text-gray-500 mt-1">Ajoutez votre premier livre pour commencer les prêts.</p>
             <button
               type="button"
               onClick={onToggleCreateForm}
@@ -631,7 +606,7 @@ const LibraryBooksTab = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-            {myBooks.map((book) => renderBookCard(book, 'mine'))}
+            {myBooks.map((book) => renderBookCard(book, "mine"))}
           </div>
         )}
 
@@ -653,30 +628,30 @@ const LibraryBooksTab = ({
             ) : (
               <div className="space-y-3">
                 {selectedBookRequests.map((request: LibraryBookRequest) => {
-                  const isRequester = (request.borrowerId || request.requesterId) === currentUserId
-                  const requestOwnerId = request.ownerId || request.book?.ownerId
-                  const canCreateLoan = requestOwnerId === currentUserId
-                  const dueDays = dueDaysByRequest[request.id] || request.book?.defaultLoanDays || 21
-                  const countdown = getOfferCountdown(request.offerExpiresAt)
-                  const borrowerDisplayName = getMemberDisplayName(request.borrower || request.requester)
+                  const isRequester = (request.borrowerId || request.requesterId) === currentUserId;
+                  const requestOwnerId = request.ownerId || request.book?.ownerId;
+                  const canCreateLoan = requestOwnerId === currentUserId;
+                  const dueDays = dueDaysByRequest[request.id] || request.book?.defaultLoanDays || 21;
+                  const countdown = getOfferCountdown(request.offerExpiresAt);
+                  const borrowerDisplayName = getMemberDisplayName(request.borrower || request.requester);
 
                   return (
                     <div key={request.id} className="p-3 rounded-lg border border-gray-200 bg-white">
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {borrowerDisplayName}
-                          </p>
+                          <p className="text-sm font-medium text-gray-900">{borrowerDisplayName}</p>
                           <p className="text-xs text-gray-500">Créée le {formatDate(request.createdAt)}</p>
                           {countdown && <p className="text-xs text-amber-700">{countdown}</p>}
                         </div>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColorMap[request.status] || 'bg-gray-100 text-gray-700'}`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColorMap[request.status] || "bg-gray-100 text-gray-700"}`}
+                        >
                           {getStatusLabel(request.status)}
                         </span>
                       </div>
 
                       <div className="mt-2 flex flex-wrap gap-2 items-center">
-                        {isRequester && request.status === 'offered' && (
+                        {isRequester && request.status === "offered" && (
                           <button
                             onClick={() => onAcceptRequest(request.id)}
                             className="px-3 py-1.5 rounded-lg text-xs bg-green-100 text-green-700"
@@ -685,16 +660,17 @@ const LibraryBooksTab = ({
                           </button>
                         )}
 
-                        {(isRequester || canCreateLoan) && ['queued', 'offered', 'accepted'].includes(request.status) && (
-                          <button
-                            onClick={() => onCancelRequest(request.id)}
-                            className="px-3 py-1.5 rounded-lg text-xs bg-red-100 text-red-700"
-                          >
-                            Annuler
-                          </button>
-                        )}
+                        {(isRequester || canCreateLoan) &&
+                          ["queued", "offered", "accepted"].includes(request.status) && (
+                            <button
+                              onClick={() => onCancelRequest(request.id)}
+                              className="px-3 py-1.5 rounded-lg text-xs bg-red-100 text-red-700"
+                            >
+                              Annuler
+                            </button>
+                          )}
 
-                        {isAdmin && ['queued', 'offered'].includes(request.status) && (
+                        {isAdmin && ["queued", "offered"].includes(request.status) && (
                           <button
                             onClick={() => onExpireRequest(request.id)}
                             className="px-3 py-1.5 rounded-lg text-xs bg-gray-200 text-gray-700"
@@ -703,7 +679,7 @@ const LibraryBooksTab = ({
                           </button>
                         )}
 
-                        {canCreateLoan && request.status === 'accepted' && (
+                        {canCreateLoan && request.status === "accepted" && (
                           <>
                             <label className="text-xs text-gray-500">Durée (échéance finalisée à l'activation)</label>
                             <input
@@ -724,7 +700,7 @@ const LibraryBooksTab = ({
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             )}
@@ -732,7 +708,7 @@ const LibraryBooksTab = ({
         )}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default LibraryBooksTab
+export default LibraryBooksTab;

@@ -1,15 +1,15 @@
-import { useState, useMemo, useEffect } from 'react'
-import FormInput from '../FormInput'
-import Dropdown from '../Dropdown'
-import { useCreateInvite } from '../../services/hooks/useInvitations'
-import { useSessions } from '../../services/hooks/useSessions'
+import { useState, useMemo, useEffect } from "react";
+import FormInput from "../FormInput";
+import Dropdown from "../Dropdown";
+import { useCreateInvite } from "../../services/hooks/useInvitations";
+import { useSessions } from "../../services/hooks/useSessions";
 
 interface CreateInviteModalProps {
-  isOpen: boolean
-  sessionId?: string // Optional - if provided, session is pre-selected
-  sessionTitle?: string
-  onClose: () => void
-  onSuccess?: () => void
+  isOpen: boolean;
+  sessionId?: string; // Optional - if provided, session is pre-selected
+  sessionTitle?: string;
+  onClose: () => void;
+  onSuccess?: () => void;
 }
 
 const CreateInviteModal = ({
@@ -19,86 +19,81 @@ const CreateInviteModal = ({
   onClose,
   onSuccess,
 }: CreateInviteModalProps) => {
-  const [email, setEmail] = useState('')
-  const [selectedSessionId, setSelectedSessionId] = useState('')
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const createInvite = useCreateInvite()
-  
+  const [email, setEmail] = useState("");
+  const [selectedSessionId, setSelectedSessionId] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const createInvite = useCreateInvite();
+
   // Fetch sessions for dropdown
   const { data: sessionsData } = useSessions({
-    status: 'upcoming',
+    status: "upcoming",
     limit: 100,
-  })
-  
-  const sessions = sessionsData?.data || []
-  
+  });
+
   // Initialize selectedSessionId when modal opens or initialSessionId changes
   useEffect(() => {
     if (isOpen) {
-      setSelectedSessionId(initialSessionId || '')
+      setSelectedSessionId(initialSessionId || "");
     }
-  }, [isOpen, initialSessionId])
-  
-  const sessionOptions = useMemo(() => {
-    return sessions.map((session) => ({
-      value: session.id,
-      label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString('fr-FR')}` : ''}`,
-    }))
-  }, [sessions])
+  }, [isOpen, initialSessionId]);
 
-  if (!isOpen) return null
+  const sessionOptions = useMemo(() => {
+    return (sessionsData?.data || []).map((session) => ({
+      value: session.id,
+      label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString("fr-FR")}` : ""}`,
+    }));
+  }, [sessionsData]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrors({})
+    e.preventDefault();
+    setErrors({});
 
     // Validation
     if (!email.trim()) {
-      setErrors({ email: 'L\'email est requis' })
-      return
+      setErrors({ email: "L'email est requis" });
+      return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setErrors({ email: 'Format d\'email invalide' })
-      return
+      setErrors({ email: "Format d'email invalide" });
+      return;
     }
 
     if (!selectedSessionId) {
-      setErrors({ sessionId: 'Veuillez sélectionner une session' })
-      return
+      setErrors({ sessionId: "Veuillez sélectionner une session" });
+      return;
     }
 
     try {
       await createInvite.mutateAsync({
         email: email.trim(),
         sessionId: selectedSessionId,
-      })
-      setEmail('')
-      setSelectedSessionId(initialSessionId || '')
-      onSuccess?.()
-      onClose()
+      });
+      setEmail("");
+      setSelectedSessionId(initialSessionId || "");
+      onSuccess?.();
+      onClose();
     } catch (error) {
       // Error is handled by the mutation hook
     }
-  }
+  };
 
   const handleClose = () => {
-    setEmail('')
-    setSelectedSessionId(initialSessionId || '')
-    setErrors({})
-    onClose()
-  }
+    setEmail("");
+    setSelectedSessionId(initialSessionId || "");
+    setErrors({});
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-gray-900">Ajouter un invité</h3>
-          <button
-            onClick={handleClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
+          <button onClick={handleClose} className="text-gray-500 hover:text-gray-700 transition-colors">
             <i className="fa-solid fa-times text-xl"></i>
           </button>
         </div>
@@ -117,16 +112,14 @@ const CreateInviteModal = ({
               options={sessionOptions}
               value={selectedSessionId}
               onChange={(e) => {
-                setSelectedSessionId(e.target.value)
+                setSelectedSessionId(e.target.value);
                 if (errors.sessionId) {
-                  setErrors((prev) => ({ ...prev, sessionId: '' }))
+                  setErrors((prev) => ({ ...prev, sessionId: "" }));
                 }
               }}
               placeholder="Sélectionner une session"
             />
-            {errors.sessionId && (
-              <p className="text-red-500 text-xs mt-1">{errors.sessionId}</p>
-            )}
+            {errors.sessionId && <p className="text-red-500 text-xs mt-1">{errors.sessionId}</p>}
           </div>
         )}
 
@@ -136,9 +129,9 @@ const CreateInviteModal = ({
             type="email"
             value={email}
             onChange={(e) => {
-              setEmail(e.target.value)
+              setEmail(e.target.value);
               if (errors.email) {
-                setErrors((prev) => ({ ...prev, email: '' }))
+                setErrors((prev) => ({ ...prev, email: "" }));
               }
             }}
             error={errors.email}
@@ -177,14 +170,13 @@ const CreateInviteModal = ({
         <div className="mt-4 p-3 bg-blue-50 rounded-lg">
           <p className="text-xs text-gray-600">
             <i className="fa-solid fa-info-circle mr-2 text-blue-500"></i>
-            Un email avec le lien d'invitation sera automatiquement envoyé à l'adresse indiquée.
-            L'invitation expire dans 7 jours.
+            Un email avec le lien d'invitation sera automatiquement envoyé à l'adresse indiquée. L'invitation expire
+            dans 7 jours.
           </p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateInviteModal
-
+export default CreateInviteModal;

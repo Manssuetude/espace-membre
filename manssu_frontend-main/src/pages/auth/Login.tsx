@@ -1,63 +1,63 @@
-import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useAuth } from '../../contexts/AuthContext'
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Login = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { isAuthenticated, sendOTP } = useAuth()
-  const [email, setEmail] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<{ email?: string }>({})
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, sendOTP } = useAuth();
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string }>({});
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    const from = (location.state as any)?.from?.pathname || '/'
-    navigate(from, { replace: true })
-    return null
+    const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || "/";
+    navigate(from, { replace: true });
+    return null;
   }
 
   const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrors({})
-    
+    e.preventDefault();
+    setErrors({});
+
     if (!email.trim()) {
-      setErrors({ email: 'Veuillez entrer votre adresse email' })
-      toast.error('Veuillez entrer votre adresse email')
-      return
+      setErrors({ email: "Veuillez entrer votre adresse email" });
+      toast.error("Veuillez entrer votre adresse email");
+      return;
     }
 
     if (!validateEmail(email)) {
-      setErrors({ email: 'Veuillez entrer une adresse email valide' })
-      toast.error('Adresse email invalide')
-      return
+      setErrors({ email: "Veuillez entrer une adresse email valide" });
+      toast.error("Adresse email invalide");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      await sendOTP(email)
-      toast.success('Code OTP envoyé à votre adresse email')
+      await sendOTP(email);
+      toast.success("Code OTP envoyé à votre adresse email");
       // Navigate to OTP verification page
-      navigate('/auth/verify-otp', { 
-        state: { 
-          email
-        } 
-      })
-    } catch (error: any) {
+      navigate("/auth/verify-otp", {
+        state: {
+          email,
+        },
+      });
+    } catch (error) {
       // Error toast is already shown by API client interceptor
       // Just handle the error silently here
-      console.error('Send OTP error:', error)
+      console.error("Send OTP error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100 font-inter flex items-center justify-center p-4">
@@ -70,9 +70,7 @@ const Login = () => {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
             Manssuétude
           </h1>
-          <p className="text-gray-600">
-            Connectez-vous à votre compte
-          </p>
+          <p className="text-gray-600">Connectez-vous à votre compte</p>
         </div>
 
         {/* Login Card */}
@@ -86,12 +84,12 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => {
-                  setEmail(e.target.value)
-                  if (errors.email) setErrors({})
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors({});
                 }}
                 placeholder="votre.email@exemple.com"
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white text-sm sm:text-base ${
-                  errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-primary'
+                  errors.email ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-primary"
                 }`}
                 required
                 disabled={isLoading}
@@ -115,7 +113,7 @@ const Login = () => {
                   Envoi en cours...
                 </span>
               ) : (
-                'Se connecter'
+                "Se connecter"
               )}
             </button>
           </form>
@@ -132,8 +130,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
-
+export default Login;

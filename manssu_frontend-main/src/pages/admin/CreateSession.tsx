@@ -1,141 +1,144 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { useCreateSession } from '../../services/hooks/useSessions'
-import { useThemes } from '../../services/hooks/useThemes'
-import { useLocations, useCreateLocation, useUpdateLocation } from '../../services/hooks/useLocations'
-import FormInput from '../../components/FormInput'
-import Dropdown from '../../components/Dropdown'
-import SearchableDropdown from '../../components/SearchableDropdown'
-import GooglePlacesAutocomplete from '../../components/GooglePlacesAutocomplete'
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useCreateSession } from "../../services/hooks/useSessions";
+import { useThemes } from "../../services/hooks/useThemes";
+import { useLocations, useCreateLocation, useUpdateLocation } from "../../services/hooks/useLocations";
+import FormInput from "../../components/FormInput";
+import Dropdown from "../../components/Dropdown";
+import SearchableDropdown from "../../components/SearchableDropdown";
+import GooglePlacesAutocomplete from "../../components/GooglePlacesAutocomplete";
 
 const CreateSession = () => {
-  const navigate = useNavigate()
-  const createSession = useCreateSession()
-  const { data: themesData } = useThemes({ status: 'approved' })
-  const { data: locationsData } = useLocations()
-  const createLocation = useCreateLocation()
-  const updateLocation = useUpdateLocation()
-  
+  const navigate = useNavigate();
+  const createSession = useCreateSession();
+  const { data: themesData } = useThemes({ status: "approved" });
+  const { data: locationsData } = useLocations();
+  const createLocation = useCreateLocation();
+  const updateLocation = useUpdateLocation();
+
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    theme: '',
-    type: '',
-    date: '',
-    startTime: '',
-    endTime: '',
-    locationId: '',
-    locationName: '',
-    location: '',
-    instructions: '',
-    googlePlaceId: '',
+    title: "",
+    description: "",
+    theme: "",
+    type: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    locationId: "",
+    locationName: "",
+    location: "",
+    instructions: "",
+    googlePlaceId: "",
     longitude: 0,
     latitude: 0,
     isOnline: false,
-    maxParticipants: '',
+    maxParticipants: "",
     objectives: [] as string[],
-  })
-  const [newObjective, setNewObjective] = useState('')
-  const [locationMode, setLocationMode] = useState<'select' | 'create' | 'update'>('select')
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  
-  const locationOptions = locationsData?.data?.map(loc => ({
-    value: loc.id,
-    label: loc.name ? `${loc.name} - ${loc.address}` : loc.address,
-  })) || []
-  
-  const selectedLocation = locationsData?.data?.find(loc => loc.id === formData.locationId)
+  });
+  const [newObjective, setNewObjective] = useState("");
+  const [locationMode, setLocationMode] = useState<"select" | "create" | "update">("select");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const locationOptions =
+    locationsData?.data?.map((loc) => ({
+      value: loc.id,
+      label: loc.name ? `${loc.name} - ${loc.address}` : loc.address,
+    })) || [];
+
+  const selectedLocation = locationsData?.data?.find((loc) => loc.id === formData.locationId);
 
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Le titre est obligatoire'
+      newErrors.title = "Le titre est obligatoire";
     }
 
-
     if (!formData.type) {
-      newErrors.type = 'Veuillez sélectionner un type de session'
+      newErrors.type = "Veuillez sélectionner un type de session";
     }
 
     if (!formData.maxParticipants) {
-      newErrors.maxParticipants = 'Le nombre maximum de participants est obligatoire'
+      newErrors.maxParticipants = "Le nombre maximum de participants est obligatoire";
     } else {
-      const num = parseInt(formData.maxParticipants)
+      const num = parseInt(formData.maxParticipants);
       if (isNaN(num) || num < 1 || num > 100) {
-        newErrors.maxParticipants = 'Veuillez entrer un nombre entre 1 et 100'
+        newErrors.maxParticipants = "Veuillez entrer un nombre entre 1 et 100";
       }
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!validateForm()) {
-      toast.error('Veuillez corriger les erreurs dans le formulaire')
-      return
+      toast.error("Veuillez corriger les erreurs dans le formulaire");
+      return;
     }
-    
-    createSession.mutate({
-      title: formData.title,
-      description: formData.description.trim() || undefined,
-      theme: formData.theme || undefined,
-      type: formData.type as 'workshop' | 'conference' | 'group' | 'individual',
-      date: formData.date || undefined,
-      startTime: formData.startTime || undefined,
-      endTime: formData.endTime || undefined,
-      locationId: formData.locationId || undefined,
-      isOnline: formData.isOnline,
-      maxParticipants: parseInt(formData.maxParticipants),
-      objectives: formData.objectives.length > 0 ? formData.objectives : undefined,
-    }, {
-      onSuccess: () => {
-        navigate('/admin/sessions')
+
+    createSession.mutate(
+      {
+        title: formData.title,
+        description: formData.description.trim() || undefined,
+        theme: formData.theme || undefined,
+        type: formData.type as "workshop" | "conference" | "group" | "individual",
+        date: formData.date || undefined,
+        startTime: formData.startTime || undefined,
+        endTime: formData.endTime || undefined,
+        locationId: formData.locationId || undefined,
+        isOnline: formData.isOnline,
+        maxParticipants: parseInt(formData.maxParticipants),
+        objectives: formData.objectives.length > 0 ? formData.objectives : undefined,
       },
-    })
-  }
+      {
+        onSuccess: () => {
+          navigate("/admin/sessions");
+        },
+      },
+    );
+  };
 
   const handleSaveDraft = async () => {
     if (!formData.title.trim()) {
-      toast.error('Veuillez au moins entrer un titre pour sauvegarder en brouillon')
-      return
+      toast.error("Veuillez au moins entrer un titre pour sauvegarder en brouillon");
+      return;
     }
-    toast.success('Session sauvegardée en brouillon')
-  }
+    toast.success("Session sauvegardée en brouillon");
+  };
 
   const handleCancel = () => {
-    navigate('/admin/sessions')
-  }
+    navigate("/admin/sessions");
+  };
 
   const handleLocationSelect = (locationId: string) => {
-    const location = locationsData?.data?.find(l => l.id === locationId)
+    const location = locationsData?.data?.find((l) => l.id === locationId);
     if (location) {
       setFormData({
         ...formData,
         locationId: location.id,
-        locationName: location.name || '',
+        locationName: location.name || "",
         location: location.address,
-        instructions: location.instructions || '',
+        instructions: location.instructions || "",
         googlePlaceId: location.googlePlaceId,
         longitude: location.longitude,
         latitude: location.latitude,
-      })
+      });
     }
-  }
+  };
 
   const handleCreateLocation = async () => {
     if (!formData.location.trim()) {
-      toast.error('Veuillez entrer une adresse')
-      return
+      toast.error("Veuillez entrer une adresse");
+      return;
     }
 
     if (!formData.googlePlaceId) {
-      toast.error('Veuillez sélectionner une adresse depuis les suggestions')
-      return
+      toast.error("Veuillez sélectionner une adresse depuis les suggestions");
+      return;
     }
 
     createLocation.mutate(
@@ -153,23 +156,23 @@ const CreateSession = () => {
             setFormData({
               ...formData,
               locationId: response.data.id,
-            })
-            setLocationMode('select')
+            });
+            setLocationMode("select");
           }
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleUpdateLocation = async () => {
     if (!formData.locationId || !formData.location.trim()) {
-      toast.error('Veuillez sélectionner un lieu à modifier')
-      return
+      toast.error("Veuillez sélectionner un lieu à modifier");
+      return;
     }
 
     if (!formData.googlePlaceId) {
-      toast.error('Veuillez sélectionner une adresse depuis les suggestions')
-      return
+      toast.error("Veuillez sélectionner une adresse depuis les suggestions");
+      return;
     }
 
     updateLocation.mutate(
@@ -186,11 +189,11 @@ const CreateSession = () => {
       },
       {
         onSuccess: () => {
-          setLocationMode('select')
+          setLocationMode("select");
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   return (
     <div>
@@ -214,7 +217,7 @@ const CreateSession = () => {
             </div>
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Informations de base</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             <div>
               <FormInput
@@ -222,18 +225,16 @@ const CreateSession = () => {
                 placeholder="Ex: Gestion du stress en période d'examens"
                 value={formData.title}
                 onChange={(e) => {
-                  setFormData({ ...formData, title: e.target.value })
-                  if (errors.title) setErrors({ ...errors, title: '' })
+                  setFormData({ ...formData, title: e.target.value });
+                  if (errors.title) setErrors({ ...errors, title: "" });
                 }}
                 required
                 error={errors.title}
               />
             </div>
-            
+
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Description</label>
               <textarea
                 rows={4}
                 value={formData.description}
@@ -242,59 +243,59 @@ const CreateSession = () => {
                 className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none bg-gray-50 focus:bg-white text-sm sm:text-base"
               />
             </div>
-            
+
             <div>
               <SearchableDropdown
                 label="Thème"
                 value={formData.theme}
                 onChange={(value) => {
-                  setFormData({ ...formData, theme: value })
-                  if (errors.theme) setErrors({ ...errors, theme: '' })
+                  setFormData({ ...formData, theme: value });
+                  if (errors.theme) setErrors({ ...errors, theme: "" });
                 }}
-                options={themesData?.data?.map((theme) => ({
-                  value: theme.title,
-                  label: theme.title,
-                })) || []}
+                options={
+                  themesData?.data?.map((theme) => ({
+                    value: theme.title,
+                    label: theme.title,
+                  })) || []
+                }
                 placeholder="Rechercher un thème..."
                 allowCustom={true}
                 error={errors.theme}
               />
             </div>
-            
+
             <div>
               <Dropdown
                 label="Type de session"
                 value={formData.type}
                 onChange={(e) => {
-                  setFormData({ ...formData, type: e.target.value })
-                  if (errors.type) setErrors({ ...errors, type: '' })
+                  setFormData({ ...formData, type: e.target.value });
+                  if (errors.type) setErrors({ ...errors, type: "" });
                 }}
                 options={[
-                  { value: '', label: 'Sélectionner un type' },
-                  { value: 'workshop', label: 'Atelier pratique' },
-                  { value: 'conference', label: 'Conférence' },
-                  { value: 'group', label: 'Séance de groupe' },
-                  { value: 'individual', label: 'Séance individuelle' },
+                  { value: "", label: "Sélectionner un type" },
+                  { value: "workshop", label: "Atelier pratique" },
+                  { value: "conference", label: "Conférence" },
+                  { value: "group", label: "Séance de groupe" },
+                  { value: "individual", label: "Séance individuelle" },
                 ]}
                 required
                 error={errors.type}
               />
             </div>
-            
+
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                Date
-              </label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Date</label>
               <input
                 type="date"
                 value={formData.date}
                 onChange={(e) => {
-                  setFormData({ ...formData, date: e.target.value })
+                  setFormData({ ...formData, date: e.target.value });
                 }}
                 className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white text-sm sm:text-base"
               />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Heure de début</label>
@@ -302,7 +303,7 @@ const CreateSession = () => {
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => {
-                    setFormData({ ...formData, startTime: e.target.value })
+                    setFormData({ ...formData, startTime: e.target.value });
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white text-sm sm:text-base"
                 />
@@ -313,13 +314,13 @@ const CreateSession = () => {
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => {
-                    setFormData({ ...formData, endTime: e.target.value })
+                    setFormData({ ...formData, endTime: e.target.value });
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-gray-50 focus:bg-white text-sm sm:text-base"
                 />
               </div>
             </div>
-            
+
             {/* Location Section */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -328,26 +329,26 @@ const CreateSession = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setLocationMode('select')
+                      setLocationMode("select");
                       if (formData.locationId) {
-                        const loc = locationsData?.data?.find(l => l.id === formData.locationId)
+                        const loc = locationsData?.data?.find((l) => l.id === formData.locationId);
                         if (loc) {
                           setFormData({
                             ...formData,
-                            locationName: loc.name || '',
+                            locationName: loc.name || "",
                             location: loc.address,
-                            instructions: loc.instructions || '',
+                            instructions: loc.instructions || "",
                             googlePlaceId: loc.googlePlaceId,
                             longitude: loc.longitude,
                             latitude: loc.latitude,
-                          })
+                          });
                         }
                       }
                     }}
                     className={`px-2 py-1 text-xs rounded-lg transition-all ${
-                      locationMode === 'select'
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      locationMode === "select"
+                        ? "bg-primary text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     Sélectionner
@@ -355,22 +356,22 @@ const CreateSession = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setLocationMode('create')
+                      setLocationMode("create");
                       setFormData({
                         ...formData,
-                        locationId: '',
-                        locationName: '',
-                        location: '',
-                        instructions: '',
-                        googlePlaceId: '',
+                        locationId: "",
+                        locationName: "",
+                        location: "",
+                        instructions: "",
+                        googlePlaceId: "",
                         longitude: 0,
                         latitude: 0,
-                      })
+                      });
                     }}
                     className={`px-2 py-1 text-xs rounded-lg transition-all ${
-                      locationMode === 'create'
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      locationMode === "create"
+                        ? "bg-primary text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     Nouveau
@@ -379,12 +380,12 @@ const CreateSession = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        setLocationMode('update')
+                        setLocationMode("update");
                       }}
                       className={`px-2 py-1 text-xs rounded-lg transition-all ${
-                        locationMode === 'update'
-                          ? 'bg-primary text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        locationMode === "update"
+                          ? "bg-primary text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
                       Modifier
@@ -393,7 +394,7 @@ const CreateSession = () => {
                 </div>
               </div>
 
-              {locationMode === 'select' ? (
+              {locationMode === "select" ? (
                 <div>
                   <SearchableDropdown
                     label="Sélectionner un lieu"
@@ -407,7 +408,9 @@ const CreateSession = () => {
                     <div className="mt-2 p-3 bg-gray-50 rounded-lg">
                       <p className="text-sm font-medium text-gray-900">{selectedLocation.address}</p>
                       {selectedLocation.instructions && (
-                        <p className="text-xs text-gray-600 mt-1 whitespace-pre-line">{selectedLocation.instructions}</p>
+                        <p className="text-xs text-gray-600 mt-1 whitespace-pre-line">
+                          {selectedLocation.instructions}
+                        </p>
                       )}
                     </div>
                   )}
@@ -415,7 +418,9 @@ const CreateSession = () => {
               ) : (
                 <>
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Nom du lieu (optionnel)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                      Nom du lieu (optionnel)
+                    </label>
                     <input
                       type="text"
                       value={formData.locationName}
@@ -436,14 +441,16 @@ const CreateSession = () => {
                           googlePlaceId: placeId,
                           longitude: longitude,
                           latitude: latitude,
-                        })
+                        });
                       }}
                       placeholder="Rechercher une adresse en France..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Accès (instructions)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                      Accès (instructions)
+                    </label>
                     <textarea
                       rows={4}
                       value={formData.instructions}
@@ -453,22 +460,22 @@ const CreateSession = () => {
                     />
                   </div>
 
-                  {(locationMode === 'create' || locationMode === 'update') && (
+                  {(locationMode === "create" || locationMode === "update") && (
                     <button
                       type="button"
-                      onClick={locationMode === 'create' ? handleCreateLocation : handleUpdateLocation}
+                      onClick={locationMode === "create" ? handleCreateLocation : handleUpdateLocation}
                       disabled={!formData.location.trim() || createLocation.isPending || updateLocation.isPending}
                       className="w-full px-4 py-2 bg-gradient-to-r from-accent to-blue-600 text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {createLocation.isPending || updateLocation.isPending ? (
                         <>
                           <i className="fa-solid fa-spinner fa-spin mr-2"></i>
-                          {locationMode === 'create' ? 'Création...' : 'Mise à jour...'}
+                          {locationMode === "create" ? "Création..." : "Mise à jour..."}
                         </>
                       ) : (
                         <>
-                          <i className={`fa-solid ${locationMode === 'create' ? 'fa-plus' : 'fa-save'} mr-2`}></i>
-                          {locationMode === 'create' ? 'Créer le lieu' : 'Mettre à jour le lieu'}
+                          <i className={`fa-solid ${locationMode === "create" ? "fa-plus" : "fa-save"} mr-2`}></i>
+                          {locationMode === "create" ? "Créer le lieu" : "Mettre à jour le lieu"}
                         </>
                       )}
                     </button>
@@ -476,7 +483,7 @@ const CreateSession = () => {
                 </>
               )}
             </div>
-            
+
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 Nombre maximum de participants
@@ -488,11 +495,13 @@ const CreateSession = () => {
                 placeholder="Ex: 25"
                 value={formData.maxParticipants}
                 onChange={(e) => {
-                  setFormData({ ...formData, maxParticipants: e.target.value })
-                  if (errors.maxParticipants) setErrors({ ...errors, maxParticipants: '' })
+                  setFormData({ ...formData, maxParticipants: e.target.value });
+                  if (errors.maxParticipants) setErrors({ ...errors, maxParticipants: "" });
                 }}
                 className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white text-sm sm:text-base ${
-                  errors.maxParticipants ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-primary'
+                  errors.maxParticipants
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-300 focus:border-primary"
                 }`}
                 required
               />
@@ -506,9 +515,7 @@ const CreateSession = () => {
 
             {/* Programme (Objectives) */}
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-                Programme
-              </label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Programme</label>
               <div className="space-y-2">
                 {formData.objectives.map((objective, index) => (
                   <div key={index} className="flex items-center gap-2">
@@ -521,7 +528,7 @@ const CreateSession = () => {
                         setFormData({
                           ...formData,
                           objectives: formData.objectives.filter((_, i) => i !== index),
-                        })
+                        });
                       }}
                       className="px-3 py-2 text-red-500 hover:bg-red-50 rounded-xl transition-all"
                     >
@@ -535,13 +542,13 @@ const CreateSession = () => {
                     value={newObjective}
                     onChange={(e) => setNewObjective(e.target.value)}
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter' && newObjective.trim()) {
-                        e.preventDefault()
+                      if (e.key === "Enter" && newObjective.trim()) {
+                        e.preventDefault();
                         setFormData({
                           ...formData,
                           objectives: [...formData.objectives, newObjective.trim()],
-                        })
-                        setNewObjective('')
+                        });
+                        setNewObjective("");
                       }
                     }}
                     placeholder="Ajouter un point au programme..."
@@ -554,8 +561,8 @@ const CreateSession = () => {
                         setFormData({
                           ...formData,
                           objectives: [...formData.objectives, newObjective.trim()],
-                        })
-                        setNewObjective('')
+                        });
+                        setNewObjective("");
                       }
                     }}
                     disabled={!newObjective.trim()}
@@ -571,45 +578,44 @@ const CreateSession = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 sm:gap-0 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  disabled={createSession.isPending}
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 rounded-xl text-sm sm:text-base font-medium hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <i className="fa-solid fa-times mr-2"></i>
-                  Annuler
-                </button>
-                
-                <div className="flex flex-col sm:flex-row gap-3 sm:space-x-3 sm:space-y-0">
-                  <button
-                    type="button"
-                    onClick={handleSaveDraft}
-                    disabled={createSession.isPending}
-                    className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl text-sm sm:text-base font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <i className="fa-solid fa-save mr-2"></i>
-                    Sauvegarder en brouillon
-                  </button>
-                  
-                  <button
-                    type="submit"
-                    disabled={createSession.isPending}
-                    className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-red-500 text-white rounded-xl text-sm sm:text-base font-medium hover:shadow-lg transition-all shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {createSession.isPending ? (
-                      <i className="fa-solid fa-spinner fa-spin mr-2"></i>
-                    ) : (
-                      <i className="fa-solid fa-plus mr-2"></i>
-                    )}
-                    Créer la session
-                  </button>
-                </div>
+          <button
+            type="button"
+            onClick={handleCancel}
+            disabled={createSession.isPending}
+            className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 rounded-xl text-sm sm:text-base font-medium hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <i className="fa-solid fa-times mr-2"></i>
+            Annuler
+          </button>
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:space-x-3 sm:space-y-0">
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              disabled={createSession.isPending}
+              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl text-sm sm:text-base font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <i className="fa-solid fa-save mr-2"></i>
+              Sauvegarder en brouillon
+            </button>
+
+            <button
+              type="submit"
+              disabled={createSession.isPending}
+              className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-primary to-red-500 text-white rounded-xl text-sm sm:text-base font-medium hover:shadow-lg transition-all shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {createSession.isPending ? (
+                <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+              ) : (
+                <i className="fa-solid fa-plus mr-2"></i>
+              )}
+              Créer la session
+            </button>
+          </div>
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default CreateSession
-
+export default CreateSession;

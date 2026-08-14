@@ -1,15 +1,15 @@
-import { Theme } from '../../types/theme'
+import { Theme } from "../../types/theme";
 
 interface ProposedThemesListProps {
-  themes: Theme[]
+  themes: Theme[];
 }
 
 const ProposedThemesList = ({ themes }: ProposedThemesListProps) => {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Date inconnue'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-  }
+    if (!dateString) return "Date inconnue";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+  };
 
   if (themes.length === 0) {
     return (
@@ -17,7 +17,7 @@ const ProposedThemesList = ({ themes }: ProposedThemesListProps) => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Thèmes proposés</h3>
         <p className="text-gray-500 text-sm text-center py-4">Aucun thème proposé pour le moment</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -27,15 +27,12 @@ const ProposedThemesList = ({ themes }: ProposedThemesListProps) => {
         {themes.map((theme) => (
           <div key={theme.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
             <span className="text-sm font-medium text-gray-900 flex-1">{theme.title}</span>
-            {theme.submittedAt && (
-              <span className="text-xs text-gray-500 ml-4">{formatDate(theme.submittedAt)}</span>
-            )}
+            {theme.submittedAt && <span className="text-xs text-gray-500 ml-4">{formatDate(theme.submittedAt)}</span>}
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProposedThemesList
-
+export default ProposedThemesList;

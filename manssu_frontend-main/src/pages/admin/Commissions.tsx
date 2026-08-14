@@ -1,40 +1,38 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
-import {
-  useCommissions,
-  useCreateCommission,
-} from '../../services/hooks/useCommissions'
-import Pagination from '../../components/Pagination'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { useCommissions, useCreateCommission } from "../../services/hooks/useCommissions";
+import Pagination from "../../components/Pagination";
+import { CommissionWithSnakeCaseFallback } from "../../types/commission";
 
 const Commissions = () => {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const isSuperAdmin = user?.role === 'super_admin'
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "super_admin";
 
-  const [page, setPage] = useState(1)
-  const [statusFilter, setStatusFilter] = useState<'active' | 'archived' | undefined>('active')
-  
+  const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<"active" | "archived" | undefined>("active");
+
   // Create modal
-  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     maxMembers: null as number | null,
-  })
+  });
 
   // Queries
   const { data: commissionsData, isLoading: loadingCommissions } = useCommissions({
     status: statusFilter,
     page,
     limit: 10,
-  })
+  });
 
   // Mutations
-  const createMutation = useCreateCommission()
+  const createMutation = useCreateCommission();
 
   const handleCreate = () => {
-    if (!createForm.name.trim()) return
+    if (!createForm.name.trim()) return;
     createMutation.mutate(
       {
         name: createForm.name,
@@ -43,12 +41,12 @@ const Commissions = () => {
       },
       {
         onSuccess: () => {
-          setShowCreateModal(false)
-          setCreateForm({ name: '', description: '', maxMembers: null })
+          setShowCreateModal(false);
+          setCreateForm({ name: "", description: "", maxMembers: null });
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -75,21 +73,17 @@ const Commissions = () => {
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Statut:</span>
           <button
-            onClick={() => setStatusFilter('active')}
+            onClick={() => setStatusFilter("active")}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              statusFilter === 'active'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              statusFilter === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             Actives
           </button>
           <button
-            onClick={() => setStatusFilter('archived')}
+            onClick={() => setStatusFilter("archived")}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              statusFilter === 'archived'
-                ? 'bg-gray-700 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              statusFilter === "archived" ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             Archivées
@@ -106,12 +100,12 @@ const Commissions = () => {
         ) : commissionsData && commissionsData.data.length > 0 ? (
           <>
             <div className="divide-y divide-gray-200">
-              {commissionsData.data.map((commission: any) => {
-                const pendingCount = commission.pendingApplicationsCount ?? commission.pending_applications_count ?? 0
-                const memberCount = commission.memberCount ?? commission.member_count ?? 0
-                const maxMembers = commission.maxMembers ?? commission.max_members
-                const leaderFirstName = commission.leader?.firstName || commission.leader?.first_name || ''
-                const leaderLastName = commission.leader?.lastName || commission.leader?.last_name || ''
+              {(commissionsData.data as CommissionWithSnakeCaseFallback[]).map((commission) => {
+                const pendingCount = commission.pendingApplicationsCount ?? commission.pending_applications_count ?? 0;
+                const memberCount = commission.memberCount ?? commission.member_count ?? 0;
+                const maxMembers = commission.maxMembers ?? commission.max_members;
+                const leaderFirstName = commission.leader?.firstName || commission.leader?.first_name || "";
+                const leaderLastName = commission.leader?.lastName || commission.leader?.last_name || "";
 
                 return (
                   <div
@@ -125,16 +119,16 @@ const Commissions = () => {
                           <h3 className="font-semibold text-gray-900 truncate">{commission.name}</h3>
                           <span
                             className={`px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap ${
-                              commission.status === 'active'
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-gray-200 text-gray-600'
+                              commission.status === "active"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-200 text-gray-600"
                             }`}
                           >
-                            {commission.status === 'active' ? 'Active' : 'Archivée'}
+                            {commission.status === "active" ? "Active" : "Archivée"}
                           </span>
                           {pendingCount > 0 && (
                             <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full whitespace-nowrap">
-                              {pendingCount} candidature{pendingCount > 1 ? 's' : ''} en attente
+                              {pendingCount} candidature{pendingCount > 1 ? "s" : ""} en attente
                             </span>
                           )}
                         </div>
@@ -158,7 +152,7 @@ const Commissions = () => {
                             <i className="fa-solid fa-users mr-1"></i>
                             {memberCount}
                             {maxMembers !== null && maxMembers !== undefined && ` / ${maxMembers}`} membre
-                            {memberCount !== 1 ? 's' : ''}
+                            {memberCount !== 1 ? "s" : ""}
                           </span>
                         </div>
                       </div>
@@ -166,8 +160,8 @@ const Commissions = () => {
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <button
                           onClick={(e) => {
-                            e.stopPropagation()
-                            navigate(`/admin/commissions/${commission.id}`)
+                            e.stopPropagation();
+                            navigate(`/admin/commissions/${commission.id}`);
                           }}
                           className="p-2 text-gray-400 hover:text-primary transition-colors"
                         >
@@ -176,17 +170,13 @@ const Commissions = () => {
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
 
             {commissionsData.totalPages > 1 && (
               <div className="p-4 border-t border-gray-200">
-                <Pagination
-                  currentPage={page}
-                  totalPages={commissionsData.totalPages}
-                  onPageChange={setPage}
-                />
+                <Pagination currentPage={page} totalPages={commissionsData.totalPages} onPageChange={setPage} />
               </div>
             )}
           </>
@@ -197,11 +187,9 @@ const Commissions = () => {
             </div>
             <p className="text-gray-500 text-lg">Aucune commission</p>
             <p className="text-sm text-gray-400 mt-1">
-              {statusFilter === 'active'
-                ? 'Aucune commission active'
-                : 'Aucune commission archivée'}
+              {statusFilter === "active" ? "Aucune commission active" : "Aucune commission archivée"}
             </p>
-            {isSuperAdmin && statusFilter === 'active' && (
+            {isSuperAdmin && statusFilter === "active" && (
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="mt-4 px-4 py-2 bg-primary text-white font-medium rounded-xl hover:bg-primary/90 transition-colors"
@@ -222,8 +210,8 @@ const Commissions = () => {
                 <h3 className="text-xl font-bold text-gray-900">Créer une commission</h3>
                 <button
                   onClick={() => {
-                    setShowCreateModal(false)
-                    setCreateForm({ name: '', description: '', maxMembers: null })
+                    setShowCreateModal(false);
+                    setCreateForm({ name: "", description: "", maxMembers: null });
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
@@ -247,9 +235,7 @@ const Commissions = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea
                   value={createForm.description}
                   onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
@@ -260,12 +246,10 @@ const Commissions = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre maximum de membres
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nombre maximum de membres</label>
                 <input
                   type="number"
-                  value={createForm.maxMembers ?? ''}
+                  value={createForm.maxMembers ?? ""}
                   onChange={(e) =>
                     setCreateForm({
                       ...createForm,
@@ -282,8 +266,8 @@ const Commissions = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-end gap-3">
               <button
                 onClick={() => {
-                  setShowCreateModal(false)
-                  setCreateForm({ name: '', description: '', maxMembers: null })
+                  setShowCreateModal(false);
+                  setCreateForm({ name: "", description: "", maxMembers: null });
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -311,7 +295,7 @@ const Commissions = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Commissions
+export default Commissions;

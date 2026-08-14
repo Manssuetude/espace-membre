@@ -1,12 +1,12 @@
-import FormInput from '../FormInput'
+import FormInput from "../FormInput";
 
 interface ResourceBasicInfoProps {
-  title: string
-  description: string
-  onTitleChange: (value: string) => void
-  onDescriptionChange: (value: string) => void
-  titleError?: string
-  descriptionError?: string
+  title: string;
+  description: string;
+  onTitleChange: (value: string) => void;
+  onDescriptionChange: (value: string) => void;
+  titleError?: string;
+  descriptionError?: string;
 }
 
 const ResourceBasicInfo = ({
@@ -45,7 +45,7 @@ const ResourceBasicInfo = ({
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm sm:text-base ${
-            descriptionError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-primary'
+            descriptionError ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-primary"
           }`}
           required
         />
@@ -57,8 +57,7 @@ const ResourceBasicInfo = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ResourceBasicInfo
-
+export default ResourceBasicInfo;

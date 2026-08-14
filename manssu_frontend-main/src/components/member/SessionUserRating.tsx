@@ -1,7 +1,7 @@
-import { UserRating } from '../../types/session'
+import { UserRating } from "../../types/session";
 
 interface SessionUserRatingProps {
-  userRating: UserRating
+  userRating: UserRating;
 }
 
 const SessionUserRating = ({ userRating }: SessionUserRatingProps) => {
@@ -11,15 +11,13 @@ const SessionUserRating = ({ userRating }: SessionUserRatingProps) => {
         <i className="fa-solid fa-star text-warning mr-2"></i>
         Votre note
       </h3>
-      
+
       <div className="mb-4">
         <div className="flex items-center justify-center space-x-2 mb-3">
           {[1, 2, 3, 4, 5].map((star) => (
             <i
               key={star}
-              className={`fa-solid fa-star text-4xl ${
-                star <= userRating.rating ? 'text-warning' : 'text-gray-300'
-              }`}
+              className={`fa-solid fa-star text-4xl ${star <= userRating.rating ? "text-warning" : "text-gray-300"}`}
             ></i>
           ))}
         </div>
@@ -46,8 +44,7 @@ const SessionUserRating = ({ userRating }: SessionUserRatingProps) => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SessionUserRating
-
+export default SessionUserRating;

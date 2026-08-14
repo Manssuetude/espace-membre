@@ -1,9 +1,9 @@
 const FeedbackTipsSidebar = () => {
   const tips = [
-    { icon: 'fa-lightbulb', text: 'Soyez spécifique et constructif dans vos commentaires', color: 'secondary' },
-    { icon: 'fa-target', text: 'Proposez des solutions quand vous identifiez un problème', color: 'accent' },
-    { icon: 'fa-heart', text: "N'hésitez pas à partager vos expériences positives", color: 'primary' },
-  ]
+    { icon: "fa-lightbulb", text: "Soyez spécifique et constructif dans vos commentaires", color: "secondary" },
+    { icon: "fa-target", text: "Proposez des solutions quand vous identifiez un problème", color: "accent" },
+    { icon: "fa-heart", text: "N'hésitez pas à partager vos expériences positives", color: "primary" },
+  ];
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
@@ -17,8 +17,7 @@ const FeedbackTipsSidebar = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FeedbackTipsSidebar
-
+export default FeedbackTipsSidebar;

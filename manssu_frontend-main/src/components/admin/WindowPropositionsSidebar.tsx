@@ -1,9 +1,9 @@
 interface WindowPropositionsSidebarProps {
-  isWindowOpen: boolean
-  windowCloseDate: string
-  daysRemaining: number
-  onManageWindow: () => void
-  onCloseWindow: () => void
+  isWindowOpen: boolean;
+  windowCloseDate: string;
+  daysRemaining: number;
+  onManageWindow: () => void;
+  onCloseWindow: () => void;
 }
 
 const WindowPropositionsSidebar = ({
@@ -13,7 +13,7 @@ const WindowPropositionsSidebar = ({
   onManageWindow,
   onCloseWindow,
 }: WindowPropositionsSidebarProps) => {
-  if (!isWindowOpen) return null
+  if (!isWindowOpen) return null;
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6">
@@ -28,7 +28,9 @@ const WindowPropositionsSidebar = ({
             <span className="px-2 py-1 bg-success text-white rounded-full text-xs font-medium">Ouverte</span>
           </div>
           <p className="text-xs sm:text-sm text-gray-600">Se ferme le {windowCloseDate}</p>
-          <p className="text-xs text-gray-500 mt-1">Dans {daysRemaining} jour{daysRemaining > 1 ? 's' : ''}</p>
+          <p className="text-xs text-gray-500 mt-1">
+            Dans {daysRemaining} jour{daysRemaining > 1 ? "s" : ""}
+          </p>
         </div>
 
         <div className="space-y-2 sm:space-y-3">
@@ -49,8 +51,7 @@ const WindowPropositionsSidebar = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WindowPropositionsSidebar
-
+export default WindowPropositionsSidebar;

@@ -1,24 +1,24 @@
-import FormInput from '../FormInput'
-import Dropdown from '../Dropdown'
-import { Member } from '../../types/member'
-import { User } from '../../types/auth'
+import FormInput from "../FormInput";
+import Dropdown from "../Dropdown";
+import { Member } from "../../types/member";
+import { User } from "../../types/auth";
 
 interface EditMemberModalProps {
-  isOpen: boolean
-  member: Member | null
-  currentUser: User | null
+  isOpen: boolean;
+  member: Member | null;
+  currentUser: User | null;
   formData: {
-    firstName: string
-    lastName: string
-    email: string
-    role?: 'member' | 'admin' | 'super_admin' | 'guest'
-  }
-  errors: Record<string, string>
-  isLoading: boolean
-  onClose: () => void
-  onSubmit: (e: React.FormEvent) => void
-  onFormDataChange: (data: Partial<EditMemberModalProps['formData']>) => void
-  onErrorClear: (field: string) => void
+    firstName: string;
+    lastName: string;
+    email: string;
+    role?: "member" | "admin" | "super_admin" | "guest";
+  };
+  errors: Record<string, string>;
+  isLoading: boolean;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onFormDataChange: (data: Partial<EditMemberModalProps["formData"]>) => void;
+  onErrorClear: (field: string) => void;
 }
 
 const EditMemberModal = ({
@@ -33,39 +33,36 @@ const EditMemberModal = ({
   onFormDataChange,
   onErrorClear,
 }: EditMemberModalProps) => {
-  if (!isOpen || !member) return null
+  if (!isOpen || !member) return null;
 
   // Check if current user can edit role/status of this member
   const canEditRole = (): boolean => {
-    if (!currentUser) return false
+    if (!currentUser) return false;
     // User cannot edit their own role
-    if (member.id === currentUser.id) return false
+    if (member.id === currentUser.id) return false;
     // Only super_admin can edit role/status of admins and super_admins
-    if (member.role === 'admin' || member.role === 'super admin') {
-      return currentUser.role === 'super_admin'
+    if (member.role === "admin" || member.role === "super admin") {
+      return currentUser.role === "super_admin";
     }
     // Admins and super_admins can edit role/status of regular members
-    return currentUser.role === 'admin' || currentUser.role === 'super_admin'
-  }
+    return currentUser.role === "admin" || currentUser.role === "super_admin";
+  };
 
-  const canEditRoleStatus = canEditRole()
+  const canEditRoleStatus = canEditRole();
 
   const roleOptions = [
-    { value: 'member', label: 'Membre' },
-    { value: 'admin', label: 'Administrateur' },
-    { value: 'super_admin', label: 'Super Administrateur' },
-    { value: 'guest', label: 'Invité' },
-  ]
+    { value: "member", label: "Membre" },
+    { value: "admin", label: "Administrateur" },
+    { value: "super_admin", label: "Super Administrateur" },
+    { value: "guest", label: "Invité" },
+  ];
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-gray-900">Modifier le membre</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
             <i className="fa-solid fa-times text-xl"></i>
           </button>
         </div>
@@ -76,8 +73,8 @@ const EditMemberModal = ({
               label="Prénom"
               value={formData.firstName}
               onChange={(e) => {
-                onFormDataChange({ firstName: e.target.value })
-                onErrorClear('firstName')
+                onFormDataChange({ firstName: e.target.value });
+                onErrorClear("firstName");
               }}
               error={errors.firstName}
               required
@@ -86,8 +83,8 @@ const EditMemberModal = ({
               label="Nom"
               value={formData.lastName}
               onChange={(e) => {
-                onFormDataChange({ lastName: e.target.value })
-                onErrorClear('lastName')
+                onFormDataChange({ lastName: e.target.value });
+                onErrorClear("lastName");
               }}
               error={errors.lastName}
               required
@@ -99,8 +96,8 @@ const EditMemberModal = ({
             type="email"
             value={formData.email}
             onChange={(e) => {
-              onFormDataChange({ email: e.target.value })
-              onErrorClear('email')
+              onFormDataChange({ email: e.target.value });
+              onErrorClear("email");
             }}
             error={errors.email}
             required
@@ -108,21 +105,17 @@ const EditMemberModal = ({
 
           {canEditRoleStatus && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Rôle
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Rôle</label>
               <Dropdown
                 options={roleOptions}
-                value={formData.role || 'member'}
+                value={formData.role || "member"}
                 onChange={(e) => {
-                  onFormDataChange({ role: e.target.value as 'member' | 'admin' | 'super_admin' | 'guest' })
-                  onErrorClear('role')
+                  onFormDataChange({ role: e.target.value as "member" | "admin" | "super_admin" | "guest" });
+                  onErrorClear("role");
                 }}
                 placeholder="Sélectionner un rôle"
               />
-              {errors.role && (
-                <p className="text-red-500 text-xs mt-1">{errors.role}</p>
-              )}
+              {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}
             </div>
           )}
 
@@ -151,8 +144,7 @@ const EditMemberModal = ({
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditMemberModal
-
+export default EditMemberModal;

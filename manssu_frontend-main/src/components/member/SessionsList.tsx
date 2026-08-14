@@ -1,34 +1,35 @@
-import { useNavigate } from 'react-router-dom'
-import { Session } from '../../types/session'
-import { formatTimeWithoutSeconds } from '../../utils/resourceUtils'
+import { useNavigate } from "react-router-dom";
+import { Session } from "../../types/session";
+import { formatTimeWithoutSeconds } from "../../utils/resourceUtils";
 
 interface SessionsListProps {
-  sessions: Session[]
+  sessions: Session[];
 }
 
 const SessionsList = ({ sessions }: SessionsListProps) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   if (sessions.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Aucune session à venir</p>
       </div>
-    )
+    );
   }
 
   return (
     <div>
       {sessions.map((session) => {
-        const sessionDate = session.date ? new Date(session.date) : null
-        const day = sessionDate ? sessionDate.getDate() : null
-        const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
-        const month = sessionDate ? monthNames[sessionDate.getMonth()] : null
-        const timeStr = session.startTime && session.endTime
-          ? `${formatTimeWithoutSeconds(session.startTime)} - ${formatTimeWithoutSeconds(session.endTime)}`
-          : 'non défini'
-        const participants = `${session.registered}/${session.maxParticipants}`
-        
+        const sessionDate = session.date ? new Date(session.date) : null;
+        const day = sessionDate ? sessionDate.getDate() : null;
+        const monthNames = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+        const month = sessionDate ? monthNames[sessionDate.getMonth()] : null;
+        const timeStr =
+          session.startTime && session.endTime
+            ? `${formatTimeWithoutSeconds(session.startTime)} - ${formatTimeWithoutSeconds(session.endTime)}`
+            : "non défini";
+        const participants = `${session.registered}/${session.maxParticipants}`;
+
         return (
           <div
             key={session.id}
@@ -54,7 +55,7 @@ const SessionsList = ({ sessions }: SessionsListProps) => {
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{session.title}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">Thème: {session.theme || 'non défini'}</p>
+                <p className="text-gray-600 mb-4 line-clamp-2">Thème: {session.theme || "non défini"}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-600">
                   <div className="flex items-center">
                     <i className="fa-solid fa-clock text-primary mr-2"></i>
@@ -62,7 +63,7 @@ const SessionsList = ({ sessions }: SessionsListProps) => {
                   </div>
                   <div className="flex items-center">
                     <i className="fa-solid fa-map-marker-alt text-accent mr-2"></i>
-                    {session.location?.address || 'non défini'}
+                    {session.location?.address || "non défini"}
                   </div>
                   <div className="flex items-center">
                     <i className="fa-solid fa-users text-success mr-2"></i>
@@ -79,11 +80,10 @@ const SessionsList = ({ sessions }: SessionsListProps) => {
               )}
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default SessionsList
-
+export default SessionsList;

@@ -1,10 +1,10 @@
 interface ThemeActionCardsProps {
-  isWindowOpen: boolean
-  daysRemaining: number
-  onOpenWindow: () => void
-  onAddTheme: () => void
-  onCreatePoll: () => void
-  onManageWindow: () => void
+  isWindowOpen: boolean;
+  daysRemaining: number;
+  onOpenWindow: () => void;
+  onAddTheme: () => void;
+  onCreatePoll: () => void;
+  onManageWindow: () => void;
 }
 
 const ThemeActionCards = ({
@@ -29,10 +29,10 @@ const ThemeActionCards = ({
                 <i className="fa-solid fa-plus-circle text-white text-xl sm:text-2xl"></i>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">Ouvrir la fenêtre de propositions</h3>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  Permettre aux membres de proposer de nouveaux thèmes
-                </p>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
+                  Ouvrir la fenêtre de propositions
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600">Permettre aux membres de proposer de nouveaux thèmes</p>
               </div>
             </div>
             <div className="flex-shrink-0">
@@ -43,7 +43,7 @@ const ThemeActionCards = ({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   // When window is open, show all action cards
@@ -106,13 +106,14 @@ const ThemeActionCards = ({
               <span className="w-2 h-2 bg-success rounded-full animate-pulse"></span>
               <span className="text-xs sm:text-sm font-medium text-success">Ouverte</span>
             </div>
-            <p className="text-xs text-gray-500">Ferme dans {daysRemaining} jour{daysRemaining > 1 ? 's' : ''}</p>
+            <p className="text-xs text-gray-500">
+              Ferme dans {daysRemaining} jour{daysRemaining > 1 ? "s" : ""}
+            </p>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ThemeActionCards
-
+export default ThemeActionCards;

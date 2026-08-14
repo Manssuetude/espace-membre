@@ -1,5 +1,5 @@
-import { Link, useParams } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
+import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   useCancelLibraryLoan,
   useConfirmLibraryHandoverBorrower,
@@ -7,69 +7,64 @@ import {
   useConfirmLibraryReturnOwner,
   useInitiateLibraryReturn,
   useLibraryLoan,
-} from '../../services/hooks/useLibrary'
-import { getLibraryStatusLabel } from '../../utils/libraryUtils'
+} from "../../services/hooks/useLibrary";
+import { getLibraryStatusLabel } from "../../utils/libraryUtils";
 
 const statusColorMap: Record<string, string> = {
-  pending_handover: 'bg-blue-100 text-blue-700 border border-blue-200',
-  active: 'bg-green-100 text-green-700 border border-green-200',
-  pending_return: 'bg-amber-100 text-amber-700 border border-amber-200',
-  completed: 'bg-purple-100 text-purple-700 border border-purple-200',
-  cancelled: 'bg-red-100 text-red-700 border border-red-200',
-}
+  pending_handover: "bg-blue-100 text-blue-700 border border-blue-200",
+  active: "bg-green-100 text-green-700 border border-green-200",
+  pending_return: "bg-amber-100 text-amber-700 border border-amber-200",
+  completed: "bg-purple-100 text-purple-700 border border-purple-200",
+  cancelled: "bg-red-100 text-red-700 border border-red-200",
+};
 
 const formatDateTime = (value?: string | null) => {
-  if (!value) return 'Non défini'
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
-  return date.toLocaleString('fr-FR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
+  if (!value) return "Non défini";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
 const getBookImageUrl = (imageUrl?: string | null) => {
-  if (!imageUrl) return '/logo.png'
-  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) return imageUrl
-  const backend = import.meta.env.VITE_BACKEND_URL || ''
-  const normalized = imageUrl.startsWith('./') ? imageUrl.slice(1) : imageUrl
-  return `${backend}${normalized.startsWith('/') ? normalized : `/${normalized}`}`
-}
+  if (!imageUrl) return "/logo.png";
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return imageUrl;
+  const backend = import.meta.env.VITE_BACKEND_URL || "";
+  const normalized = imageUrl.startsWith("./") ? imageUrl.slice(1) : imageUrl;
+  return `${backend}${normalized.startsWith("/") ? normalized : `/${normalized}`}`;
+};
 
-const getMemberDisplayName = (member?: {
-  name?: string
-  firstName?: string
-  lastName?: string
-  email?: string
-}) => {
-  return member?.name || `${member?.firstName || ''} ${member?.lastName || ''}`.trim() || member?.email || 'Membre'
-}
+const getMemberDisplayName = (member?: { name?: string; firstName?: string; lastName?: string; email?: string }) => {
+  return member?.name || `${member?.firstName || ""} ${member?.lastName || ""}`.trim() || member?.email || "Membre";
+};
 
 const BibliothequeLoanDetail = () => {
-  const { id = '' } = useParams()
-  const { user } = useAuth()
+  const { id = "" } = useParams();
+  const { user } = useAuth();
 
-  const { data: loan, isLoading } = useLibraryLoan(id)
+  const { data: loan, isLoading } = useLibraryLoan(id);
 
-  const confirmOwnerHandoverMutation = useConfirmLibraryHandoverOwner()
-  const confirmBorrowerHandoverMutation = useConfirmLibraryHandoverBorrower()
-  const initiateReturnMutation = useInitiateLibraryReturn()
-  const confirmReturnOwnerMutation = useConfirmLibraryReturnOwner()
-  const cancelLoanMutation = useCancelLibraryLoan()
+  const confirmOwnerHandoverMutation = useConfirmLibraryHandoverOwner();
+  const confirmBorrowerHandoverMutation = useConfirmLibraryHandoverBorrower();
+  const initiateReturnMutation = useInitiateLibraryReturn();
+  const confirmReturnOwnerMutation = useConfirmLibraryReturnOwner();
+  const cancelLoanMutation = useCancelLibraryLoan();
 
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin'
-  const isOwner = loan?.ownerId === user?.id
-  const isBorrower = loan?.borrowerId === user?.id
+  const isAdmin = user?.role === "admin" || user?.role === "super_admin";
+  const isOwner = loan?.ownerId === user?.id;
+  const isBorrower = loan?.borrowerId === user?.id;
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[300px]">
         <i className="fa-solid fa-spinner fa-spin text-2xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (!loan) {
@@ -80,44 +75,44 @@ const BibliothequeLoanDetail = () => {
           Retour à la bibliothèque
         </Link>
       </div>
-    )
+    );
   }
 
-  const canCancel = (isOwner || isAdmin) && ['pending_handover', 'active', 'pending_return'].includes(loan.status)
-  const returnInitiatedAt = loan.borrowerReturnConfirmedAt ?? loan.returnInitiatedAt
+  const canCancel = (isOwner || isAdmin) && ["pending_handover", "active", "pending_return"].includes(loan.status);
+  const returnInitiatedAt = loan.borrowerReturnConfirmedAt ?? loan.returnInitiatedAt;
 
   const progressItems = [
     {
-      label: 'Prêt créé',
+      label: "Prêt créé",
       date: loan.createdAt,
       completed: true,
-      icon: 'fa-plus',
+      icon: "fa-plus",
     },
     {
-      label: 'Remise propriétaire',
+      label: "Remise propriétaire",
       date: loan.ownerHandoverConfirmedAt,
       completed: Boolean(loan.ownerHandoverConfirmedAt),
-      icon: 'fa-handshake',
+      icon: "fa-handshake",
     },
     {
-      label: 'Remise emprunteur',
+      label: "Remise emprunteur",
       date: loan.borrowerHandoverConfirmedAt,
       completed: Boolean(loan.borrowerHandoverConfirmedAt),
-      icon: 'fa-handshake-angle',
+      icon: "fa-handshake-angle",
     },
     {
-      label: 'Retour initié',
+      label: "Retour initié",
       date: returnInitiatedAt,
       completed: Boolean(returnInitiatedAt),
-      icon: 'fa-rotate-left',
+      icon: "fa-rotate-left",
     },
     {
-      label: 'Retour confirmé',
+      label: "Retour confirmé",
       date: loan.ownerReturnConfirmedAt,
       completed: Boolean(loan.ownerReturnConfirmedAt),
-      icon: 'fa-check',
+      icon: "fa-check",
     },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
@@ -132,22 +127,22 @@ const BibliothequeLoanDetail = () => {
             <div className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-sm aspect-[3/4] bg-slate-100">
               <img
                 src={getBookImageUrl(loan.book?.imageUrl)}
-                alt={loan.book?.title || 'Livre'}
+                alt={loan.book?.title || "Livre"}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent"></div>
               <div className="absolute bottom-3 left-3 right-3">
                 <h1 className="text-lg font-bold text-white line-clamp-2 drop-shadow">
-                  {loan.book?.title || 'Détail du prêt'}
+                  {loan.book?.title || "Détail du prêt"}
                 </h1>
-                <p className="text-xs text-white/90 line-clamp-1">{loan.book?.author || 'Auteur inconnu'}</p>
+                <p className="text-xs text-white/90 line-clamp-1">{loan.book?.author || "Auteur inconnu"}</p>
               </div>
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">Actions</h2>
               <div className="space-y-2">
-                {loan.status === 'pending_handover' && isOwner && (
+                {loan.status === "pending_handover" && isOwner && (
                   <button
                     onClick={() => confirmOwnerHandoverMutation.mutate(loan.id)}
                     className="w-full px-3 py-2 rounded-lg text-sm bg-indigo-100 text-indigo-700 text-left"
@@ -157,7 +152,7 @@ const BibliothequeLoanDetail = () => {
                   </button>
                 )}
 
-                {loan.status === 'pending_handover' && isBorrower && (
+                {loan.status === "pending_handover" && isBorrower && (
                   <button
                     onClick={() => confirmBorrowerHandoverMutation.mutate(loan.id)}
                     className="w-full px-3 py-2 rounded-lg text-sm bg-indigo-100 text-indigo-700 text-left"
@@ -167,7 +162,7 @@ const BibliothequeLoanDetail = () => {
                   </button>
                 )}
 
-                {loan.status === 'active' && isBorrower && (
+                {loan.status === "active" && isBorrower && (
                   <button
                     onClick={() => initiateReturnMutation.mutate(loan.id)}
                     className="w-full px-3 py-2 rounded-lg text-sm bg-amber-100 text-amber-700 text-left"
@@ -177,7 +172,7 @@ const BibliothequeLoanDetail = () => {
                   </button>
                 )}
 
-                {loan.status === 'pending_return' && isOwner && (
+                {loan.status === "pending_return" && isOwner && (
                   <button
                     onClick={() => confirmReturnOwnerMutation.mutate(loan.id)}
                     className="w-full px-3 py-2 rounded-lg text-sm bg-green-100 text-green-700 text-left"
@@ -197,13 +192,13 @@ const BibliothequeLoanDetail = () => {
                   </button>
                 )}
 
-                {!canCancel && loan.status === 'completed' && (
+                {!canCancel && loan.status === "completed" && (
                   <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
                     Ce prêt est terminé.
                   </p>
                 )}
 
-                {!canCancel && loan.status === 'cancelled' && (
+                {!canCancel && loan.status === "cancelled" && (
                   <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
                     Ce prêt a été annulé.
                   </p>
@@ -214,7 +209,9 @@ const BibliothequeLoanDetail = () => {
 
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColorMap[loan.status] || 'bg-gray-100 text-gray-700 border border-gray-200'}`}>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColorMap[loan.status] || "bg-gray-100 text-gray-700 border border-gray-200"}`}
+              >
                 {getLibraryStatusLabel(loan.status)}
               </span>
               {loan.dueAt && (
@@ -247,11 +244,14 @@ const BibliothequeLoanDetail = () => {
               <h2 className="text-sm font-semibold text-gray-900 mb-3">Progression du prêt</h2>
               <div className="space-y-2">
                 {progressItems.map((item) => (
-                  <div key={item.label} className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2">
+                  <div
+                    key={item.label}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2"
+                  >
                     <div className="flex items-center gap-2 min-w-0">
                       <span
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${
-                          item.completed ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                          item.completed ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
                         }`}
                         title={item.completed ? `${item.label} confirmé` : `${item.label} en attente`}
                       >
@@ -268,19 +268,33 @@ const BibliothequeLoanDetail = () => {
             <div className="rounded-xl border border-gray-200 bg-white p-4">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">Historique</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                <p className="text-gray-700">Créé le: <span className="font-medium">{formatDateTime(loan.createdAt)}</span></p>
-                <p className="text-gray-700">Mis à jour le: <span className="font-medium">{formatDateTime(loan.updatedAt)}</span></p>
-                <p className="text-gray-700">Remise propriétaire: <span className="font-medium">{formatDateTime(loan.ownerHandoverConfirmedAt)}</span></p>
-                <p className="text-gray-700">Remise emprunteur: <span className="font-medium">{formatDateTime(loan.borrowerHandoverConfirmedAt)}</span></p>
-                <p className="text-gray-700">Retour initié: <span className="font-medium">{formatDateTime(returnInitiatedAt)}</span></p>
-                <p className="text-gray-700">Retour confirmé: <span className="font-medium">{formatDateTime(loan.ownerReturnConfirmedAt)}</span></p>
+                <p className="text-gray-700">
+                  Créé le: <span className="font-medium">{formatDateTime(loan.createdAt)}</span>
+                </p>
+                <p className="text-gray-700">
+                  Mis à jour le: <span className="font-medium">{formatDateTime(loan.updatedAt)}</span>
+                </p>
+                <p className="text-gray-700">
+                  Remise propriétaire:{" "}
+                  <span className="font-medium">{formatDateTime(loan.ownerHandoverConfirmedAt)}</span>
+                </p>
+                <p className="text-gray-700">
+                  Remise emprunteur:{" "}
+                  <span className="font-medium">{formatDateTime(loan.borrowerHandoverConfirmedAt)}</span>
+                </p>
+                <p className="text-gray-700">
+                  Retour initié: <span className="font-medium">{formatDateTime(returnInitiatedAt)}</span>
+                </p>
+                <p className="text-gray-700">
+                  Retour confirmé: <span className="font-medium">{formatDateTime(loan.ownerReturnConfirmedAt)}</span>
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
-export default BibliothequeLoanDetail
+export default BibliothequeLoanDetail;

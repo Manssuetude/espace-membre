@@ -1,36 +1,31 @@
-import FormInput from '../FormInput'
+import FormInput from "../FormInput";
 
-type ResourceType = 'file' | 'video' | 'audio' | 'folder' | ''
+type ResourceType = "file" | "video" | "audio" | "folder" | "";
 
 interface ResourceLinkSectionsProps {
-  resourceType: ResourceType
+  resourceType: ResourceType;
   formData: {
-    fileLink: string
-    videoLink: string
-    audioLink: string
-    folderDescription: string
-    folderLink: string
-  }
-  onFormDataChange: (data: Partial<ResourceLinkSectionsProps['formData']>) => void
+    fileLink: string;
+    videoLink: string;
+    audioLink: string;
+    folderDescription: string;
+    folderLink: string;
+  };
+  onFormDataChange: (data: Partial<ResourceLinkSectionsProps["formData"]>) => void;
   errors: {
-    fileLink?: string
-    videoLink?: string
-    audioLink?: string
-    folderDescription?: string
-    folderLink?: string
-  }
+    fileLink?: string;
+    videoLink?: string;
+    audioLink?: string;
+    folderDescription?: string;
+    folderLink?: string;
+  };
 }
 
-const ResourceLinkSections = ({
-  resourceType,
-  formData,
-  onFormDataChange,
-  errors,
-}: ResourceLinkSectionsProps) => {
+const ResourceLinkSections = ({ resourceType, formData, onFormDataChange, errors }: ResourceLinkSectionsProps) => {
   return (
     <>
       {/* File Link Section */}
-      {resourceType === 'file' && (
+      {resourceType === "file" && (
         <div className="mt-6 sm:mt-8">
           <FormInput
             label="Lien vers le fichier *"
@@ -38,7 +33,7 @@ const ResourceLinkSections = ({
             placeholder="https://drive.google.com/file/..."
             value={formData.fileLink}
             onChange={(e) => {
-              onFormDataChange({ fileLink: e.target.value })
+              onFormDataChange({ fileLink: e.target.value });
             }}
             required
           />
@@ -53,7 +48,7 @@ const ResourceLinkSections = ({
       )}
 
       {/* Video Link Section */}
-      {resourceType === 'video' && (
+      {resourceType === "video" && (
         <div className="mt-6 sm:mt-8">
           <FormInput
             label="Lien YouTube *"
@@ -61,7 +56,7 @@ const ResourceLinkSections = ({
             placeholder="https://www.youtube.com/watch?v=..."
             value={formData.videoLink}
             onChange={(e) => {
-              onFormDataChange({ videoLink: e.target.value })
+              onFormDataChange({ videoLink: e.target.value });
             }}
             required
           />
@@ -76,7 +71,7 @@ const ResourceLinkSections = ({
       )}
 
       {/* Audio Link Section */}
-      {resourceType === 'audio' && (
+      {resourceType === "audio" && (
         <div className="mt-6 sm:mt-8">
           <FormInput
             label="Lien vers le podcast/audio *"
@@ -84,7 +79,7 @@ const ResourceLinkSections = ({
             placeholder="https://..."
             value={formData.audioLink}
             onChange={(e) => {
-              onFormDataChange({ audioLink: e.target.value })
+              onFormDataChange({ audioLink: e.target.value });
             }}
             required
           />
@@ -101,7 +96,7 @@ const ResourceLinkSections = ({
       )}
 
       {/* Folder Link Section */}
-      {resourceType === 'folder' && (
+      {resourceType === "folder" && (
         <div className="mt-6 sm:mt-8 space-y-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -112,12 +107,12 @@ const ResourceLinkSections = ({
               placeholder="Décrivez le contenu du dossier et les fichiers qu'il contient..."
               value={formData.folderDescription}
               onChange={(e) => {
-                onFormDataChange({ folderDescription: e.target.value })
+                onFormDataChange({ folderDescription: e.target.value });
               }}
               className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none text-sm sm:text-base ${
                 errors.folderDescription
-                  ? 'border-red-500 focus:border-red-500'
-                  : 'border-gray-300 focus:border-primary'
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-gray-300 focus:border-primary"
               }`}
               required
             />
@@ -135,7 +130,7 @@ const ResourceLinkSections = ({
               placeholder="https://drive.google.com/drive/folders/..."
               value={formData.folderLink}
               onChange={(e) => {
-                onFormDataChange({ folderLink: e.target.value })
+                onFormDataChange({ folderLink: e.target.value });
               }}
               required
             />
@@ -150,8 +145,7 @@ const ResourceLinkSections = ({
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ResourceLinkSections
-
+export default ResourceLinkSections;

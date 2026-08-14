@@ -1,60 +1,59 @@
-import { useNavigate } from 'react-router-dom'
-import { useMyUnansweredQuestionnaires } from '../../services/hooks/useQuestionnaires'
-import { useQuery } from '@tanstack/react-query'
-import { questionnairesApi } from '../../services/api/questionnaires'
-import { queryKeys } from '../../services/api/queryKeys'
+import { useNavigate } from "react-router-dom";
+import { useMyUnansweredQuestionnaires } from "../../services/hooks/useQuestionnaires";
+import { useQuery } from "@tanstack/react-query";
+import { questionnairesApi } from "../../services/api/questionnaires";
+import { queryKeys } from "../../services/api/queryKeys";
 
 const MemberQuestionnaires = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const { data: unansweredData, isLoading: isLoadingUnanswered } = useMyUnansweredQuestionnaires({
     page: 1,
     limit: 50,
-  })
+  });
 
   const { data: historyData, isLoading: isLoadingHistory } = useQuery({
-    queryKey: [...queryKeys.questionnaires, 'me', 'history'],
+    queryKey: [...queryKeys.questionnaires, "me", "history"],
     queryFn: () => questionnairesApi.getMyQuestionnaireHistory({ page: 1, limit: 50 }),
     select: (response) => response.data,
-  })
+  });
 
-  const unanswered = unansweredData?.data || []
-  const historyResponses = historyData?.data || []
+  const unanswered = unansweredData?.data || [];
+  const historyResponses = historyData?.data || [];
 
   // Preload questionnaire metadata for history (to show titles)
-  const questionnaireIds = Array.from(new Set(historyResponses.map((r) => r.questionnaireId)))
+  const questionnaireIds = Array.from(new Set(historyResponses.map((r) => r.questionnaireId)));
   const { data: questionnaireMeta } = useQuery({
-    queryKey: [...queryKeys.questionnaires, 'me', 'history-meta', questionnaireIds],
+    queryKey: [...queryKeys.questionnaires, "me", "history-meta", questionnaireIds],
     queryFn: async () => {
-      const map: Record<string, { title: string; description?: string | null }> = {}
+      const map: Record<string, { title: string; description?: string | null }> = {};
       for (const qid of questionnaireIds) {
         try {
-          const res = await questionnairesApi.getQuestionnaire(qid)
+          const res = await questionnairesApi.getQuestionnaire(qid);
           if (res.data) {
             map[qid] = {
               title: res.data.title,
               description: res.data.description,
-            }
+            };
           }
         } catch (e) {
           // ignore failures
         }
       }
-      return map
+      return map;
     },
     enabled: questionnaireIds.length > 0,
-  })
+  });
 
   const getHistoryQuestionnaireTitle = (questionnaireId: string) => {
-    const meta = questionnaireMeta?.[questionnaireId]
-    return meta?.title || questionnaireId
-  }
+    const meta = questionnaireMeta?.[questionnaireId];
+    return meta?.title || questionnaireId;
+  };
 
   const getHistoryQuestionnaireDescription = (questionnaireId: string) => {
-    const meta = questionnaireMeta?.[questionnaireId]
-    return meta?.description || ''
-  }
-
+    const meta = questionnaireMeta?.[questionnaireId];
+    return meta?.description || "";
+  };
 
   return (
     <div className="space-y-8">
@@ -90,12 +89,9 @@ const MemberQuestionnaires = () => {
               >
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{q.title}</h3>
-                  {q.description && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-3">{q.description}</p>
-                  )}
+                  {q.description && <p className="text-sm text-gray-600 mb-3 line-clamp-3">{q.description}</p>}
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning mb-3">
-                    <i className="fa-solid fa-circle-exclamation mr-2"></i>
-                    À compléter
+                    <i className="fa-solid fa-circle-exclamation mr-2"></i>À compléter
                   </span>
                 </div>
                 <button
@@ -104,7 +100,7 @@ const MemberQuestionnaires = () => {
                   className="mt-3 inline-flex items-center justify-center px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-red-500 text-white text-sm font-semibold hover:shadow-md hover:shadow-primary/30 transition-all"
                 >
                   <i className="fa-solid fa-play mr-2"></i>
-                  {q.hasResponse && !q.isSubmitted ? 'Continuer' : 'Commencer'}
+                  {q.hasResponse && !q.isSubmitted ? "Continuer" : "Commencer"}
                 </button>
               </div>
             ))}
@@ -133,18 +129,16 @@ const MemberQuestionnaires = () => {
         ) : historyResponses.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[160px] text-center">
             <i className="fa-solid fa-inbox text-3xl text-gray-300 mb-3"></i>
-            <p className="text-gray-700 font-medium">
-              Vous n&apos;avez pas encore répondu à de questionnaires.
-            </p>
+            <p className="text-gray-700 font-medium">Vous n&apos;avez pas encore répondu à de questionnaires.</p>
           </div>
         ) : (
           <div className="space-y-3">
             {historyResponses.map((r) => {
-              const metaTitle = getHistoryQuestionnaireTitle(r.questionnaireId)
-              const metaDescription = getHistoryQuestionnaireDescription(r.questionnaireId)
-              const submitted = r.status === 'submitted'
+              const metaTitle = getHistoryQuestionnaireTitle(r.questionnaireId);
+              const metaDescription = getHistoryQuestionnaireDescription(r.questionnaireId);
+              const submitted = r.status === "submitted";
               const canEdit =
-                submitted && r.editUntil ? new Date(r.editUntil) > new Date() : r.status === 'in_progress'
+                submitted && r.editUntil ? new Date(r.editUntil) > new Date() : r.status === "in_progress";
 
               return (
                 <div
@@ -153,31 +147,25 @@ const MemberQuestionnaires = () => {
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900 truncate">{metaTitle}</p>
-                    {metaDescription && (
-                      <p className="text-xs text-gray-500 truncate mt-0.5">{metaDescription}</p>
-                    )}
+                    {metaDescription && <p className="text-xs text-gray-500 truncate mt-0.5">{metaDescription}</p>}
                     <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-gray-500">
                       <span>
-                        Statut :{' '}
-                        <span className="font-medium">
-                          {submitted ? 'Soumis' : 'Brouillon'}
-                        </span>
+                        Statut : <span className="font-medium">{submitted ? "Soumis" : "Brouillon"}</span>
                       </span>
                       {r.submittedAt && (
                         <span>
-                          Soumis le{' '}
-                          {new Date(r.submittedAt).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
+                          Soumis le{" "}
+                          {new Date(r.submittedAt).toLocaleDateString("fr-FR", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
                           })}
                         </span>
                       )}
                       {canEdit && r.editUntil && (
                         <span className="inline-flex items-center px-2 py-1 rounded-full bg-primary/10 text-primary">
                           <i className="fa-solid fa-pen-to-square mr-1"></i>
-                          Modifiable jusqu&apos;au{' '}
-                          {new Date(r.editUntil).toLocaleDateString('fr-FR')}
+                          Modifiable jusqu&apos;au {new Date(r.editUntil).toLocaleDateString("fr-FR")}
                         </span>
                       )}
                     </div>
@@ -189,19 +177,17 @@ const MemberQuestionnaires = () => {
                       className="inline-flex items-center px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-red-500 text-white text-xs font-semibold hover:shadow-md hover:shadow-primary/30 transition-all"
                     >
                       <i className="fa-solid fa-eye mr-1"></i>
-                      {canEdit ? 'Modifier mes réponses' : 'Voir mes réponses'}
+                      {canEdit ? "Modifier mes réponses" : "Voir mes réponses"}
                     </button>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MemberQuestionnaires
-
-
+export default MemberQuestionnaires;

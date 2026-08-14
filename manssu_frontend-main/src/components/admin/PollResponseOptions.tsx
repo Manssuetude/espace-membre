@@ -1,15 +1,15 @@
 interface PollOption {
-  id: number
-  label: string
+  id: number;
+  label: string;
 }
 
 interface PollResponseOptionsProps {
-  responseType: string
-  options: PollOption[]
-  onResponseTypeChange: (value: string) => void
-  onAddOption: () => void
-  onRemoveOption: (id: number) => void
-  onUpdateOption: (id: number, label: string) => void
+  responseType: string;
+  options: PollOption[];
+  onResponseTypeChange: (value: string) => void;
+  onAddOption: () => void;
+  onRemoveOption: (id: number) => void;
+  onUpdateOption: (id: number, label: string) => void;
 }
 
 const PollResponseOptions = ({
@@ -41,21 +41,19 @@ const PollResponseOptions = ({
                 type="radio"
                 name="response-type"
                 value="single"
-                checked={responseType === 'single'}
+                checked={responseType === "single"}
                 onChange={(e) => onResponseTypeChange(e.target.value)}
                 className="sr-only"
               />
               <div
                 className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                  responseType === 'single'
-                    ? 'border-accent bg-accent/10'
-                    : 'border-gray-200 hover:border-accent/50'
+                  responseType === "single" ? "border-accent bg-accent/10" : "border-gray-200 hover:border-accent/50"
                 }`}
               >
                 <div className="text-center">
                   <i
                     className={`fa-solid fa-circle-dot text-2xl mb-2 ${
-                      responseType === 'single' ? 'text-accent' : 'text-gray-400'
+                      responseType === "single" ? "text-accent" : "text-gray-400"
                     }`}
                   ></i>
                   <p className="font-semibold text-gray-900 text-sm">Choix unique</p>
@@ -67,21 +65,19 @@ const PollResponseOptions = ({
                 type="radio"
                 name="response-type"
                 value="multiple"
-                checked={responseType === 'multiple'}
+                checked={responseType === "multiple"}
                 onChange={(e) => onResponseTypeChange(e.target.value)}
                 className="sr-only"
               />
               <div
                 className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                  responseType === 'multiple'
-                    ? 'border-accent bg-accent/10'
-                    : 'border-gray-200 hover:border-accent/50'
+                  responseType === "multiple" ? "border-accent bg-accent/10" : "border-gray-200 hover:border-accent/50"
                 }`}
               >
                 <div className="text-center">
                   <i
                     className={`fa-solid fa-square-check text-2xl mb-2 ${
-                      responseType === 'multiple' ? 'text-accent' : 'text-gray-400'
+                      responseType === "multiple" ? "text-accent" : "text-gray-400"
                     }`}
                   ></i>
                   <p className="font-semibold text-gray-900 text-sm">Choix multiples</p>
@@ -128,8 +124,7 @@ const PollResponseOptions = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollResponseOptions
-
+export default PollResponseOptions;

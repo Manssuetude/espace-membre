@@ -1,12 +1,12 @@
 interface TimelineItem {
-  event: string
-  date: string
-  color: string
-  future?: boolean
+  event: string;
+  date: string;
+  color: string;
+  future?: boolean;
 }
 
 interface PollTimelineSidebarProps {
-  timeline: TimelineItem[]
+  timeline: TimelineItem[];
 }
 
 const PollTimelineSidebar = ({ timeline }: PollTimelineSidebarProps) => {
@@ -16,22 +16,26 @@ const PollTimelineSidebar = ({ timeline }: PollTimelineSidebarProps) => {
       <div className="space-y-4">
         {timeline.map((item, idx) => (
           <div key={idx} className="flex items-start space-x-3">
-            <div className={`w-2 h-2 ${
-              item.color === 'success' ? 'bg-success' :
-              item.color === 'accent' ? 'bg-accent' :
-              item.color === 'warning' ? 'bg-warning' :
-              'bg-gray-300'
-            } rounded-full mt-2`}></div>
+            <div
+              className={`w-2 h-2 ${
+                item.color === "success"
+                  ? "bg-success"
+                  : item.color === "accent"
+                    ? "bg-accent"
+                    : item.color === "warning"
+                      ? "bg-warning"
+                      : "bg-gray-300"
+              } rounded-full mt-2`}
+            ></div>
             <div>
-              <p className={`text-sm font-medium ${item.future ? 'text-gray-500' : 'text-gray-900'}`}>{item.event}</p>
-              <p className={`text-xs ${item.future ? 'text-gray-400' : 'text-gray-500'}`}>{item.date}</p>
+              <p className={`text-sm font-medium ${item.future ? "text-gray-500" : "text-gray-900"}`}>{item.event}</p>
+              <p className={`text-xs ${item.future ? "text-gray-400" : "text-gray-500"}`}>{item.date}</p>
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollTimelineSidebar
-
+export default PollTimelineSidebar;

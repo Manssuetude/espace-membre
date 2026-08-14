@@ -1,8 +1,8 @@
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 interface BlockGuestRouteProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 /**
@@ -10,7 +10,7 @@ interface BlockGuestRouteProps {
  * Redirects guests to sessions page
  */
 const BlockGuestRoute = ({ children }: BlockGuestRouteProps) => {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -20,15 +20,15 @@ const BlockGuestRoute = ({ children }: BlockGuestRouteProps) => {
           <p className="text-gray-600">Chargement...</p>
         </div>
       </div>
-    )
+    );
   }
 
   // Block guests - redirect them to sessions page
-  if (user?.role === 'guest') {
-    return <Navigate to="/sessions" replace />
+  if (user?.role === "guest") {
+    return <Navigate to="/sessions" replace />;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
-export default BlockGuestRoute
+export default BlockGuestRoute;

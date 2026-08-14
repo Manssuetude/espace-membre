@@ -1,10 +1,10 @@
-type ResourceType = 'file' | 'video' | 'audio' | 'folder' | ''
+type ResourceType = "file" | "video" | "audio" | "folder" | "";
 
 interface ResourceFormActionsProps {
-  isLoading: boolean
-  resourceType: ResourceType
-  onSaveDraft: () => void
-  disabled?: boolean
+  isLoading: boolean;
+  resourceType: ResourceType;
+  onSaveDraft: () => void;
+  disabled?: boolean;
 }
 
 const ResourceFormActions = ({ isLoading, resourceType, onSaveDraft, disabled = false }: ResourceFormActionsProps) => {
@@ -37,8 +37,7 @@ const ResourceFormActions = ({ isLoading, resourceType, onSaveDraft, disabled = 
         )}
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default ResourceFormActions
-
+export default ResourceFormActions;

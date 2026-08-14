@@ -1,65 +1,70 @@
-import { useState } from 'react'
-import { useActivityTemplates, useCreateActivityTemplate, useUpdateActivityTemplate, useDeleteActivityTemplate } from '../../services/hooks/useActivityTemplates'
-import CreateFormatModal from '../../components/admin/CreateFormatModal'
-import { ActivityTemplate } from '../../types/format'
+import { useState } from "react";
+import {
+  useActivityTemplates,
+  useCreateActivityTemplate,
+  useUpdateActivityTemplate,
+  useDeleteActivityTemplate,
+} from "../../services/hooks/useActivityTemplates";
+import CreateFormatModal from "../../components/admin/CreateFormatModal";
+import { ActivityTemplate } from "../../types/format";
 
 // Helper to convert Tailwind gradient class to display format
 const getGradientClass = (color?: string): string => {
-  if (!color) return 'bg-gradient-to-br from-gray-400 to-gray-500'
+  if (!color) return "bg-gradient-to-br from-gray-400 to-gray-500";
   // If it's already a Tailwind class, use it
-  if (color.startsWith('from-')) {
-    return `bg-gradient-to-br ${color}`
+  if (color.startsWith("from-")) {
+    return `bg-gradient-to-br ${color}`;
   }
   // Otherwise, it might be a hex color or other format - use a default
-  return 'bg-gradient-to-br from-gray-400 to-gray-500'
-}
+  return "bg-gradient-to-br from-gray-400 to-gray-500";
+};
 
 const Formats = () => {
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [editingTemplate, setEditingTemplate] = useState<ActivityTemplate | null>(null)
-  const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null)
-  const { data: templatesData, isLoading, error } = useActivityTemplates({ limit: 100 })
-  const createTemplate = useCreateActivityTemplate()
-  const updateTemplate = useUpdateActivityTemplate()
-  const deleteTemplate = useDeleteActivityTemplate()
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<ActivityTemplate | null>(null);
+  const [deletingTemplateId, setDeletingTemplateId] = useState<string | null>(null);
+  const { data: templatesData, isLoading, error } = useActivityTemplates({ limit: 100 });
+  const createTemplate = useCreateActivityTemplate();
+  const updateTemplate = useUpdateActivityTemplate();
+  const deleteTemplate = useDeleteActivityTemplate();
 
-  const templates = templatesData?.data || []
+  const templates = templatesData?.data || [];
 
   const formatDuration = (duration?: string) => {
-    if (!duration) return 'N/A'
-    return duration
-  }
+    if (!duration) return "N/A";
+    return duration;
+  };
 
   const convertDurationToString = (minutes: number): string => {
     if (minutes < 60) {
-      return `${minutes}min`
+      return `${minutes}min`;
     }
     if (minutes % 60 === 0) {
-      return `${Math.floor(minutes / 60)}h`
+      return `${Math.floor(minutes / 60)}h`;
     }
-    return `${Math.floor(minutes / 60)}h${minutes % 60}min`
-  }
+    return `${Math.floor(minutes / 60)}h${minutes % 60}min`;
+  };
 
   const handleCreateFormat = (data: {
-    name: string
-    description: string
-    icon: string
-    color: string
-    durationMinutes: number
-    rules: string[]
-    examples: string[]
+    name: string;
+    description: string;
+    icon: string;
+    color: string;
+    durationMinutes: number;
+    rules: string[];
+    examples: string[];
   }) => {
     // Convert form data to API format
-    const durationString = convertDurationToString(data.durationMinutes)
+    const durationString = convertDurationToString(data.durationMinutes);
     const apiData = {
       title: data.name,
-      description: data.description.trim() !== '' ? data.description : undefined,
+      description: data.description.trim() !== "" ? data.description : undefined,
       icon: data.icon,
       color: data.color,
       duration: durationString,
-      rules: data.rules.filter((r) => r.trim() !== ''),
-      examples: data.examples.filter((e) => e.trim() !== ''),
-    }
+      rules: data.rules.filter((r) => r.trim() !== ""),
+      examples: data.examples.filter((e) => e.trim() !== ""),
+    };
 
     if (editingTemplate) {
       // Update existing template
@@ -70,53 +75,53 @@ const Formats = () => {
         },
         {
           onSuccess: () => {
-            setShowCreateModal(false)
-            setEditingTemplate(null)
+            setShowCreateModal(false);
+            setEditingTemplate(null);
           },
-        }
-      )
+        },
+      );
     } else {
       // Create new template
       createTemplate.mutate(apiData, {
         onSuccess: () => {
-          setShowCreateModal(false)
+          setShowCreateModal(false);
         },
-      })
+      });
     }
-  }
+  };
 
   const handleEdit = (template: ActivityTemplate) => {
-    setEditingTemplate(template)
-    setShowCreateModal(true)
-  }
+    setEditingTemplate(template);
+    setShowCreateModal(true);
+  };
 
   const handleDelete = (templateId: string) => {
-    setDeletingTemplateId(templateId)
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce format ? Cette action est irréversible.')) {
+    setDeletingTemplateId(templateId);
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce format ? Cette action est irréversible.")) {
       deleteTemplate.mutate(templateId, {
         onSuccess: () => {
-          setDeletingTemplateId(null)
+          setDeletingTemplateId(null);
         },
         onError: () => {
-          setDeletingTemplateId(null)
+          setDeletingTemplateId(null);
         },
-      })
+      });
     } else {
-      setDeletingTemplateId(null)
+      setDeletingTemplateId(null);
     }
-  }
+  };
 
   const handleCloseModal = () => {
-    setShowCreateModal(false)
-    setEditingTemplate(null)
-  }
+    setShowCreateModal(false);
+    setEditingTemplate(null);
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -127,7 +132,7 @@ const Formats = () => {
           <p className="text-gray-600">Erreur lors du chargement des formats</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (templates.length === 0) {
@@ -156,7 +161,7 @@ const Formats = () => {
           onSubmit={handleCreateFormat}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -173,12 +178,14 @@ const Formats = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template: ActivityTemplate) => {
-          const gradientClass = getGradientClass(template.color)
+          const gradientClass = getGradientClass(template.color);
           // Handle icon format - API might return with or without "fa-" prefix
-          const iconClass = template.icon 
-            ? (template.icon.startsWith('fa-') ? template.icon : `fa-${template.icon}`)
-            : 'fa-question-circle'
-          
+          const iconClass = template.icon
+            ? template.icon.startsWith("fa-")
+              ? template.icon
+              : `fa-${template.icon}`
+            : "fa-question-circle";
+
           return (
             <div
               key={template.id}
@@ -191,7 +198,9 @@ const Formats = () => {
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
                     {template.icon && (
-                      <div className={`w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                      <div
+                        className={`w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}
+                      >
                         <i className={`fa-solid ${iconClass} text-3xl text-white`}></i>
                       </div>
                     )}
@@ -280,7 +289,7 @@ const Formats = () => {
                 </div>
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -291,7 +300,7 @@ const Formats = () => {
         onSubmit={handleCreateFormat}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Formats
+export default Formats;

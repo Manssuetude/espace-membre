@@ -1,28 +1,28 @@
-import { useState } from 'react'
-import { useThemeWindowStatus, useCreateTheme, useThemes } from '../../services/hooks/useThemes'
-import WindowClosedBanner from '../../components/member/WindowClosedBanner'
-import WindowClosedContent from '../../components/member/WindowClosedContent'
-import WindowOpenBanner from '../../components/member/WindowOpenBanner'
-import ThemeProposalForm from '../../components/member/ThemeProposalForm'
-import ProposedThemesList from '../../components/member/ProposedThemesList'
-import MyPropositionsSidebar from '../../components/member/MyPropositionsSidebar'
+import { useState } from "react";
+import { useThemeWindowStatus, useCreateTheme, useThemes } from "../../services/hooks/useThemes";
+import WindowClosedBanner from "../../components/member/WindowClosedBanner";
+import WindowClosedContent from "../../components/member/WindowClosedContent";
+import WindowOpenBanner from "../../components/member/WindowOpenBanner";
+import ThemeProposalForm from "../../components/member/ThemeProposalForm";
+import ProposedThemesList from "../../components/member/ProposedThemesList";
+import MyPropositionsSidebar from "../../components/member/MyPropositionsSidebar";
 
 const ProposerTheme = () => {
-  const { data: windowStatus, isLoading: windowLoading } = useThemeWindowStatus()
-  const { data: approvedThemes } = useThemes({ status: 'approved', limit: 10 })
-  const createTheme = useCreateTheme()
-  
+  const { data: windowStatus, isLoading: windowLoading } = useThemeWindowStatus();
+  const { data: approvedThemes } = useThemes({ status: "approved", limit: 10 });
+  const createTheme = useCreateTheme();
+
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-  })
+    title: "",
+    description: "",
+    category: "",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!windowStatus?.isOpen) {
-      return
+      return;
     }
 
     createTheme.mutate(
@@ -33,24 +33,24 @@ const ProposerTheme = () => {
       },
       {
         onSuccess: () => {
-          setFormData({ title: '', description: '', category: '' })
+          setFormData({ title: "", description: "", category: "" });
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   // Get user proposals from window status (only for current active window)
-  const myPropositions = windowStatus?.userProposals || []
+  const myPropositions = windowStatus?.userProposals || [];
 
   // Calculate proposals used in current window (all proposals count toward the limit)
-  const proposalsUsed = myPropositions.length
+  const proposalsUsed = myPropositions.length;
 
   if (windowLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (!windowStatus?.isOpen) {
@@ -59,7 +59,7 @@ const ProposerTheme = () => {
         <WindowClosedBanner nextOpeningDate={windowStatus?.nextOpeningDate || null} />
         <WindowClosedContent />
       </div>
-    )
+    );
   }
 
   return (
@@ -85,8 +85,7 @@ const ProposerTheme = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProposerTheme
-
+export default ProposerTheme;

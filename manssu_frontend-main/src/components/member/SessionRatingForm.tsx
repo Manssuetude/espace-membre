@@ -1,33 +1,36 @@
-import { useState } from 'react'
-import { useRateSession } from '../../services/hooks/useSessions'
+import { useState } from "react";
+import { useRateSession } from "../../services/hooks/useSessions";
 
 interface SessionRatingFormProps {
-  sessionId: string
+  sessionId: string;
 }
 
 const SessionRatingForm = ({ sessionId }: SessionRatingFormProps) => {
-  const [rating, setRating] = useState(0)
-  const [comment, setComment] = useState('')
-  const rateSessionMutation = useRateSession()
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const rateSessionMutation = useRateSession();
 
   const handleSubmit = () => {
     if (rating === 0) {
-      return
+      return;
     }
 
-    rateSessionMutation.mutate({
-      sessionId,
-      data: {
-        rating,
-        comment: comment.trim() || undefined,
+    rateSessionMutation.mutate(
+      {
+        sessionId,
+        data: {
+          rating,
+          comment: comment.trim() || undefined,
+        },
       },
-    }, {
-      onSuccess: () => {
-        setRating(0)
-        setComment('')
+      {
+        onSuccess: () => {
+          setRating(0);
+          setComment("");
+        },
       },
-    })
-  }
+    );
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
@@ -35,7 +38,9 @@ const SessionRatingForm = ({ sessionId }: SessionRatingFormProps) => {
         <i className="fa-solid fa-star text-warning mr-2"></i>
         Noter la session
       </h3>
-      <p className="text-sm text-gray-600 mb-4">Partagez votre expérience pour aider à améliorer les futures sessions</p>
+      <p className="text-sm text-gray-600 mb-4">
+        Partagez votre expérience pour aider à améliorer les futures sessions
+      </p>
 
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">Note</label>
@@ -44,7 +49,7 @@ const SessionRatingForm = ({ sessionId }: SessionRatingFormProps) => {
             <i
               key={star}
               className={`fa-solid fa-star text-4xl cursor-pointer transition-colors ${
-                star <= rating ? 'text-warning' : 'text-gray-300 hover:text-warning'
+                star <= rating ? "text-warning" : "text-gray-300 hover:text-warning"
               }`}
               onClick={() => setRating(star)}
             ></i>
@@ -81,8 +86,7 @@ const SessionRatingForm = ({ sessionId }: SessionRatingFormProps) => {
         )}
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default SessionRatingForm
-
+export default SessionRatingForm;

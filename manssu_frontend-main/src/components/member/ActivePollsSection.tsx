@@ -1,13 +1,13 @@
-import { Poll } from '../../types/sondage'
-import ActivePollCard from './ActivePollCard'
+import { Poll } from "../../types/sondage";
+import ActivePollCard from "./ActivePollCard";
 
 interface ActivePollsSectionProps {
-  polls: Poll[]
-  selectedOptions: Record<string, Record<string, string | string[]>> // { pollId: { questionId: optionId | optionIds[] } }
-  onSelectOption: (pollId: string, questionId: string, optionId: string, singleResponse: boolean) => void
-  onVote: (pollId: string) => void
-  isVoting: boolean
-  getColorForOption: (index: number) => 'primary' | 'accent' | 'secondary'
+  polls: Poll[];
+  selectedOptions: Record<string, Record<string, string | string[]>>; // { pollId: { questionId: optionId | optionIds[] } }
+  onSelectOption: (pollId: string, questionId: string, optionId: string, singleResponse: boolean) => void;
+  onVote: (pollId: string) => void;
+  isVoting: boolean;
+  getColorForOption: (index: number) => "primary" | "accent" | "secondary";
 }
 
 const ActivePollsSection = ({
@@ -33,14 +33,14 @@ const ActivePollsSection = ({
           <p className="text-gray-400 text-xs">Les nouveaux sondages apparaîtront ici</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="mb-8">
       <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
         <i className="fa-solid fa-poll text-primary mr-3"></i>
-        Sondage{polls.length > 1 ? 's' : ''} en cours
+        Sondage{polls.length > 1 ? "s" : ""} en cours
       </h2>
 
       {polls.map((poll) => (
@@ -55,8 +55,7 @@ const ActivePollsSection = ({
         />
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default ActivePollsSection
-
+export default ActivePollsSection;

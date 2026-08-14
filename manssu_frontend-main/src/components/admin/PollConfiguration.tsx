@@ -1,12 +1,12 @@
 interface PollConfigurationProps {
-  startDate: string
-  endDate: string
-  visibility: string
-  anonymous?: boolean
-  onStartDateChange: (value: string) => void
-  onEndDateChange: (value: string) => void
-  onVisibilityChange: (value: string) => void
-  onAnonymousChange?: (value: boolean) => void
+  startDate: string;
+  endDate: string;
+  visibility: string;
+  anonymous?: boolean;
+  onStartDateChange: (value: string) => void;
+  onEndDateChange: (value: string) => void;
+  onVisibilityChange: (value: string) => void;
+  onAnonymousChange?: (value: boolean) => void;
 }
 
 const PollConfiguration = ({
@@ -73,7 +73,7 @@ const PollConfiguration = ({
                 type="radio"
                 name="visibility"
                 value="realtime"
-                checked={visibility === 'realtime'}
+                checked={visibility === "realtime"}
                 onChange={(e) => onVisibilityChange(e.target.value)}
                 className="mt-1"
               />
@@ -87,7 +87,7 @@ const PollConfiguration = ({
                 type="radio"
                 name="visibility"
                 value="hidden"
-                checked={visibility === 'hidden'}
+                checked={visibility === "hidden"}
                 onChange={(e) => onVisibilityChange(e.target.value)}
                 className="mt-1"
               />
@@ -115,15 +115,16 @@ const PollConfiguration = ({
               />
               <div>
                 <p className="font-semibold text-gray-900">Sondage anonyme</p>
-                <p className="text-sm text-gray-600">Les votes seront anonymes et les noms des participants ne seront pas affichés</p>
+                <p className="text-sm text-gray-600">
+                  Les votes seront anonymes et les noms des participants ne seront pas affichés
+                </p>
               </div>
             </label>
           </div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollConfiguration
-
+export default PollConfiguration;

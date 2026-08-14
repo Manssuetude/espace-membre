@@ -1,14 +1,14 @@
-import { Member } from '../../types/member'
-import { getMemberAvatarUrl, getMemberInitials } from '../../utils/userUtils'
+import { Member } from "../../types/member";
+import { getMemberAvatarUrl, getMemberInitials } from "../../utils/userUtils";
 
 interface MemberProfileCardProps {
-  member: Member
+  member: Member;
 }
 
 const MemberProfileCard = ({ member }: MemberProfileCardProps) => {
-  const avatarUrl = getMemberAvatarUrl(member)
-  const initials = getMemberInitials(member)
-  
+  const avatarUrl = getMemberAvatarUrl(member);
+  const initials = getMemberInitials(member);
+
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
       <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
@@ -54,8 +54,8 @@ const MemberProfileCard = ({ member }: MemberProfileCardProps) => {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Adresse</p>
             <p className="text-sm font-medium text-gray-900">
               {member.address || member.city || member.postalCode || member.country
-                ? [member.address, member.city, member.postalCode, member.country].filter(Boolean).join(', ')
-                : 'Non renseignée'}
+                ? [member.address, member.city, member.postalCode, member.country].filter(Boolean).join(", ")
+                : "Non renseignée"}
             </p>
           </div>
           {member.bio && (
@@ -67,8 +67,7 @@ const MemberProfileCard = ({ member }: MemberProfileCardProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MemberProfileCard
-
+export default MemberProfileCard;

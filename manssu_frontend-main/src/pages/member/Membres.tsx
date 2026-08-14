@@ -1,65 +1,65 @@
-import { useState } from 'react'
-import { useMembers } from '../../services/hooks/useMembers'
-import { getMemberAvatarUrl, getMemberInitials } from '../../utils/userUtils'
-import Dropdown from '../../components/Dropdown'
-import Pagination from '../../components/Pagination'
+import { useState } from "react";
+import { useMembers } from "../../services/hooks/useMembers";
+import { getMemberAvatarUrl, getMemberInitials } from "../../utils/userUtils";
+import Dropdown from "../../components/Dropdown";
+import Pagination from "../../components/Pagination";
 
 const Membres = () => {
-  const [roleFilter, setRoleFilter] = useState('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize] = useState(12)
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(12);
 
   const { data: membersData, isLoading } = useMembers({
     search: searchQuery || undefined,
     page: currentPage,
     limit: pageSize,
-  })
+  });
 
   // Filter members by role on client side
   const members = (membersData?.data || []).filter((member) => {
-    if (roleFilter === 'all') return true
-    if (roleFilter === 'member') return member.role === 'member'
-    if (roleFilter === 'admins') return member.role === 'admin'
-    if (roleFilter === 'super admins') return member.role === 'super admin'
-    return true
-  })
+    if (roleFilter === "all") return true;
+    if (roleFilter === "member") return member.role === "member";
+    if (roleFilter === "admins") return member.role === "admin";
+    if (roleFilter === "super admins") return member.role === "super admin";
+    return true;
+  });
 
   // Reset to page 1 when filters change
   const handleRoleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRoleFilter(e.target.value)
-    setCurrentPage(1)
-  }
+    setRoleFilter(e.target.value);
+    setCurrentPage(1);
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
-    setCurrentPage(1)
-  }
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case 'admin':
-        return 'Administrateur'
-      case 'super admin':
-        return 'Super Admin'
-      case 'guest':
-        return 'Invité'
+      case "admin":
+        return "Administrateur";
+      case "super admin":
+        return "Super Admin";
+      case "guest":
+        return "Invité";
       default:
-        return 'Membre'
+        return "Membre";
     }
-  }
+  };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'admin':
-      case 'super admin':
-        return 'bg-gradient-to-r from-secondary to-orange-600 text-white'
-      case 'guest':
-        return 'bg-blue-100 text-blue-800'
+      case "admin":
+      case "super admin":
+        return "bg-gradient-to-r from-secondary to-orange-600 text-white";
+      case "guest":
+        return "bg-blue-100 text-blue-800";
       default:
-        return 'bg-gray-100 text-gray-800'
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="space-y-8">
@@ -81,10 +81,10 @@ const Membres = () => {
               value={roleFilter}
               onChange={handleRoleFilterChange}
               options={[
-                { value: 'all', label: 'Tous les rôles' },
-                { value: 'member', label: 'Membres' },
-                { value: 'admins', label: 'Administrateurs' },
-                { value: 'super admins', label: 'Super administrateurs' },
+                { value: "all", label: "Tous les rôles" },
+                { value: "member", label: "Membres" },
+                { value: "admins", label: "Administrateurs" },
+                { value: "super admins", label: "Super administrateurs" },
               ]}
               className="min-w-[180px]"
             />
@@ -110,12 +110,12 @@ const Membres = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {members.map((member) => {
-                  const avatarUrl = getMemberAvatarUrl(member)
-                  const initials = getMemberInitials(member)
-                  const memberSince = new Date(member.memberSince).toLocaleDateString('fr-FR', {
-                    year: 'numeric',
-                    month: 'long',
-                  })
+                  const avatarUrl = getMemberAvatarUrl(member);
+                  const initials = getMemberInitials(member);
+                  const memberSince = new Date(member.memberSince).toLocaleDateString("fr-FR", {
+                    year: "numeric",
+                    month: "long",
+                  });
 
                   return (
                     <div
@@ -136,7 +136,7 @@ const Membres = () => {
                               {initials}
                             </div>
                           )}
-                          {(member.role === 'admin' || member.role === 'super admin') && (
+                          {(member.role === "admin" || member.role === "super admin") && (
                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full border-2 border-white flex items-center justify-center">
                               <i className="fa-solid fa-crown text-white text-xs"></i>
                             </div>
@@ -171,7 +171,7 @@ const Membres = () => {
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </>
@@ -199,7 +199,7 @@ const Membres = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Membres
+export default Membres;

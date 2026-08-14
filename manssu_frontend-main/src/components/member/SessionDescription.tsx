@@ -1,13 +1,13 @@
 interface SessionDescriptionProps {
-  description?: string | null
-  objectives?: string[]
+  description?: string | null;
+  objectives?: string[];
 }
 
 const SessionDescription = ({ description, objectives }: SessionDescriptionProps) => {
-  const hasContent = description || (objectives && objectives.length > 0)
-  
+  const hasContent = description || (objectives && objectives.length > 0);
+
   if (!hasContent) {
-    return null
+    return null;
   }
 
   return (
@@ -17,9 +17,7 @@ const SessionDescription = ({ description, objectives }: SessionDescriptionProps
         Description détaillée
       </h3>
       <div className="space-y-4 text-gray-700">
-        {description && (
-          <p className="whitespace-pre-line">{description}</p>
-        )}
+        {description && <p className="whitespace-pre-line">{description}</p>}
         {objectives && objectives.length > 0 && (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <h4 className="text-sm font-semibold text-gray-900 mb-3">Au programme :</h4>
@@ -35,8 +33,7 @@ const SessionDescription = ({ description, objectives }: SessionDescriptionProps
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SessionDescription
-
+export default SessionDescription;

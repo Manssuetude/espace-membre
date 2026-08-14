@@ -1,26 +1,29 @@
-import { useMembers } from '../../services/hooks/useMembers'
+import { useMembers } from "../../services/hooks/useMembers";
 
 const MembersStats = () => {
-  const { data: membersData, isLoading } = useMembers()
-  
+  const { data: membersData, isLoading } = useMembers();
+
   const stats = membersData?.stats || {
     totalMembers: 0,
     activeMembers: 0,
     administrators: 0,
     inactive: 0,
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-white/90 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-gray-100 animate-pulse">
+          <div
+            key={i}
+            className="bg-white/90 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-gray-100 animate-pulse"
+          >
             <div className="h-8 bg-gray-200 rounded mb-2"></div>
             <div className="h-10 bg-gray-200 rounded"></div>
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -73,8 +76,7 @@ const MembersStats = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MembersStats
-
+export default MembersStats;

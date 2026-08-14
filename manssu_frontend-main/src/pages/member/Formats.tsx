@@ -1,35 +1,35 @@
-import { useNavigate } from 'react-router-dom'
-import { useActivityTemplates } from '../../services/hooks/useActivityTemplates'
-import { ActivityTemplate } from '../../types/format'
+import { useNavigate } from "react-router-dom";
+import { useActivityTemplates } from "../../services/hooks/useActivityTemplates";
+import { ActivityTemplate } from "../../types/format";
 
 // Helper to convert Tailwind gradient class to display format
 const getGradientClass = (color?: string): string => {
-  if (!color) return 'bg-gradient-to-br from-gray-400 to-gray-500'
+  if (!color) return "bg-gradient-to-br from-gray-400 to-gray-500";
   // If it's already a Tailwind class, use it
-  if (color.startsWith('from-')) {
-    return `bg-gradient-to-br ${color}`
+  if (color.startsWith("from-")) {
+    return `bg-gradient-to-br ${color}`;
   }
   // Otherwise, it might be a hex color or other format - use a default
-  return 'bg-gradient-to-br from-gray-400 to-gray-500'
-}
+  return "bg-gradient-to-br from-gray-400 to-gray-500";
+};
 
 const Formats = () => {
-  const navigate = useNavigate()
-  const { data: templatesData, isLoading, error } = useActivityTemplates({ limit: 100 })
+  const navigate = useNavigate();
+  const { data: templatesData, isLoading, error } = useActivityTemplates({ limit: 100 });
 
-  const templates = templatesData?.data || []
+  const templates = templatesData?.data || [];
 
   const formatDuration = (duration?: string) => {
-    if (!duration) return 'N/A'
-    return duration
-  }
+    if (!duration) return "N/A";
+    return duration;
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -40,7 +40,7 @@ const Formats = () => {
           <p className="text-gray-600">Erreur lors du chargement des formats</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (templates.length === 0) {
@@ -54,7 +54,7 @@ const Formats = () => {
         </div>
         <div className="flex justify-center pt-8">
           <button
-            onClick={() => navigate('/feedback')}
+            onClick={() => navigate("/feedback")}
             className="px-6 py-3 bg-gradient-to-r from-primary to-red-500 text-white rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all font-medium flex items-center gap-2"
           >
             <i className="fa-solid fa-lightbulb"></i>
@@ -62,19 +62,21 @@ const Formats = () => {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((template: ActivityTemplate) => {
-          const gradientClass = getGradientClass(template.color)
+          const gradientClass = getGradientClass(template.color);
           // Handle icon format - API might return with or without "fa-" prefix
-          const iconClass = template.icon 
-            ? (template.icon.startsWith('fa-') ? template.icon : `fa-${template.icon}`)
-            : 'fa-question-circle'
-          
+          const iconClass = template.icon
+            ? template.icon.startsWith("fa-")
+              ? template.icon
+              : `fa-${template.icon}`
+            : "fa-question-circle";
+
           return (
             <div
               key={template.id}
@@ -87,7 +89,9 @@ const Formats = () => {
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
                     {template.icon && (
-                      <div className={`w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                      <div
+                        className={`w-16 h-16 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}
+                      >
                         <i className={`fa-solid ${iconClass} text-3xl text-white`}></i>
                       </div>
                     )}
@@ -148,14 +152,14 @@ const Formats = () => {
                 </div>
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
       {/* Suggestion Button */}
       <div className="flex justify-center pt-8">
         <button
-          onClick={() => navigate('/feedback')}
+          onClick={() => navigate("/feedback")}
           className="px-6 py-3 bg-gradient-to-r from-primary to-red-500 text-white rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all font-medium flex items-center gap-2"
         >
           <i className="fa-solid fa-lightbulb"></i>
@@ -163,19 +167,7 @@ const Formats = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Formats
-
-
-
-
-
-
-
-
-
-
-
-
+export default Formats;

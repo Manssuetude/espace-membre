@@ -1,45 +1,45 @@
-import { useState, useMemo } from 'react'
-import { useSessions } from '../../services/hooks/useSessions'
-import SessionsViewToggle from '../../components/member/SessionsViewToggle'
-import SessionsSearch from '../../components/member/SessionsSearch'
-import SessionsList from '../../components/member/SessionsList'
-import SessionsCalendar from '../../components/member/SessionsCalendar'
-import CalendarLegend from '../../components/member/CalendarLegend'
-import UpcomingSessionsSidebar from '../../components/member/UpcomingSessionsSidebar'
+import { useState, useMemo } from "react";
+import { useSessions } from "../../services/hooks/useSessions";
+import SessionsViewToggle from "../../components/member/SessionsViewToggle";
+import SessionsSearch from "../../components/member/SessionsSearch";
+import SessionsList from "../../components/member/SessionsList";
+import SessionsCalendar from "../../components/member/SessionsCalendar";
+import CalendarLegend from "../../components/member/CalendarLegend";
+import UpcomingSessionsSidebar from "../../components/member/UpcomingSessionsSidebar";
 
 const Sessions = () => {
-  const [view, setView] = useState<'list' | 'calendar'>('list')
-  const [showPastSessions, setShowPastSessions] = useState(false)
+  const [view, setView] = useState<"list" | "calendar">("list");
+  const [showPastSessions, setShowPastSessions] = useState(false);
 
-  const { data: sessionsData, isLoading } = useSessions({})
+  const { data: sessionsData, isLoading } = useSessions({});
 
-  const allSessions = sessionsData?.data || []
+  const allSessions = useMemo(() => sessionsData?.data || [], [sessionsData]);
 
   // Separate upcoming and past sessions
   const { upcomingSessions, pastSessions } = useMemo(() => {
-    const now = new Date()
-    const upcoming: typeof allSessions = []
-    const past: typeof allSessions = []
+    const now = new Date();
+    const upcoming: typeof allSessions = [];
+    const past: typeof allSessions = [];
 
     allSessions.forEach((session) => {
-      if (session.status === 'completed' || (session.date && new Date(session.date) < now)) {
-        past.push(session)
+      if (session.status === "completed" || (session.date && new Date(session.date) < now)) {
+        past.push(session);
       } else {
-        upcoming.push(session)
+        upcoming.push(session);
       }
-    })
+    });
 
-    return { upcomingSessions: upcoming, pastSessions: past }
-  }, [allSessions])
+    return { upcomingSessions: upcoming, pastSessions: past };
+  }, [allSessions]);
 
-  const displayedSessions = showPastSessions ? pastSessions : upcomingSessions
+  const displayedSessions = showPastSessions ? pastSessions : upcomingSessions;
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   return (
@@ -51,7 +51,7 @@ const Sessions = () => {
         </div>
       </div>
 
-      {view === 'list' ? (
+      {view === "list" ? (
         <div>
           <SessionsList sessions={displayedSessions} />
           {!showPastSessions && pastSessions.length > 0 && (
@@ -111,8 +111,7 @@ const Sessions = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Sessions
-
+export default Sessions;

@@ -1,89 +1,89 @@
-import { Link } from 'react-router-dom'
-import { useState, useMemo } from 'react'
-import { Attendant } from '../../types/session'
-import { useMarkAttendance } from '../../services/hooks/useSessions'
-import { useMembers } from '../../services/hooks/useMembers'
-import SearchableDropdown from '../SearchableDropdown'
+import { Link } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { Attendant } from "../../types/session";
+import { useMarkAttendance } from "../../services/hooks/useSessions";
+import { useMembers } from "../../services/hooks/useMembers";
+import SearchableDropdown from "../SearchableDropdown";
 
 interface SessionAttendantsProps {
-  attendants: Attendant[]
-  sessionId: string
-  sessionDate: string | null
+  attendants: Attendant[];
+  sessionId: string;
+  sessionDate: string | null;
 }
 
 const getAttendantAvatarUrl = (avatar: string | null): string | null => {
-  if (!avatar) return null
-  
+  if (!avatar) return null;
+
   // If avatar is already a full URL, return it
-  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-    return avatar
+  if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
+    return avatar;
   }
-  
+
   // Otherwise, construct the URL
-  return `https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/${avatar}`
-}
+  return `https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/${avatar}`;
+};
 
 const getAttendantInitials = (firstName: string, lastName: string): string => {
-  const first = firstName?.trim() || ''
-  const last = lastName?.trim() || ''
-  
+  const first = firstName?.trim() || "";
+  const last = lastName?.trim() || "";
+
   if (first && last) {
-    return `${first[0]}${last[0]}`.toUpperCase()
+    return `${first[0]}${last[0]}`.toUpperCase();
   } else if (first) {
-    return first[0].toUpperCase()
+    return first[0].toUpperCase();
   } else if (last) {
-    return last[0].toUpperCase()
+    return last[0].toUpperCase();
   }
-  
-  return 'U'
-}
+
+  return "U";
+};
 
 const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttendantsProps) => {
-  const markAttendance = useMarkAttendance()
-  const [confirmUserId, setConfirmUserId] = useState<string | null>(null)
-  const [confirmUserName, setConfirmUserName] = useState<string | null>(null)
-  const [showAddMemberModal, setShowAddMemberModal] = useState(false)
-  const [selectedMemberId, setSelectedMemberId] = useState('')
-  
+  const markAttendance = useMarkAttendance();
+  const [confirmUserId, setConfirmUserId] = useState<string | null>(null);
+  const [confirmUserName, setConfirmUserName] = useState<string | null>(null);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState("");
+
   // Fetch all members for the dropdown
   const { data: membersData, isLoading: membersLoading } = useMembers({
     limit: 100,
     page: 1,
-  })
-  
+  });
+
   // Filter out members who are already in the attendants list
   const availableMembers = useMemo(() => {
-    if (!membersData?.data) return []
-    const attendantIds = new Set(attendants.map(a => a.id))
+    if (!membersData?.data) return [];
+    const attendantIds = new Set(attendants.map((a) => a.id));
     return membersData.data
-      .filter(member => !attendantIds.has(member.id))
-      .map(member => ({
+      .filter((member) => !attendantIds.has(member.id))
+      .map((member) => ({
         value: member.id,
         label: member.name || `${member.firstName} ${member.lastName}`.trim(),
-      }))
-  }, [membersData?.data, attendants])
+      }));
+  }, [membersData?.data, attendants]);
 
   // Check if we are at least on the day of the session
   const isSessionDayOrLater = () => {
-    if (!sessionDate) return false
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const session = new Date(sessionDate)
-    session.setHours(0, 0, 0, 0)
-    return session <= today
-  }
+    if (!sessionDate) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const session = new Date(sessionDate);
+    session.setHours(0, 0, 0, 0);
+    return session <= today;
+  };
 
-  const canMarkAttendance = isSessionDayOrLater()
+  const canMarkAttendance = isSessionDayOrLater();
 
   const handleMarkAttendanceClick = (e: React.MouseEvent, userId: string, name: string) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setConfirmUserId(userId)
-    setConfirmUserName(name)
-  }
+    e.preventDefault();
+    e.stopPropagation();
+    setConfirmUserId(userId);
+    setConfirmUserName(name);
+  };
 
   const handleConfirm = () => {
-    if (!confirmUserId) return
+    if (!confirmUserId) return;
     markAttendance.mutate(
       {
         sessionId,
@@ -92,25 +92,25 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
       },
       {
         onSuccess: () => {
-          setConfirmUserId(null)
-          setConfirmUserName(null)
+          setConfirmUserId(null);
+          setConfirmUserName(null);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleCancel = () => {
-    if (markAttendance.isPending) return
-    setConfirmUserId(null)
-    setConfirmUserName(null)
-  }
+    if (markAttendance.isPending) return;
+    setConfirmUserId(null);
+    setConfirmUserName(null);
+  };
 
   const handleAddMember = () => {
-    if (!selectedMemberId) return
-    
-    const selectedMember = membersData?.data?.find(m => m.id === selectedMemberId)
-    if (!selectedMember) return
-    
+    if (!selectedMemberId) return;
+
+    const selectedMember = membersData?.data?.find((m) => m.id === selectedMemberId);
+    if (!selectedMember) return;
+
     // Mark the selected member as present
     markAttendance.mutate(
       {
@@ -120,12 +120,12 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
       },
       {
         onSuccess: () => {
-          setShowAddMemberModal(false)
-          setSelectedMemberId('')
+          setShowAddMemberModal(false);
+          setSelectedMemberId("");
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 flex flex-col">
@@ -133,7 +133,7 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
         <h3 className="text-lg font-semibold text-gray-900">Participants</h3>
         {attendants && attendants.length > 0 && (
           <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-lg">
-            {attendants.length} inscrit{attendants.length > 1 ? 's' : ''}
+            {attendants.length} inscrit{attendants.length > 1 ? "s" : ""}
           </span>
         )}
       </div>
@@ -161,19 +161,16 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
         <div className="flex-1 overflow-hidden flex flex-col min-h-0">
           <div className="space-y-3 overflow-y-auto max-h-[400px] pr-2">
             {attendants.map((attendant) => {
-              const avatarUrl = getAttendantAvatarUrl(attendant.avatar)
-              const initials = getAttendantInitials(attendant.firstName, attendant.lastName)
-              const isMarking = markAttendance.isPending && markAttendance.variables?.userId === attendant.id
+              const avatarUrl = getAttendantAvatarUrl(attendant.avatar);
+              const initials = getAttendantInitials(attendant.firstName, attendant.lastName);
+              const isMarking = markAttendance.isPending && markAttendance.variables?.userId === attendant.id;
 
               return (
                 <div
                   key={attendant.id}
                   className="flex items-center space-x-3 hover:bg-gray-50 rounded-lg p-2 transition-all group"
                 >
-                  <Link
-                    to={`/admin/membres/${attendant.id}`}
-                    className="flex items-center space-x-3 flex-1 min-w-0"
-                  >
+                  <Link to={`/admin/membres/${attendant.id}`} className="flex items-center space-x-3 flex-1 min-w-0">
                     {avatarUrl ? (
                       <img
                         src={avatarUrl}
@@ -219,7 +216,7 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
                     </button>
                   ) : null}
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -242,11 +239,12 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
               </button>
             </div>
             <p className="text-sm text-gray-700 mb-4">
-              Voulez-vous vraiment marquer <span className="font-semibold">{confirmUserName}</span> comme
-              présent à cette session ?
+              Voulez-vous vraiment marquer <span className="font-semibold">{confirmUserName}</span> comme présent à
+              cette session ?
             </p>
             <p className="text-xs text-gray-500 mb-6">
-              Cette action indique que le membre était effectivement présent. Vous ne pourrez plus modifier la présence de ce membre.
+              Cette action indique que le membre était effectivement présent. Vous ne pourrez plus modifier la présence
+              de ce membre.
             </p>
             <div className="flex flex-col sm:flex-row gap-2 sm:space-x-3 sm:space-y-0">
               <button
@@ -290,8 +288,8 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
               <button
                 onClick={() => {
                   if (!markAttendance.isPending) {
-                    setShowAddMemberModal(false)
-                    setSelectedMemberId('')
+                    setShowAddMemberModal(false);
+                    setSelectedMemberId("");
                   }
                 }}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -301,9 +299,10 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
               </button>
             </div>
             <p className="text-sm text-gray-700 mb-4">
-              Sélectionnez un membre qui était présent mais n'était pas inscrit à cette session. Il sera automatiquement marqué comme présent.
+              Sélectionnez un membre qui était présent mais n'était pas inscrit à cette session. Il sera automatiquement
+              marqué comme présent.
             </p>
-            
+
             <div className="mb-6">
               <SearchableDropdown
                 label="Membre"
@@ -320,8 +319,8 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
               <button
                 onClick={() => {
                   if (!markAttendance.isPending) {
-                    setShowAddMemberModal(false)
-                    setSelectedMemberId('')
+                    setShowAddMemberModal(false);
+                    setSelectedMemberId("");
                   }
                 }}
                 disabled={markAttendance.isPending}
@@ -351,8 +350,7 @@ const SessionAttendants = ({ attendants, sessionId, sessionDate }: SessionAttend
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default SessionAttendants
-
+export default SessionAttendants;

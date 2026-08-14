@@ -1,82 +1,85 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   useCommissions,
   useMyCommissions,
   useMyApplications,
   useApplyToCommission,
   useWithdrawApplication,
-} from '../../services/hooks/useCommissions'
-import { MyCommissionApplication } from '../../types/commission'
-import Pagination from '../../components/Pagination'
+} from "../../services/hooks/useCommissions";
+import {
+  MyCommissionApplication,
+  MyCommissionWithSnakeCaseFallback,
+  MyCommissionApplicationWithSnakeCaseFallback,
+  CommissionWithSnakeCaseFallback,
+} from "../../types/commission";
+import Pagination from "../../components/Pagination";
 
 const Commissions = () => {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const isGuest = user?.role === 'guest'
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isGuest = user?.role === "guest";
 
-  const [page, setPage] = useState(1)
-  const [statusFilter, setStatusFilter] = useState<'active' | 'archived' | undefined>('active')
-  const [selectedCommission, setSelectedCommission] = useState<any>(null)
-  const [showApplyModal, setShowApplyModal] = useState(false)
-  const [applyReason, setApplyReason] = useState('')
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
-  const [withdrawCommissionId, setWithdrawCommissionId] = useState<string | null>(null)
+  const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<"active" | "archived" | undefined>("active");
+  const [selectedCommission, setSelectedCommission] = useState<CommissionWithSnakeCaseFallback | null>(null);
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [applyReason, setApplyReason] = useState("");
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawCommissionId, setWithdrawCommissionId] = useState<string | null>(null);
 
   const { data: commissionsData, isLoading: loadingCommissions } = useCommissions({
     status: statusFilter,
     page,
     limit: 10,
-  })
+  });
 
-  const { data: myCommissions, isLoading: loadingMyCommissions } = useMyCommissions()
-  const { data: myApplications, isLoading: loadingMyApplications } = useMyApplications()
+  const { data: myCommissions, isLoading: loadingMyCommissions } = useMyCommissions();
+  const { data: myApplications, isLoading: loadingMyApplications } = useMyApplications();
 
-  const applyMutation = useApplyToCommission()
-  const withdrawMutation = useWithdrawApplication()
+  const applyMutation = useApplyToCommission();
+  const withdrawMutation = useWithdrawApplication();
 
   const handleApply = () => {
-    if (!selectedCommission || applyReason.trim().length < 10) return
+    if (!selectedCommission || applyReason.trim().length < 10) return;
     applyMutation.mutate(
       { id: selectedCommission.id, data: { reason: applyReason } },
       {
         onSuccess: () => {
-          setShowApplyModal(false)
-          setSelectedCommission(null)
-          setApplyReason('')
+          setShowApplyModal(false);
+          setSelectedCommission(null);
+          setApplyReason("");
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleWithdraw = () => {
-    if (!withdrawCommissionId) return
+    if (!withdrawCommissionId) return;
     withdrawMutation.mutate(withdrawCommissionId, {
       onSuccess: () => {
-        setShowWithdrawModal(false)
-        setWithdrawCommissionId(null)
+        setShowWithdrawModal(false);
+        setWithdrawCommissionId(null);
       },
-    })
-  }
+    });
+  };
 
   const getMyPendingApplication = (commissionId: string): MyCommissionApplication | undefined => {
-    return myApplications?.find(
-      (app) => app.commissionId === commissionId && app.status === 'pending'
-    )
-  }
+    return myApplications?.find((app) => app.commissionId === commissionId && app.status === "pending");
+  };
 
   const isMemberOf = (commissionId: string): boolean => {
-    return myCommissions?.some((c) => c.id === commissionId) || false
-  }
+    return myCommissions?.some((c) => c.id === commissionId) || false;
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-  }
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -92,8 +95,8 @@ const Commissions = () => {
           </div>
         </div>
         <p className="text-gray-700 leading-relaxed">
-          Les commissions sont des groupes de membres qui travaillent ensemble sur des missions spécifiques 
-          pour soutenir l'association. Vous pouvez candidater pour rejoindre une commission.
+          Les commissions sont des groupes de membres qui travaillent ensemble sur des missions spécifiques pour
+          soutenir l'association. Vous pouvez candidater pour rejoindre une commission.
         </p>
       </div>
 
@@ -113,10 +116,10 @@ const Commissions = () => {
             </div>
           ) : myCommissions && myCommissions.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {myCommissions.map((commission: any) => {
-                const isLeader = commission.isLeader ?? commission.is_leader ?? false
-                const memberCount = commission.memberCount ?? commission.member_count ?? 0
-                const joinedAt = commission.joinedAt || commission.joined_at || ''
+              {(myCommissions as MyCommissionWithSnakeCaseFallback[]).map((commission) => {
+                const isLeader = commission.isLeader ?? commission.is_leader ?? false;
+                const memberCount = commission.memberCount ?? commission.member_count ?? 0;
+                const joinedAt = commission.joinedAt || commission.joined_at || "";
 
                 return (
                   <div
@@ -134,17 +137,19 @@ const Commissions = () => {
                       )}
                     </div>
                     {commission.description && (
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2 whitespace-pre-line">{commission.description}</p>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2 whitespace-pre-line">
+                        {commission.description}
+                      </p>
                     )}
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <span>
                         <i className="fa-solid fa-users mr-1"></i>
-                        {memberCount} membre{memberCount > 1 ? 's' : ''}
+                        {memberCount} membre{memberCount > 1 ? "s" : ""}
                       </span>
                       {joinedAt && <span>Rejoint le {formatDate(joinedAt)}</span>}
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           ) : (
@@ -175,32 +180,30 @@ const Commissions = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {myApplications.map((application: any) => {
-                const commissionName = application.commissionName || application.commission_name || ''
-                const commissionId = application.commissionId || application.commission_id || ''
-                const createdAt = application.createdAt || application.created_at || ''
-                const rejectionReason = application.rejectionReason || application.rejection_reason || ''
+              {(myApplications as MyCommissionApplicationWithSnakeCaseFallback[]).map((application) => {
+                const commissionName = application.commissionName || application.commission_name || "";
+                const commissionId = application.commissionId || application.commission_id || "";
+                const createdAt = application.createdAt || application.created_at || "";
+                const rejectionReason = application.rejectionReason || application.rejection_reason || "";
 
                 return (
                   <div
                     key={application.id}
                     className={`rounded-xl p-4 border ${
-                      application.status === 'pending'
-                        ? 'bg-yellow-50 border-yellow-200'
-                        : application.status === 'approved'
-                        ? 'bg-green-50 border-green-200'
-                        : 'bg-red-50 border-red-200'
+                      application.status === "pending"
+                        ? "bg-yellow-50 border-yellow-200"
+                        : application.status === "approved"
+                          ? "bg-green-50 border-green-200"
+                          : "bg-red-50 border-red-200"
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-gray-900">{commissionName}</h4>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2 whitespace-pre-line">{application.reason}</p>
-                        {createdAt && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            Soumise le {formatDate(createdAt)}
-                          </p>
-                        )}
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2 whitespace-pre-line">
+                          {application.reason}
+                        </p>
+                        {createdAt && <p className="text-xs text-gray-500 mt-2">Soumise le {formatDate(createdAt)}</p>}
                         {rejectionReason && (
                           <p className="text-sm text-red-600 mt-2">
                             <i className="fa-solid fa-circle-info mr-1"></i>
@@ -211,24 +214,24 @@ const Commissions = () => {
                       <div className="flex sm:flex-col items-center sm:items-end gap-2">
                         <span
                           className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
-                            application.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : application.status === 'approved'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-red-100 text-red-700'
+                            application.status === "pending"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : application.status === "approved"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
                           }`}
                         >
-                          {application.status === 'pending'
-                            ? 'En attente'
-                            : application.status === 'approved'
-                            ? 'Approuvée'
-                            : 'Rejetée'}
+                          {application.status === "pending"
+                            ? "En attente"
+                            : application.status === "approved"
+                              ? "Approuvée"
+                              : "Rejetée"}
                         </span>
-                        {application.status === 'pending' && (
+                        {application.status === "pending" && (
                           <button
                             onClick={() => {
-                              setWithdrawCommissionId(commissionId)
-                              setShowWithdrawModal(true)
+                              setWithdrawCommissionId(commissionId);
+                              setShowWithdrawModal(true);
                             }}
                             className="text-xs text-red-600 hover:text-red-700 transition-colors"
                           >
@@ -239,7 +242,7 @@ const Commissions = () => {
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           )}
@@ -258,21 +261,17 @@ const Commissions = () => {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setStatusFilter('active')}
+              onClick={() => setStatusFilter("active")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                statusFilter === 'active'
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                statusFilter === "active" ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
               Actives
             </button>
             <button
-              onClick={() => setStatusFilter('archived')}
+              onClick={() => setStatusFilter("archived")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                statusFilter === 'archived'
-                  ? 'bg-gray-700 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                statusFilter === "archived" ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
               Archivées
@@ -287,15 +286,15 @@ const Commissions = () => {
         ) : commissionsData && commissionsData.data.length > 0 ? (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {commissionsData.data.map((commission: any) => {
-                const pendingApp = getMyPendingApplication(commission.id)
-                const isMember = isMemberOf(commission.id)
-                const memberCount = commission.memberCount ?? commission.member_count ?? 0
-                const maxMembers = commission.maxMembers ?? commission.max_members
-                const createdAt = commission.createdAt || commission.created_at || ''
-                const leaderFirstName = commission.leader?.firstName || commission.leader?.first_name || ''
-                const leaderLastName = commission.leader?.lastName || commission.leader?.last_name || ''
-                const isFull = maxMembers !== null && maxMembers !== undefined && memberCount >= maxMembers
+              {(commissionsData.data as CommissionWithSnakeCaseFallback[]).map((commission) => {
+                const pendingApp = getMyPendingApplication(commission.id);
+                const isMember = isMemberOf(commission.id);
+                const memberCount = commission.memberCount ?? commission.member_count ?? 0;
+                const maxMembers = commission.maxMembers ?? commission.max_members;
+                const createdAt = commission.createdAt || commission.created_at || "";
+                const leaderFirstName = commission.leader?.firstName || commission.leader?.first_name || "";
+                const leaderLastName = commission.leader?.lastName || commission.leader?.last_name || "";
+                const isFull = maxMembers !== null && maxMembers !== undefined && memberCount >= maxMembers;
 
                 return (
                   <div
@@ -307,10 +306,8 @@ const Commissions = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-gray-900">{commission.name}</h3>
-                          {commission.status === 'archived' && (
-                            <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">
-                              Archivée
-                            </span>
+                          {commission.status === "archived" && (
+                            <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded-full">Archivée</span>
                           )}
                         </div>
                         {commission.leader && (
@@ -347,23 +344,17 @@ const Commissions = () => {
                           Candidature en cours
                         </span>
                       ) : isGuest ? (
-                        <span className="text-sm text-gray-500 italic">
-                          Connectez-vous pour candidater
-                        </span>
-                      ) : commission.status === 'archived' ? (
-                        <span className="text-sm text-gray-500 italic">
-                          Commission archivée
-                        </span>
+                        <span className="text-sm text-gray-500 italic">Connectez-vous pour candidater</span>
+                      ) : commission.status === "archived" ? (
+                        <span className="text-sm text-gray-500 italic">Commission archivée</span>
                       ) : isFull ? (
-                        <span className="text-sm text-gray-500 italic">
-                          Commission complète
-                        </span>
+                        <span className="text-sm text-gray-500 italic">Commission complète</span>
                       ) : (
                         <button
                           onClick={(e) => {
-                            e.stopPropagation()
-                            setSelectedCommission(commission)
-                            setShowApplyModal(true)
+                            e.stopPropagation();
+                            setSelectedCommission(commission);
+                            setShowApplyModal(true);
                           }}
                           className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
                         >
@@ -372,24 +363,16 @@ const Commissions = () => {
                         </button>
                       )}
 
-                      {createdAt && (
-                        <span className="text-xs text-gray-400">
-                          Créée le {formatDate(createdAt)}
-                        </span>
-                      )}
+                      {createdAt && <span className="text-xs text-gray-400">Créée le {formatDate(createdAt)}</span>}
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
 
             {commissionsData.totalPages > 1 && (
               <div className="mt-6">
-                <Pagination
-                  currentPage={page}
-                  totalPages={commissionsData.totalPages}
-                  onPageChange={setPage}
-                />
+                <Pagination currentPage={page} totalPages={commissionsData.totalPages} onPageChange={setPage} />
               </div>
             )}
           </>
@@ -400,9 +383,7 @@ const Commissions = () => {
             </div>
             <p className="text-gray-500 text-lg">Aucune commission trouvée</p>
             <p className="text-sm text-gray-400 mt-1">
-              {statusFilter === 'active'
-                ? 'Aucune commission active pour le moment'
-                : 'Aucune commission archivée'}
+              {statusFilter === "active" ? "Aucune commission active pour le moment" : "Aucune commission archivée"}
             </p>
           </div>
         )}
@@ -417,9 +398,9 @@ const Commissions = () => {
                 <h3 className="text-xl font-bold text-gray-900">Candidater à une commission</h3>
                 <button
                   onClick={() => {
-                    setShowApplyModal(false)
-                    setSelectedCommission(null)
-                    setApplyReason('')
+                    setShowApplyModal(false);
+                    setSelectedCommission(null);
+                    setApplyReason("");
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
@@ -437,7 +418,7 @@ const Commissions = () => {
                 {selectedCommission.leader && (
                   <p className="text-sm text-gray-500 mt-2">
                     <i className="fa-solid fa-crown text-yellow-500 mr-1"></i>
-                    Leader: {selectedCommission.leader.firstName || selectedCommission.leader.first_name}{' '}
+                    Leader: {selectedCommission.leader.firstName || selectedCommission.leader.first_name}{" "}
                     {selectedCommission.leader.lastName || selectedCommission.leader.last_name}
                   </p>
                 )}
@@ -455,9 +436,7 @@ const Commissions = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all resize-none"
                     placeholder="Expliquez pourquoi vous souhaitez rejoindre cette commission et ce que vous pouvez y apporter (minimum 10 caractères)..."
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {applyReason.length} / 2000 caractères (minimum 10)
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{applyReason.length} / 2000 caractères (minimum 10)</p>
                 </div>
               </div>
             </div>
@@ -465,9 +444,9 @@ const Commissions = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-end gap-3">
               <button
                 onClick={() => {
-                  setShowApplyModal(false)
-                  setSelectedCommission(null)
-                  setApplyReason('')
+                  setShowApplyModal(false);
+                  setSelectedCommission(null);
+                  setApplyReason("");
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -503,9 +482,7 @@ const Commissions = () => {
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i className="fa-solid fa-triangle-exclamation text-red-500 text-2xl"></i>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-                Retirer votre candidature ?
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Retirer votre candidature ?</h3>
               <p className="text-gray-600 text-center">
                 Êtes-vous sûr de vouloir retirer votre candidature ? Cette action est irréversible.
               </p>
@@ -514,8 +491,8 @@ const Commissions = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-center gap-3">
               <button
                 onClick={() => {
-                  setShowWithdrawModal(false)
-                  setWithdrawCommissionId(null)
+                  setShowWithdrawModal(false);
+                  setWithdrawCommissionId(null);
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -543,8 +520,7 @@ const Commissions = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Commissions
-
+export default Commissions;

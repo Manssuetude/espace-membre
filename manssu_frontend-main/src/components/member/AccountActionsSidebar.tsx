@@ -1,5 +1,5 @@
 interface AccountActionsSidebarProps {
-  onLogout: () => void
+  onLogout: () => void;
 }
 
 const AccountActionsSidebar = ({ onLogout }: AccountActionsSidebarProps) => {
@@ -19,8 +19,7 @@ const AccountActionsSidebar = ({ onLogout }: AccountActionsSidebarProps) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AccountActionsSidebar
-
+export default AccountActionsSidebar;

@@ -1,117 +1,117 @@
-import { useState, useEffect, useRef } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useAuth } from '../../contexts/AuthContext'
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "../../contexts/AuthContext";
 
 const VerifyOTP = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { login, isAuthenticated } = useAuth()
-  const { email } = location.state || { email: '' }
-  const [otp, setOtp] = useState(['', '', '', '', '', ''])
-  const [isLoading, setIsLoading] = useState(false)
-  const [resendTimer, setResendTimer] = useState(60)
-  const [canResend, setCanResend] = useState(false)
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
+  const { email } = location.state || { email: "" };
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (!email) {
-      navigate('/auth/login')
-      return
+      navigate("/auth/login");
+      return;
     }
 
     // Start resend timer
     const timer = setInterval(() => {
       setResendTimer((prev) => {
         if (prev <= 1) {
-          setCanResend(true)
-          return 0
+          setCanResend(true);
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [email, navigate])
+    return () => clearInterval(timer);
+  }, [email, navigate]);
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/', { replace: true })
+      navigate("/", { replace: true });
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate]);
 
   const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) return
-    if (!/^\d*$/.test(value)) return
+    if (value.length > 1) return;
+    if (!/^\d*$/.test(value)) return;
 
-    const newOtp = [...otp]
-    newOtp[index] = value
-    setOtp(newOtp)
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
 
     // Auto-focus next input
     if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus()
+      inputRefs.current[index + 1]?.focus();
     }
-  }
+  };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus()
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
     }
-  }
+  };
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault()
-    const pastedData = e.clipboardData.getData('text').slice(0, 6)
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").slice(0, 6);
     if (/^\d+$/.test(pastedData)) {
-      const newOtp = [...otp]
+      const newOtp = [...otp];
       for (let i = 0; i < pastedData.length && i < 6; i++) {
-        newOtp[i] = pastedData[i]
+        newOtp[i] = pastedData[i];
       }
-      setOtp(newOtp)
-      inputRefs.current[Math.min(pastedData.length, 5)]?.focus()
+      setOtp(newOtp);
+      inputRefs.current[Math.min(pastedData.length, 5)]?.focus();
     }
-  }
+  };
 
   const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    const otpString = otp.join('')
+    e.preventDefault();
+
+    const otpString = otp.join("");
     if (otpString.length !== 6) {
-      toast.error('Veuillez entrer le code complet à 6 chiffres')
-      return
+      toast.error("Veuillez entrer le code complet à 6 chiffres");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      await login(email, otpString)
-      toast.success('Connexion réussie !')
-      
+      await login(email, otpString);
+      toast.success("Connexion réussie !");
+
       // Navigate based on user role
-      const from = (location.state as any)?.from?.pathname
+      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
       if (from) {
-        navigate(from, { replace: true })
+        navigate(from, { replace: true });
       } else {
-        navigate('/', { replace: true })
+        navigate("/", { replace: true });
       }
     } catch (error) {
       // Error toast is already shown by API client interceptor
       // Just handle the error silently here
-      console.error('Login error:', error)
+      console.error("Login error:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleResend = () => {
-    if (!canResend) return
-    
-    setCanResend(false)
-    setResendTimer(60)
-    toast.success('Code de vérification renvoyé à votre adresse email')
-  }
+    if (!canResend) return;
+
+    setCanResend(false);
+    setResendTimer(60);
+    toast.success("Code de vérification renvoyé à votre adresse email");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100 font-inter flex items-center justify-center p-4">
@@ -124,9 +124,7 @@ const VerifyOTP = () => {
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
             Vérification
           </h1>
-          <p className="text-sm sm:text-base text-gray-600">
-            Entrez le code à 6 chiffres envoyé à
-          </p>
+          <p className="text-sm sm:text-base text-gray-600">Entrez le code à 6 chiffres envoyé à</p>
           <p className="text-sm sm:text-base font-semibold text-gray-900 mt-1">{email}</p>
         </div>
 
@@ -134,9 +132,7 @@ const VerifyOTP = () => {
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 sm:p-8">
           <form onSubmit={handleVerify} className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-4 text-center">
-                Code de vérification
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-4 text-center">Code de vérification</label>
               <div className="flex justify-center space-x-2 sm:space-x-3" onPaste={handlePaste}>
                 {otp.map((digit, index) => (
                   <input
@@ -158,7 +154,7 @@ const VerifyOTP = () => {
 
             <button
               type="submit"
-              disabled={isLoading || otp.join('').length !== 6}
+              disabled={isLoading || otp.join("").length !== 6}
               className="w-full px-6 py-3 bg-gradient-to-r from-primary to-red-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {isLoading ? (
@@ -167,27 +163,21 @@ const VerifyOTP = () => {
                   Vérification...
                 </span>
               ) : (
-                'Vérifier'
+                "Vérifier"
               )}
             </button>
           </form>
 
           {/* Resend Code */}
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-            <p className="text-sm text-gray-600 mb-3">
-              Vous n'avez pas reçu le code ?
-            </p>
+            <p className="text-sm text-gray-600 mb-3">Vous n'avez pas reçu le code ?</p>
             <button
               type="button"
               onClick={handleResend}
               disabled={!canResend}
               className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
             >
-              {canResend ? (
-                'Renvoyer le code'
-              ) : (
-                `Renvoyer dans ${resendTimer}s`
-              )}
+              {canResend ? "Renvoyer le code" : `Renvoyer dans ${resendTimer}s`}
             </button>
           </div>
 
@@ -195,7 +185,7 @@ const VerifyOTP = () => {
           <div className="mt-4 text-center">
             <button
               type="button"
-              onClick={() => navigate('/auth/login')}
+              onClick={() => navigate("/auth/login")}
               className="text-sm text-gray-600 hover:text-primary transition-colors"
             >
               <i className="fa-solid fa-arrow-left mr-2"></i>
@@ -205,8 +195,7 @@ const VerifyOTP = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default VerifyOTP
-
+export default VerifyOTP;

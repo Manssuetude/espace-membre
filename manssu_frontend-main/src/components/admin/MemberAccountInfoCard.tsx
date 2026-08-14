@@ -1,29 +1,29 @@
-import { Member } from '../../types/member'
+import { Member } from "../../types/member";
 
 interface MemberAccountInfoCardProps {
-  member: Member
+  member: Member;
 }
 
 const MemberAccountInfoCard = ({ member }: MemberAccountInfoCardProps) => {
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  }
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   const formatDateTime = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+    const date = new Date(dateStr);
+    return date.toLocaleString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
@@ -44,8 +44,7 @@ const MemberAccountInfoCard = ({ member }: MemberAccountInfoCardProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MemberAccountInfoCard
-
+export default MemberAccountInfoCard;

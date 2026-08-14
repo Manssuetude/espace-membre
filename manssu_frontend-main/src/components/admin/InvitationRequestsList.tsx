@@ -1,54 +1,50 @@
-import { useState } from 'react'
-import { useInvitationRequests, useReviewInvitationRequest } from '../../services/hooks/useInvitations'
-import { InvitationRequestStatus } from '../../types/invitation'
-import Dropdown from '../Dropdown'
+import { useState } from "react";
+import { useInvitationRequests, useReviewInvitationRequest } from "../../services/hooks/useInvitations";
+import { InvitationRequestStatus } from "../../types/invitation";
+import Dropdown from "../Dropdown";
 
 interface InvitationRequestsListProps {
-  sessionId?: string
+  sessionId?: string;
 }
 
 const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
-  const [statusFilter, setStatusFilter] = useState<InvitationRequestStatus | 'all'>('all')
+  const [statusFilter, setStatusFilter] = useState<InvitationRequestStatus | "all">("all");
   const { data: requests, isLoading } = useInvitationRequests({
-    status: statusFilter !== 'all' ? statusFilter : undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
     session_id: sessionId,
-  })
-  const reviewRequest = useReviewInvitationRequest()
+  });
+  const reviewRequest = useReviewInvitationRequest();
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+    return new Date(dateStr).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const getStatusBadge = (status: InvitationRequestStatus) => {
     const statusConfig = {
-      pending: { label: 'En attente', color: 'bg-yellow-100 text-yellow-800' },
-      approved: { label: 'Approuvée', color: 'bg-green-100 text-green-800' },
-      rejected: { label: 'Rejetée', color: 'bg-red-100 text-red-800' },
-    }
-    const config = statusConfig[status]
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-        {config.label}
-      </span>
-    )
-  }
+      pending: { label: "En attente", color: "bg-yellow-100 text-yellow-800" },
+      approved: { label: "Approuvée", color: "bg-green-100 text-green-800" },
+      rejected: { label: "Rejetée", color: "bg-red-100 text-red-800" },
+    };
+    const config = statusConfig[status];
+    return <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>;
+  };
 
-  const handleReview = async (id: string, action: 'approve' | 'reject') => {
-    const actionText = action === 'approve' ? 'approuver' : 'rejeter'
+  const handleReview = async (id: string, action: "approve" | "reject") => {
+    const actionText = action === "approve" ? "approuver" : "rejeter";
     if (window.confirm(`Êtes-vous sûr de vouloir ${actionText} cette demande d'invitation ?`)) {
       try {
-        await reviewRequest.mutateAsync({ id, data: { action } })
+        await reviewRequest.mutateAsync({ id, data: { action } });
       } catch (error) {
         // Error handled by mutation
       }
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -57,7 +53,7 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
           <i className="fa-solid fa-spinner fa-spin text-2xl text-primary"></i>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -66,7 +62,7 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
         <h3 className="text-lg font-semibold text-gray-900">Demandes d'invitation</h3>
         {requests && requests.length > 0 && (
           <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-lg">
-            {requests.length} demande{requests.length > 1 ? 's' : ''}
+            {requests.length} demande{requests.length > 1 ? "s" : ""}
           </span>
         )}
       </div>
@@ -76,13 +72,13 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
         <div className="w-full sm:w-48">
           <Dropdown
             options={[
-              { value: 'all', label: 'Tous les statuts' },
-              { value: 'pending', label: 'En attente' },
-              { value: 'approved', label: 'Approuvées' },
-              { value: 'rejected', label: 'Rejetées' },
+              { value: "all", label: "Tous les statuts" },
+              { value: "pending", label: "En attente" },
+              { value: "approved", label: "Approuvées" },
+              { value: "rejected", label: "Rejetées" },
             ]}
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as InvitationRequestStatus | 'all')}
+            onChange={(e) => setStatusFilter(e.target.value as InvitationRequestStatus | "all")}
             placeholder="Filtrer par statut"
           />
         </div>
@@ -99,10 +95,7 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
       ) : (
         <div className="space-y-3">
           {requests.map((request) => (
-            <div
-              key={request.id}
-              className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all"
-            >
+            <div key={request.id} className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
@@ -126,7 +119,7 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
                   <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
                     <span>
                       <i className="fa-solid fa-user mr-1"></i>
-                      Demandé par: {request.requestedByName || 'N/A'}
+                      Demandé par: {request.requestedByName || "N/A"}
                     </span>
                     <span>
                       <i className="fa-solid fa-clock mr-1"></i>
@@ -146,10 +139,10 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
                     )}
                   </div>
                 </div>
-                {request.status === 'pending' && (
+                {request.status === "pending" && (
                   <div className="flex gap-2 flex-shrink-0">
                     <button
-                      onClick={() => handleReview(request.id, 'approve')}
+                      onClick={() => handleReview(request.id, "approve")}
                       disabled={reviewRequest.isPending}
                       className="px-3 py-1.5 text-sm bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1"
                       title="Approuver la demande"
@@ -158,7 +151,7 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
                       Approuver
                     </button>
                     <button
-                      onClick={() => handleReview(request.id, 'reject')}
+                      onClick={() => handleReview(request.id, "reject")}
                       disabled={reviewRequest.isPending}
                       className="px-3 py-1.5 text-sm bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1"
                       title="Rejeter la demande"
@@ -174,7 +167,7 @@ const InvitationRequestsList = ({ sessionId }: InvitationRequestsListProps) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default InvitationRequestsList
+export default InvitationRequestsList;

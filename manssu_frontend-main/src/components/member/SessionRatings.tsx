@@ -1,22 +1,21 @@
-import { SessionRating } from '../../types/session'
-import { formatDateWithTime } from '../../utils/dateUtils'
+import { SessionRating } from "../../types/session";
+import { formatDateWithTime } from "../../utils/dateUtils";
 
 interface SessionRatingsProps {
-  ratings: SessionRating[]
-  totalRatings: number
+  ratings: SessionRating[];
+  totalRatings: number;
 }
 
 const SessionRatings = ({ ratings, totalRatings }: SessionRatingsProps) => {
   // Calculate average rating
-  const averageRating = ratings.length > 0
-    ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
-    : 0
+  const averageRating =
+    ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length : 0;
 
   // Format date - use ratedAt if available
   const formatDate = (dateStr: string | null | undefined) => {
-    if (!dateStr) return 'Date inconnue'
-    return formatDateWithTime(dateStr)
-  }
+    if (!dateStr) return "Date inconnue";
+    return formatDateWithTime(dateStr);
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6">
@@ -47,7 +46,7 @@ const SessionRatings = ({ ratings, totalRatings }: SessionRatingsProps) => {
                 <i
                   key={star}
                   className={`fa-solid fa-star text-lg sm:text-xl ${
-                    star <= Math.round(averageRating) ? 'text-warning' : 'text-gray-300'
+                    star <= Math.round(averageRating) ? "text-warning" : "text-gray-300"
                   }`}
                 ></i>
               ))}
@@ -81,15 +80,13 @@ const SessionRatings = ({ ratings, totalRatings }: SessionRatingsProps) => {
                       <i
                         key={star}
                         className={`fa-solid fa-star text-sm sm:text-base ${
-                          star <= rating.rating ? 'text-warning' : 'text-gray-300'
+                          star <= rating.rating ? "text-warning" : "text-gray-300"
                         }`}
                       ></i>
                     ))}
                   </div>
                 </div>
-                {rating.comment && (
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-3">{rating.comment}</p>
-                )}
+                {rating.comment && <p className="text-sm text-gray-600 mt-2 line-clamp-3">{rating.comment}</p>}
               </div>
             ))}
           </div>
@@ -101,17 +98,7 @@ const SessionRatings = ({ ratings, totalRatings }: SessionRatingsProps) => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default SessionRatings
-
-
-
-
-
-
-
-
-
-
+export default SessionRatings;

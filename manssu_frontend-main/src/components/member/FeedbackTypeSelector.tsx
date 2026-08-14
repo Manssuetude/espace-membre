@@ -1,14 +1,14 @@
 interface FeedbackTypeSelectorProps {
-  selectedType: string
-  onTypeChange: (type: string) => void
+  selectedType: string;
+  onTypeChange: (type: string) => void;
 }
 
 const FeedbackTypeSelector = ({ selectedType, onTypeChange }: FeedbackTypeSelectorProps) => {
   const types = [
-    { value: 'suggestion', label: 'Suggestion', color: 'accent' },
-    { value: 'probleme', label: 'Problème', color: 'primary' },
-    { value: 'compliment', label: 'Compliment', color: 'success' },
-  ]
+    { value: "suggestion", label: "Suggestion", color: "accent" },
+    { value: "probleme", label: "Problème", color: "primary" },
+    { value: "compliment", label: "Compliment", color: "success" },
+  ];
 
   return (
     <div>
@@ -29,8 +29,7 @@ const FeedbackTypeSelector = ({ selectedType, onTypeChange }: FeedbackTypeSelect
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FeedbackTypeSelector
-
+export default FeedbackTypeSelector;

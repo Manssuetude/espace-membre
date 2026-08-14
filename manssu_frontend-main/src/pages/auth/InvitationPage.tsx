@@ -1,161 +1,159 @@
-import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useValidateInvite } from '../../services/hooks/useInvitations'
-import { useAuth } from '../../contexts/AuthContext'
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useValidateInvite } from "../../services/hooks/useInvitations";
+import { useAuth } from "../../contexts/AuthContext";
+import { getErrorMessage } from "../../utils/errorUtils";
 
 const InvitationPage = () => {
-  const { code } = useParams<{ code: string }>()
-  const navigate = useNavigate()
-  const { isAuthenticated, sendOTPForInvite, registerGuest } = useAuth()
-  const { data: validation, isLoading: isValidating } = useValidateInvite(code || '')
-  
-  const [step, setStep] = useState<'info' | 'otp'>('info')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [otp, setOtp] = useState(['', '', '', '', '', ''])
-  const [isLoading, setIsLoading] = useState(false)
-  const [resendTimer, setResendTimer] = useState(60)
-  const [canResend, setCanResend] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const { code } = useParams<{ code: string }>();
+  const navigate = useNavigate();
+  const { isAuthenticated, sendOTPForInvite, registerGuest } = useAuth();
+  const { data: validation, isLoading: isValidating } = useValidateInvite(code || "");
+
+  const [step, setStep] = useState<"info" | "otp">("info");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/', { replace: true })
+      navigate("/", { replace: true });
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate]);
 
   // Handle invalid invite
   useEffect(() => {
     if (validation && !validation.valid) {
-      toast.error(validation.message || 'Code d\'invitation invalide')
+      toast.error(validation.message || "Code d'invitation invalide");
     }
-  }, [validation])
+  }, [validation]);
 
   // Resend timer
   useEffect(() => {
-    if (step === 'otp') {
+    if (step === "otp") {
       const timer = setInterval(() => {
         setResendTimer((prev) => {
           if (prev <= 1) {
-            setCanResend(true)
-            return 0
+            setCanResend(true);
+            return 0;
           }
-          return prev - 1
-        })
-      }, 1000)
-      return () => clearInterval(timer)
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
     }
-  }, [step])
+  }, [step]);
 
   const handleRequestOTP = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrors({})
+    e.preventDefault();
+    setErrors({});
 
     if (!firstName.trim()) {
-      setErrors({ firstName: 'Le prénom est requis' })
-      return
+      setErrors({ firstName: "Le prénom est requis" });
+      return;
     }
 
     if (!lastName.trim()) {
-      setErrors({ lastName: 'Le nom est requis' })
-      return
+      setErrors({ lastName: "Le nom est requis" });
+      return;
     }
 
     if (!code) {
-      toast.error('Code d\'invitation manquant')
-      return
+      toast.error("Code d'invitation manquant");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await sendOTPForInvite(code)
-      toast.success('Code OTP envoyé à votre adresse email')
-      setStep('otp')
-      setResendTimer(60)
-      setCanResend(false)
-    } catch (error: any) {
-      const message = error.response?.data?.detail || error.message || 'Erreur lors de l\'envoi du code OTP'
-      toast.error(message)
+      await sendOTPForInvite(code);
+      toast.success("Code OTP envoyé à votre adresse email");
+      setStep("otp");
+      setResendTimer(60);
+      setCanResend(false);
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erreur lors de l'envoi du code OTP"));
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) return
-    if (!/^\d*$/.test(value)) return
+    if (value.length > 1) return;
+    if (!/^\d*$/.test(value)) return;
 
-    const newOtp = [...otp]
-    newOtp[index] = value
-    setOtp(newOtp)
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
 
     if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus()
+      inputRefs.current[index + 1]?.focus();
     }
-  }
+  };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus()
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
     }
-  }
+  };
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault()
-    const pastedData = e.clipboardData.getData('text').slice(0, 6)
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").slice(0, 6);
     if (/^\d+$/.test(pastedData)) {
-      const newOtp = [...otp]
+      const newOtp = [...otp];
       for (let i = 0; i < pastedData.length && i < 6; i++) {
-        newOtp[i] = pastedData[i]
+        newOtp[i] = pastedData[i];
       }
-      setOtp(newOtp)
-      inputRefs.current[Math.min(pastedData.length, 5)]?.focus()
+      setOtp(newOtp);
+      inputRefs.current[Math.min(pastedData.length, 5)]?.focus();
     }
-  }
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    const otpString = otp.join('')
+    e.preventDefault();
+
+    const otpString = otp.join("");
     if (otpString.length !== 6) {
-      toast.error('Veuillez entrer le code complet à 6 chiffres')
-      return
+      toast.error("Veuillez entrer le code complet à 6 chiffres");
+      return;
     }
 
     if (!code) {
-      toast.error('Code d\'invitation manquant')
-      return
+      toast.error("Code d'invitation manquant");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await registerGuest(code, firstName.trim(), lastName.trim(), otpString)
-      toast.success('Inscription réussie !')
-      navigate('/', { replace: true })
-    } catch (error: any) {
-      const message = error.response?.data?.detail || error.message || 'Erreur lors de l\'inscription'
-      toast.error(message)
+      await registerGuest(code, firstName.trim(), lastName.trim(), otpString);
+      toast.success("Inscription réussie !");
+      navigate("/", { replace: true });
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erreur lors de l'inscription"));
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleResendOTP = async () => {
-    if (!canResend || !code) return
-    
-    setCanResend(false)
-    setResendTimer(60)
+    if (!canResend || !code) return;
+
+    setCanResend(false);
+    setResendTimer(60);
     try {
-      await sendOTPForInvite(code)
-      toast.success('Code de vérification renvoyé')
-    } catch (error: any) {
-      const message = error.response?.data?.detail || error.message || 'Erreur lors de l\'envoi du code'
-      toast.error(message)
+      await sendOTPForInvite(code);
+      toast.success("Code de vérification renvoyé");
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Erreur lors de l'envoi du code"));
     }
-  }
+  };
 
   if (isValidating) {
     return (
@@ -165,7 +163,7 @@ const InvitationPage = () => {
           <p className="text-gray-600">Vérification du code d'invitation...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!validation || !validation.valid) {
@@ -177,9 +175,9 @@ const InvitationPage = () => {
               <i className="fa-solid fa-times-circle text-red-500 text-3xl"></i>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Invitation invalide</h2>
-            <p className="text-gray-600 mb-6">{validation?.message || 'Ce code d\'invitation n\'est pas valide'}</p>
+            <p className="text-gray-600 mb-6">{validation?.message || "Ce code d'invitation n'est pas valide"}</p>
             <button
-              onClick={() => navigate('/auth/login')}
+              onClick={() => navigate("/auth/login")}
               className="px-6 py-2.5 bg-gradient-to-r from-primary to-red-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
             >
               Retour à la connexion
@@ -187,7 +185,7 @@ const InvitationPage = () => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -220,7 +218,7 @@ const InvitationPage = () => {
                 {validation.expiresAt && (
                   <p className="text-xs text-gray-500 mt-2">
                     <i className="fa-solid fa-clock mr-1"></i>
-                    Expire le {new Date(validation.expiresAt).toLocaleDateString('fr-FR')}
+                    Expire le {new Date(validation.expiresAt).toLocaleDateString("fr-FR")}
                   </p>
                 )}
               </div>
@@ -230,7 +228,7 @@ const InvitationPage = () => {
 
         {/* Registration Card */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 sm:p-8">
-          {step === 'info' ? (
+          {step === "info" ? (
             <form onSubmit={handleRequestOTP} className="space-y-6">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Vos informations</h2>
@@ -243,18 +241,16 @@ const InvitationPage = () => {
                       type="text"
                       value={firstName}
                       onChange={(e) => {
-                        setFirstName(e.target.value)
-                        if (errors.firstName) setErrors((prev) => ({ ...prev, firstName: '' }))
+                        setFirstName(e.target.value);
+                        if (errors.firstName) setErrors((prev) => ({ ...prev, firstName: "" }));
                       }}
                       className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white ${
-                        errors.firstName ? 'border-red-500' : 'border-gray-300 focus:border-primary'
+                        errors.firstName ? "border-red-500" : "border-gray-300 focus:border-primary"
                       }`}
                       required
                       disabled={isLoading}
                     />
-                    {errors.firstName && (
-                      <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
-                    )}
+                    {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -264,18 +260,16 @@ const InvitationPage = () => {
                       type="text"
                       value={lastName}
                       onChange={(e) => {
-                        setLastName(e.target.value)
-                        if (errors.lastName) setErrors((prev) => ({ ...prev, lastName: '' }))
+                        setLastName(e.target.value);
+                        if (errors.lastName) setErrors((prev) => ({ ...prev, lastName: "" }));
                       }}
                       className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white ${
-                        errors.lastName ? 'border-red-500' : 'border-gray-300 focus:border-primary'
+                        errors.lastName ? "border-red-500" : "border-gray-300 focus:border-primary"
                       }`}
                       required
                       disabled={isLoading}
                     />
-                    {errors.lastName && (
-                      <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
-                    )}
+                    {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
                   </div>
                 </div>
               </div>
@@ -326,7 +320,7 @@ const InvitationPage = () => {
 
               <button
                 type="submit"
-                disabled={isLoading || otp.join('').length !== 6}
+                disabled={isLoading || otp.join("").length !== 6}
                 className="w-full px-6 py-3 bg-gradient-to-r from-primary to-red-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
@@ -335,7 +329,7 @@ const InvitationPage = () => {
                     Inscription...
                   </span>
                 ) : (
-                  'Finaliser l\'inscription'
+                  "Finaliser l'inscription"
                 )}
               </button>
 
@@ -347,18 +341,14 @@ const InvitationPage = () => {
                   disabled={!canResend}
                   className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
-                  {canResend ? (
-                    'Renvoyer le code'
-                  ) : (
-                    `Renvoyer dans ${resendTimer}s`
-                  )}
+                  {canResend ? "Renvoyer le code" : `Renvoyer dans ${resendTimer}s`}
                 </button>
               </div>
 
               <div className="text-center">
                 <button
                   type="button"
-                  onClick={() => setStep('info')}
+                  onClick={() => setStep("info")}
                   className="text-sm text-gray-600 hover:text-primary transition-colors"
                 >
                   <i className="fa-solid fa-arrow-left mr-2"></i>
@@ -370,8 +360,7 @@ const InvitationPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default InvitationPage
-
+export default InvitationPage;

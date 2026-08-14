@@ -1,7 +1,7 @@
-import { Session } from '../../types/session'
+import { Session } from "../../types/session";
 
 interface UpcomingSessionsSidebarProps {
-  sessions: Session[]
+  sessions: Session[];
 }
 
 const UpcomingSessionsSidebar = ({ sessions }: UpcomingSessionsSidebarProps) => {
@@ -11,16 +11,15 @@ const UpcomingSessionsSidebar = ({ sessions }: UpcomingSessionsSidebarProps) => 
       <div className="space-y-4">
         {sessions.length > 0 ? (
           sessions.slice(0, 3).map((session) => {
-            const sessionDate = session.date ? new Date(session.date) : null
-            const day = sessionDate ? sessionDate.getDate() : null
-            const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
-            const month = sessionDate ? monthNames[sessionDate.getMonth()] : null
-            const dateStr = day && month ? `${day} ${month}` : 'non défini'
-            const timeStr = session.startTime && session.endTime
-              ? `${session.startTime} - ${session.endTime}`
-              : 'non défini'
-            const borderClass = session.status === 'upcoming' ? 'border-primary' : 'border-accent'
-            
+            const sessionDate = session.date ? new Date(session.date) : null;
+            const day = sessionDate ? sessionDate.getDate() : null;
+            const monthNames = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+            const month = sessionDate ? monthNames[sessionDate.getMonth()] : null;
+            const dateStr = day && month ? `${day} ${month}` : "non défini";
+            const timeStr =
+              session.startTime && session.endTime ? `${session.startTime} - ${session.endTime}` : "non défini";
+            const borderClass = session.status === "upcoming" ? "border-primary" : "border-accent";
+
             return (
               <div key={session.id} className={`border-l-4 ${borderClass} pl-4 py-2`}>
                 <div className="flex items-center justify-between mb-1">
@@ -28,19 +27,16 @@ const UpcomingSessionsSidebar = ({ sessions }: UpcomingSessionsSidebarProps) => 
                   <span className="text-xs text-gray-500">{dateStr}</span>
                 </div>
                 <p className="text-xs text-gray-600">{timeStr}</p>
-                <p className="text-xs text-gray-500">
-                  {session.location?.address || 'non défini'}
-                </p>
+                <p className="text-xs text-gray-500">{session.location?.address || "non défini"}</p>
               </div>
-            )
+            );
           })
         ) : (
           <p className="text-sm text-gray-500 text-center py-4">Aucune session à venir</p>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UpcomingSessionsSidebar
-
+export default UpcomingSessionsSidebar;

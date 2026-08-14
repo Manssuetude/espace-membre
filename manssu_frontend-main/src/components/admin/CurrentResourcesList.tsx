@@ -1,21 +1,21 @@
-import { translateResourceType } from '../../utils/resourceUtils'
+import { translateResourceType } from "../../utils/resourceUtils";
 
 interface CurrentResource {
-  title: string
-  type: string
-  icon: string
-  color: string
-  session: string
-  addedDate: string
-  resourceId: string
-  link: string
-  description: string
+  title: string;
+  type: string;
+  icon: string;
+  color: string;
+  session: string;
+  addedDate: string;
+  resourceId: string;
+  link: string;
+  description: string;
 }
 
 interface CurrentResourcesListProps {
-  resources: CurrentResource[]
-  onEditResource: (resource: CurrentResource) => void
-  onDeleteResource: (resource: { resourceId: string; title: string }) => void
+  resources: CurrentResource[];
+  onEditResource: (resource: CurrentResource) => void;
+  onDeleteResource: (resource: { resourceId: string; title: string }) => void;
 }
 
 const CurrentResourcesList = ({ resources, onEditResource, onDeleteResource }: CurrentResourcesListProps) => {
@@ -42,41 +42,46 @@ const CurrentResourcesList = ({ resources, onEditResource, onDeleteResource }: C
         <div className="space-y-4">
           {resources.map((resource, idx) => {
             const iconColorClass =
-              resource.color === 'primary'
-                ? 'text-primary'
-                : resource.color === 'accent'
-                ? 'text-accent'
-                : 'text-success'
+              resource.color === "primary"
+                ? "text-primary"
+                : resource.color === "accent"
+                  ? "text-accent"
+                  : "text-success";
             return (
-              <div key={idx} className="p-4 sm:p-5 bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+              <div
+                key={idx}
+                className="p-4 sm:p-5 bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-lg transition-all"
+              >
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-3">
                   <div className="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0 w-full sm:w-auto">
                     <div
                       className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br ${
-                        resource.color === 'primary'
-                          ? 'from-primary/10 to-red-500/10'
-                          : resource.color === 'accent'
-                          ? 'from-accent/10 to-blue-600/10'
-                          : 'from-success/10 to-emerald-600/10'
+                        resource.color === "primary"
+                          ? "from-primary/10 to-red-500/10"
+                          : resource.color === "accent"
+                            ? "from-accent/10 to-blue-600/10"
+                            : "from-success/10 to-emerald-600/10"
                       } rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0`}
                     >
                       <i className={`fa-solid ${resource.icon} ${iconColorClass} text-lg sm:text-xl`}></i>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-gray-900 text-base sm:text-lg mb-1 break-words">{resource.title}</h4>
+                      <h4 className="font-semibold text-gray-900 text-base sm:text-lg mb-1 break-words">
+                        {resource.title}
+                      </h4>
                       <p className="text-xs sm:text-sm text-gray-600 mb-2 break-words">
                         {translateResourceType(resource.type)}
                       </p>
                       <p className="text-xs sm:text-sm text-gray-500 break-words hidden sm:block overflow-hidden text-ellipsis whitespace-nowrap">
                         <i className="fa-solid fa-align-left mr-1 text-accent"></i>
-                        {resource.description || 'Aucune description disponible'}
+                        {resource.description || "Aucune description disponible"}
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3 sm:space-x-4 text-xs text-gray-500 w-full sm:w-auto sm:ml-0">
                     <span className="flex items-center sm:hidden break-words w-full overflow-hidden text-ellipsis whitespace-nowrap">
                       <i className="fa-solid fa-align-left mr-1 text-accent flex-shrink-0"></i>
-                      <span className="break-words">{resource.description || 'Aucune description disponible'}</span>
+                      <span className="break-words">{resource.description || "Aucune description disponible"}</span>
                     </span>
                     <span className="flex items-center">
                       <i className="fa-solid fa-calendar mr-1 flex-shrink-0"></i>
@@ -110,13 +115,12 @@ const CurrentResourcesList = ({ resources, onEditResource, onDeleteResource }: C
                   </button>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CurrentResourcesList
-
+export default CurrentResourcesList;

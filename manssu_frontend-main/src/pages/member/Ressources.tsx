@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import NextSessionResources from '../../components/member/NextSessionResources'
-import PastSessionResources from '../../components/member/PastSessionResources'
-import ProposeResourceModal from '../../components/member/ProposeResourceModal'
+import { useState } from "react";
+import NextSessionResources from "../../components/member/NextSessionResources";
+import PastSessionResources from "../../components/member/PastSessionResources";
+import ProposeResourceModal from "../../components/member/ProposeResourceModal";
 
 const Ressources = () => {
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div>
@@ -22,8 +22,7 @@ const Ressources = () => {
       <PastSessionResources />
       <ProposeResourceModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
-  )
-}
+  );
+};
 
-export default Ressources
-
+export default Ressources;

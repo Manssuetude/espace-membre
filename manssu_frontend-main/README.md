@@ -36,6 +36,7 @@ src/
 ## 🎨 Design System
 
 ### Couleurs
+
 - **Primary**: `#dc2626` (Rouge)
 - **Secondary**: `#f97316` (Orange)
 - **Accent**: `#3b82f6` (Bleu)
@@ -43,6 +44,7 @@ src/
 - **Success**: `#10b981` (Vert)
 
 ### Typographie
+
 - Police: **Inter** (Google Fonts)
 
 ## 🛠️ Technologies
@@ -52,4 +54,3 @@ src/
 - Tailwind CSS
 - React Router
 - Vite
-

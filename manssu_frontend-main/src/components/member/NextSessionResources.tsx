@@ -1,74 +1,73 @@
-import { useMemo, useState } from 'react'
-import { useSessions } from '../../services/hooks/useSessions'
-import { useResources } from '../../services/hooks/useResources'
-import { translateResourceType } from '../../utils/resourceUtils'
+import { useMemo, useState } from "react";
+import { useSessions } from "../../services/hooks/useSessions";
+import { useResources } from "../../services/hooks/useResources";
+import { translateResourceType } from "../../utils/resourceUtils";
 
 const NextSessionResources = () => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({})
+  const [currentPage, setCurrentPage] = useState(1);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<number, boolean>>({});
 
   // Get the next upcoming session
-  const { data: sessionsData, isLoading: isLoadingSessions } = useSessions({ status: 'upcoming', limit: 12 })
-  const nextSession = sessionsData?.data?.[0]
+  const { data: sessionsData, isLoading: isLoadingSessions } = useSessions({ status: "upcoming", limit: 12 });
+  const nextSession = sessionsData?.data?.[0];
 
   // Get resources for the next session (only approved)
   const { data: resourcesData, isLoading: isLoadingResources } = useResources({
     sessionId: nextSession?.id,
-    status: 'approved',
+    status: "approved",
     page: currentPage,
     limit: 12,
-  })
+  });
 
-  const resources = resourcesData?.data || []
-  const totalPages = resourcesData?.totalPages || 1
-  const totalItems = resourcesData?.total || 0
+  const totalPages = resourcesData?.totalPages || 1;
+  const totalItems = resourcesData?.total || 0;
 
   // Transform resources for display
   const displayResources = useMemo(() => {
-    return resources.map((resource) => {
+    return (resourcesData?.data || []).map((resource) => {
       // Get icon based on type
       const getIcon = (type: string) => {
         switch (type) {
-          case 'file':
-            return 'fa-file-pdf'
-          case 'video':
-            return 'fa-video'
-          case 'audio':
-            return 'fa-headphones'
-          case 'folder':
-            return 'fa-link'
+          case "file":
+            return "fa-file-pdf";
+          case "video":
+            return "fa-video";
+          case "audio":
+            return "fa-headphones";
+          case "folder":
+            return "fa-link";
           default:
-            return 'fa-file'
+            return "fa-file";
         }
-      }
+      };
 
       // Get color based on type
       const getColor = (type: string) => {
         switch (type) {
-          case 'file':
-            return 'primary'
-          case 'video':
-            return 'accent'
-          case 'audio':
-            return 'success'
-          case 'folder':
-            return 'secondary'
+          case "file":
+            return "primary";
+          case "video":
+            return "accent";
+          case "audio":
+            return "success";
+          case "folder":
+            return "secondary";
           default:
-            return 'primary'
+            return "primary";
         }
-      }
+      };
 
       // Format type display
-      let typeDisplay = translateResourceType(resource.type)
+      let typeDisplay = translateResourceType(resource.type);
       if (resource.fileSize) {
-        const sizeMB = (resource.fileSize / (1024 * 1024)).toFixed(1)
-        typeDisplay = `${typeDisplay} • ${sizeMB} MB`
+        const sizeMB = (resource.fileSize / (1024 * 1024)).toFixed(1);
+        typeDisplay = `${typeDisplay} • ${sizeMB} MB`;
       }
 
       // Check if resource is new (created in last 7 days)
       const isNew = resource.createdAt
         ? (Date.now() - new Date(resource.createdAt).getTime()) / (1000 * 60 * 60 * 24) < 7
-        : false
+        : false;
 
       return {
         icon: getIcon(resource.type),
@@ -78,40 +77,40 @@ const NextSessionResources = () => {
         color: getColor(resource.type),
         isNew,
         link: resource.link,
-      }
-    })
-  }, [resources])
+      };
+    });
+  }, [resourcesData]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === currentPage) {
-      return
+      return;
     }
-    setCurrentPage(newPage)
-  }
+    setCurrentPage(newPage);
+  };
 
   if (isLoadingSessions || isLoadingResources) {
     return (
       <div className="mb-8 flex items-center justify-center min-h-[200px]">
         <i className="fa-solid fa-spinner fa-spin text-2xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (!nextSession) {
-    return null
+    return null;
   }
 
   return (
     <div className="mb-8">
       <div className="flex flex-col sm:flex-row sm:items-center mb-4 gap-2 sm:gap-0">
         <div className="flex items-center">
-        <div className="w-1 h-6 bg-gradient-to-b from-primary to-red-500 rounded-full mr-3"></div>
-        <h2 className="text-xl font-bold text-gray-900">Prochaine session</h2>
+          <div className="w-1 h-6 bg-gradient-to-b from-primary to-red-500 rounded-full mr-3"></div>
+          <h2 className="text-xl font-bold text-gray-900">Prochaine session</h2>
         </div>
         <div className="flex items-center sm:ml-3 gap-3 flex-wrap">
           <span className="px-3 py-1 bg-gradient-to-r from-primary/10 to-red-500/10 text-primary text-sm font-semibold rounded-lg">
-          {nextSession.title}
-        </span>
+            {nextSession.title}
+          </span>
           {totalItems > 0 && (
             <span className="text-sm text-gray-500 sm:ml-auto">
               {resourcesData?.page ?? currentPage}/{totalPages} • {totalItems} ressources
@@ -132,19 +131,19 @@ const NextSessionResources = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {displayResources.map((resource, idx) => {
             const colorClasses = {
-              primary: 'from-primary/20 to-red-500/20 text-primary border-primary/30',
-              accent: 'from-accent/20 to-blue-600/20 text-accent border-accent/30',
-              success: 'from-success/20 to-emerald-600/20 text-success border-success/30',
-              secondary: 'from-secondary/20 to-orange-600/20 text-secondary border-secondary/30',
-            }
+              primary: "from-primary/20 to-red-500/20 text-primary border-primary/30",
+              accent: "from-accent/20 to-blue-600/20 text-accent border-accent/30",
+              success: "from-success/20 to-emerald-600/20 text-success border-success/30",
+              secondary: "from-secondary/20 to-orange-600/20 text-secondary border-secondary/30",
+            };
             const bgClasses = {
-              primary: 'from-primary to-red-500',
-              accent: 'from-accent to-blue-600',
-              success: 'from-success to-emerald-600',
-              secondary: 'from-secondary to-orange-600',
-            }
-            const colorClass = colorClasses[resource.color as keyof typeof colorClasses] || colorClasses.primary
-            const bgClass = bgClasses[resource.color as keyof typeof bgClasses] || bgClasses.primary
+              primary: "from-primary to-red-500",
+              accent: "from-accent to-blue-600",
+              success: "from-success to-emerald-600",
+              secondary: "from-secondary to-orange-600",
+            };
+            const colorClass = colorClasses[resource.color as keyof typeof colorClasses] || colorClasses.primary;
+            const bgClass = bgClasses[resource.color as keyof typeof bgClasses] || bgClasses.primary;
 
             return (
               <div
@@ -152,7 +151,9 @@ const NextSessionResources = () => {
                 className={`bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 hover:shadow-xl hover:border-${resource.color}/30 transition-all group flex flex-col`}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`w-14 h-14 bg-gradient-to-br ${colorClass} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                  <div
+                    className={`w-14 h-14 bg-gradient-to-br ${colorClass} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}
+                  >
                     <i className={`fa-solid ${resource.icon} text-${resource.color} text-2xl`}></i>
                   </div>
                   {resource.isNew && (
@@ -173,12 +174,12 @@ const NextSessionResources = () => {
                       {resource.description && resource.description.length > 120 && (
                         <button
                           onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
+                            e.preventDefault();
+                            e.stopPropagation();
                             setExpandedDescriptions((prev) => ({
                               ...prev,
                               [idx]: !prev[idx],
-                            }))
+                            }));
                           }}
                           className="text-xs text-primary hover:text-primary/80 font-medium mt-1 flex items-center"
                         >
@@ -202,7 +203,9 @@ const NextSessionResources = () => {
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                   <span className="flex items-center">
-                    <i className={`fa-solid ${resource.icon === 'fa-file-pdf' ? 'fa-file' : resource.icon === 'fa-video' ? 'fa-play' : resource.icon === 'fa-link' ? 'fa-external-link' : 'fa-file'} mr-1`}></i>
+                    <i
+                      className={`fa-solid ${resource.icon === "fa-file-pdf" ? "fa-file" : resource.icon === "fa-video" ? "fa-play" : resource.icon === "fa-link" ? "fa-external-link" : "fa-file"} mr-1`}
+                    ></i>
                     {resource.type}
                   </span>
                 </div>
@@ -212,16 +215,16 @@ const NextSessionResources = () => {
                   rel="noopener noreferrer"
                   className={`w-full py-2.5 bg-gradient-to-r ${bgClass} text-white font-medium rounded-lg hover:shadow-lg transition-all block text-center mt-auto`}
                 >
-                  {resource.icon === 'fa-video'
-                    ? 'Regarder'
-                    : resource.icon === 'fa-headphones'
-                      ? 'Écouter'
-                      : resource.icon === 'fa-link'
-                        ? 'Accéder'
-                        : 'Télécharger'}
+                  {resource.icon === "fa-video"
+                    ? "Regarder"
+                    : resource.icon === "fa-headphones"
+                      ? "Écouter"
+                      : resource.icon === "fa-link"
+                        ? "Accéder"
+                        : "Télécharger"}
                 </a>
               </div>
-            )
+            );
           })}
         </div>
       )}
@@ -236,7 +239,7 @@ const NextSessionResources = () => {
             Précédent
           </button>
           <div className="text-sm text-gray-500">
-            Page <span className="font-semibold text-gray-800">{currentPage}</span> sur{' '}
+            Page <span className="font-semibold text-gray-800">{currentPage}</span> sur{" "}
             <span className="font-semibold text-gray-800">{totalPages}</span>
           </div>
           <button
@@ -250,8 +253,7 @@ const NextSessionResources = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default NextSessionResources
-
+export default NextSessionResources;

@@ -1,68 +1,76 @@
-import { useState } from 'react'
-import { useCreateFeedback } from '../../services/hooks/useFeedback'
-import FeedbackHeader from '../../components/member/FeedbackHeader'
-import FeedbackCategorySelector from '../../components/member/FeedbackCategorySelector'
-import FeedbackTypeSelector from '../../components/member/FeedbackTypeSelector'
-import FeedbackFormFields from '../../components/member/FeedbackFormFields'
-import FeedbackStatsSidebar from '../../components/member/FeedbackStatsSidebar'
-import FeedbackTipsSidebar from '../../components/member/FeedbackTipsSidebar'
-import FeedbackHistory from '../../components/member/FeedbackHistory'
+import { useState } from "react";
+import { useCreateFeedback } from "../../services/hooks/useFeedback";
+import FeedbackHeader from "../../components/member/FeedbackHeader";
+import FeedbackCategorySelector from "../../components/member/FeedbackCategorySelector";
+import FeedbackTypeSelector from "../../components/member/FeedbackTypeSelector";
+import FeedbackFormFields from "../../components/member/FeedbackFormFields";
+import FeedbackStatsSidebar from "../../components/member/FeedbackStatsSidebar";
+import FeedbackTipsSidebar from "../../components/member/FeedbackTipsSidebar";
+import FeedbackHistory from "../../components/member/FeedbackHistory";
 
 const Feedback = () => {
-  const createFeedbackMutation = useCreateFeedback()
-  
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const createFeedbackMutation = useCreateFeedback();
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [formData, setFormData] = useState({
-    category: '',
-    type: '',
-    subject: '',
-    message: '',
+    category: "",
+    type: "",
+    subject: "",
+    message: "",
     anonymous: false,
     rating: undefined as number | undefined,
     sessionId: undefined as string | undefined,
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Validate form
     if (!formData.category || !formData.type || !formData.subject || !formData.message) {
-      return
+      return;
     }
 
     // Map category values to API format
     const categoryMap: Record<string, string> = {
-      'association': 'Général',
-      'sessions': 'Session',
-      'plateforme': 'Général',
-      'autre': 'Général',
-    }
+      association: "Général",
+      sessions: "Session",
+      plateforme: "Général",
+      autre: "Général",
+    };
 
     // Map type values to API format
     const typeMap: Record<string, string> = {
-      'suggestion': 'Suggestion',
-      'probleme': 'Complaint',
-      'compliment': 'Compliment',
-    }
+      suggestion: "Suggestion",
+      probleme: "Complaint",
+      compliment: "Compliment",
+    };
 
     const requestData = {
-      category: categoryMap[formData.category] || 'Général',
+      category: categoryMap[formData.category] || "Général",
       type: typeMap[formData.type] || formData.type,
       subject: formData.subject,
       message: formData.message,
       anonymous: formData.anonymous || false,
       ...(formData.rating && { rating: formData.rating }),
       ...(formData.sessionId && { sessionId: formData.sessionId }),
-    }
+    };
 
     createFeedbackMutation.mutate(requestData, {
       onSuccess: () => {
-        setFormData({ category: '', type: '', subject: '', message: '', anonymous: false, rating: undefined, sessionId: undefined })
-        setSelectedCategory('')
+        setFormData({
+          category: "",
+          type: "",
+          subject: "",
+          message: "",
+          anonymous: false,
+          rating: undefined,
+          sessionId: undefined,
+        });
+        setSelectedCategory("");
         // Query invalidation is handled in the hook
       },
-    })
-  }
+    });
+  };
 
   return (
     <div>
@@ -74,8 +82,8 @@ const Feedback = () => {
               <FeedbackCategorySelector
                 selectedCategory={selectedCategory}
                 onCategoryChange={(category) => {
-                  setFormData({ ...formData, category })
-                  setSelectedCategory(category)
+                  setFormData({ ...formData, category });
+                  setSelectedCategory(category);
                 }}
               />
               <FeedbackTypeSelector
@@ -92,7 +100,13 @@ const Feedback = () => {
               />
               <button
                 type="submit"
-                disabled={createFeedbackMutation.isPending || !formData.category || !formData.type || !formData.subject || !formData.message}
+                disabled={
+                  createFeedbackMutation.isPending ||
+                  !formData.category ||
+                  !formData.type ||
+                  !formData.subject ||
+                  !formData.message
+                }
                 className="w-full bg-gradient-to-r from-primary to-red-500 text-white font-semibold py-4 rounded-xl hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createFeedbackMutation.isPending ? (
@@ -119,8 +133,7 @@ const Feedback = () => {
 
       <FeedbackHistory />
     </div>
-  )
-}
+  );
+};
 
-export default Feedback
-
+export default Feedback;

@@ -1,19 +1,15 @@
 interface PollOption {
-  id: number
-  label: string
+  id: number;
+  label: string;
 }
 
 interface PollPreviewProps {
-  responseType: string
-  options: PollOption[]
-  visibility: string
+  responseType: string;
+  options: PollOption[];
+  visibility: string;
 }
 
-const PollPreview = ({
-  responseType,
-  options,
-  visibility,
-}: PollPreviewProps) => {
+const PollPreview = ({ responseType, options, visibility }: PollPreviewProps) => {
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-8">
       <div className="flex items-center mb-6">
@@ -33,11 +29,7 @@ const PollPreview = ({
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Type de réponse:</span>
-              <span className="font-medium">
-                {responseType === 'single'
-                  ? 'Choix unique'
-                  : 'Choix multiples'}
-              </span>
+              <span className="font-medium">{responseType === "single" ? "Choix unique" : "Choix multiples"}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Nombre d'options:</span>
@@ -45,18 +37,13 @@ const PollPreview = ({
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Visibilité:</span>
-              <span className="font-medium">
-                {visibility === 'realtime'
-                  ? 'Temps réel'
-                  : 'Masqués jusqu\'à la fin'}
-              </span>
+              <span className="font-medium">{visibility === "realtime" ? "Temps réel" : "Masqués jusqu'à la fin"}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollPreview
-
+export default PollPreview;

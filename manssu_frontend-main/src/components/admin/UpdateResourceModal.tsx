@@ -1,24 +1,24 @@
-import { useState, useEffect } from 'react'
-import { useUpdateResource } from '../../services/hooks/useResources'
+import { useState, useEffect } from "react";
+import { useUpdateResource } from "../../services/hooks/useResources";
 
 interface UpdateResourceModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   resource: {
-    resourceId: string
-    title: string
-    description: string
-  } | null
+    resourceId: string;
+    title: string;
+    description: string;
+  } | null;
 }
 
 const UpdateResourceModal = ({ isOpen, onClose, resource }: UpdateResourceModalProps) => {
-  const updateResourceMutation = useUpdateResource()
+  const updateResourceMutation = useUpdateResource();
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
+    title: "",
+    description: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Initialize form data when resource changes
   useEffect(() => {
@@ -26,31 +26,31 @@ const UpdateResourceModal = ({ isOpen, onClose, resource }: UpdateResourceModalP
       setFormData({
         title: resource.title,
         description: resource.description,
-      })
-      setErrors({})
+      });
+      setErrors({});
     }
-  }, [resource])
+  }, [resource]);
 
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Le titre est obligatoire'
+      newErrors.title = "Le titre est obligatoire";
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'La description est obligatoire'
+      newErrors.description = "La description est obligatoire";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm() || !resource) {
-      return
+      return;
     }
 
     updateResourceMutation.mutate(
@@ -63,19 +63,19 @@ const UpdateResourceModal = ({ isOpen, onClose, resource }: UpdateResourceModalP
       },
       {
         onSuccess: () => {
-          onClose()
+          onClose();
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleClose = () => {
-    setFormData({ title: '', description: '' })
-    setErrors({})
-    onClose()
-  }
+    setFormData({ title: "", description: "" });
+    setErrors({});
+    onClose();
+  };
 
-  if (!isOpen || !resource) return null
+  if (!isOpen || !resource) return null;
 
   return (
     <div
@@ -113,11 +113,11 @@ const UpdateResourceModal = ({ isOpen, onClose, resource }: UpdateResourceModalP
                 id="title"
                 value={formData.title}
                 onChange={(e) => {
-                  setFormData({ ...formData, title: e.target.value })
-                  if (errors.title) setErrors({ ...errors, title: '' })
+                  setFormData({ ...formData, title: e.target.value });
+                  if (errors.title) setErrors({ ...errors, title: "" });
                 }}
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${
-                  errors.title ? 'border-red-300' : 'border-gray-300'
+                  errors.title ? "border-red-300" : "border-gray-300"
                 }`}
                 placeholder="Entrez le titre de la ressource"
               />
@@ -133,12 +133,12 @@ const UpdateResourceModal = ({ isOpen, onClose, resource }: UpdateResourceModalP
                 id="description"
                 value={formData.description}
                 onChange={(e) => {
-                  setFormData({ ...formData, description: e.target.value })
-                  if (errors.description) setErrors({ ...errors, description: '' })
+                  setFormData({ ...formData, description: e.target.value });
+                  if (errors.description) setErrors({ ...errors, description: "" });
                 }}
                 rows={6}
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none ${
-                  errors.description ? 'border-red-300' : 'border-gray-300'
+                  errors.description ? "border-red-300" : "border-gray-300"
                 }`}
                 placeholder="Entrez la description de la ressource"
               />
@@ -175,8 +175,7 @@ const UpdateResourceModal = ({ isOpen, onClose, resource }: UpdateResourceModalP
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UpdateResourceModal
-
+export default UpdateResourceModal;

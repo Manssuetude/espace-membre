@@ -1,10 +1,10 @@
-import Dropdown from '../Dropdown'
+import Dropdown from "../Dropdown";
 
 interface ResourcesFiltersProps {
-  statusFilter: string
-  typeFilter: string
-  onStatusFilterChange: (value: string) => void
-  onTypeFilterChange: (value: string) => void
+  statusFilter: string;
+  typeFilter: string;
+  onStatusFilterChange: (value: string) => void;
+  onTypeFilterChange: (value: string) => void;
 }
 
 const ResourcesFilters = ({
@@ -31,27 +31,26 @@ const ResourcesFilters = ({
           value={statusFilter}
           onChange={(e) => onStatusFilterChange(e.target.value)}
           options={[
-            { value: 'all', label: 'Tous les statuts' },
-            { value: 'pending', label: 'En attente' },
-            { value: 'validated', label: 'Validé' },
-            { value: 'rejected', label: 'Rejeté' },
+            { value: "all", label: "Tous les statuts" },
+            { value: "pending", label: "En attente" },
+            { value: "validated", label: "Validé" },
+            { value: "rejected", label: "Rejeté" },
           ]}
         />
         <Dropdown
           value={typeFilter}
           onChange={(e) => onTypeFilterChange(e.target.value)}
           options={[
-            { value: 'all', label: 'Tous les types' },
-            { value: 'pdf', label: 'PDF' },
-            { value: 'video', label: 'Vidéo' },
-            { value: 'audio', label: 'Audio' },
-            { value: 'link', label: 'Lien' },
+            { value: "all", label: "Tous les types" },
+            { value: "pdf", label: "PDF" },
+            { value: "video", label: "Vidéo" },
+            { value: "audio", label: "Audio" },
+            { value: "link", label: "Lien" },
           ]}
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ResourcesFilters
-
+export default ResourcesFilters;

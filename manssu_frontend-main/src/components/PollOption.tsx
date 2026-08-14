@@ -1,49 +1,59 @@
 interface PollOptionProps {
-  id: string
-  label: string
-  votes: number
-  totalVotes: number
-  selected?: boolean
-  color?: 'primary' | 'accent' | 'secondary'
-  onSelect?: () => void
-  singleResponse?: boolean
-  questionId?: string
+  id: string;
+  label: string;
+  votes: number;
+  totalVotes: number;
+  selected?: boolean;
+  color?: "primary" | "accent" | "secondary";
+  onSelect?: () => void;
+  singleResponse?: boolean;
+  questionId?: string;
 }
 
-const PollOption = ({ id, label, votes, totalVotes, selected = false, color = 'primary', onSelect, singleResponse = true, questionId }: PollOptionProps) => {
-  const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0
-  const inputType = singleResponse ? 'radio' : 'checkbox'
-  const inputName = singleResponse && questionId ? `poll-${questionId}` : id
-  
+const PollOption = ({
+  id,
+  label,
+  votes,
+  totalVotes,
+  selected = false,
+  color = "primary",
+  onSelect,
+  singleResponse = true,
+  questionId,
+}: PollOptionProps) => {
+  const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
+  const inputType = singleResponse ? "radio" : "checkbox";
+  const inputName = singleResponse && questionId ? `poll-${questionId}` : id;
+
   const colorClasses = {
     primary: {
-      border: selected ? 'border-primary/20' : 'border-gray-200 hover:border-primary/40',
-      bg: selected ? 'bg-gradient-to-r from-red-50 to-orange-50' : 'bg-white',
-      input: 'text-primary',
-      progress: 'from-primary to-red-500',
+      border: selected ? "border-primary/20" : "border-gray-200 hover:border-primary/40",
+      bg: selected ? "bg-gradient-to-r from-red-50 to-orange-50" : "bg-white",
+      input: "text-primary",
+      progress: "from-primary to-red-500",
     },
     accent: {
-      border: selected ? 'border-accent/20' : 'border-gray-200 hover:border-accent/40',
-      bg: selected ? 'bg-gradient-to-r from-blue-50 to-cyan-50' : 'bg-white',
-      input: 'text-accent',
-      progress: 'from-accent to-blue-600',
+      border: selected ? "border-accent/20" : "border-gray-200 hover:border-accent/40",
+      bg: selected ? "bg-gradient-to-r from-blue-50 to-cyan-50" : "bg-white",
+      input: "text-accent",
+      progress: "from-accent to-blue-600",
     },
     secondary: {
-      border: selected ? 'border-secondary/20' : 'border-gray-200 hover:border-secondary/40',
-      bg: selected ? 'bg-gradient-to-r from-orange-50 to-amber-50' : 'bg-white',
-      input: 'text-secondary',
-      progress: 'from-secondary to-orange-600',
+      border: selected ? "border-secondary/20" : "border-gray-200 hover:border-secondary/40",
+      bg: selected ? "bg-gradient-to-r from-orange-50 to-amber-50" : "bg-white",
+      input: "text-secondary",
+      progress: "from-secondary to-orange-600",
     },
-  }
+  };
 
-  const classes = colorClasses[color]
+  const classes = colorClasses[color];
 
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (onSelect) {
-      onSelect()
+      onSelect();
     }
-  }
+  };
 
   return (
     <div
@@ -62,10 +72,7 @@ const PollOption = ({ id, label, votes, totalVotes, selected = false, color = 'p
             readOnly
             tabIndex={-1}
           />
-          <label 
-            htmlFor={id} 
-            className="ml-3 font-medium text-gray-900 cursor-pointer flex-1 select-none"
-          >
+          <label htmlFor={id} className="ml-3 font-medium text-gray-900 cursor-pointer flex-1 select-none">
             {label}
           </label>
         </div>
@@ -77,8 +84,7 @@ const PollOption = ({ id, label, votes, totalVotes, selected = false, color = 'p
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollOption
-
+export default PollOption;

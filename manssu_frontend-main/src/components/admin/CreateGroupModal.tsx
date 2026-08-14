@@ -1,23 +1,23 @@
-import { toast } from 'sonner'
-import { useCreateGroups } from '../../services/hooks/useSessions'
+import { toast } from "sonner";
+import { useCreateGroups } from "../../services/hooks/useSessions";
 
 interface Participant {
-  id: string
-  name: string
-  avatar: string
+  id: string;
+  name: string;
+  avatar: string;
 }
 
 interface CreateGroupModalProps {
-  isOpen: boolean
-  onClose: () => void
-  sessionId: string
-  numberOfGroups: number
-  onNumberOfGroupsChange: (count: number) => void
-  isRandomMode: boolean
-  onRandomModeChange: (isRandom: boolean) => void
-  groupAssignments: { [memberId: string]: number | null }
-  onGroupAssignmentsChange: (assignments: { [memberId: string]: number | null }) => void
-  allParticipants: Participant[]
+  isOpen: boolean;
+  onClose: () => void;
+  sessionId: string;
+  numberOfGroups: number;
+  onNumberOfGroupsChange: (count: number) => void;
+  isRandomMode: boolean;
+  onRandomModeChange: (isRandom: boolean) => void;
+  groupAssignments: { [memberId: string]: number | null };
+  onGroupAssignmentsChange: (assignments: { [memberId: string]: number | null }) => void;
+  allParticipants: Participant[];
 }
 
 const CreateGroupModal = ({
@@ -32,46 +32,46 @@ const CreateGroupModal = ({
   onGroupAssignmentsChange,
   allParticipants,
 }: CreateGroupModalProps) => {
-  const createGroups = useCreateGroups()
+  const createGroups = useCreateGroups();
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   const handleClose = () => {
-    onRandomModeChange(false)
-    onGroupAssignmentsChange({})
-    onClose()
-  }
+    onRandomModeChange(false);
+    onGroupAssignmentsChange({});
+    onClose();
+  };
 
   const handleNumberOfGroupsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newCount = parseInt(e.target.value) || 2
-    onNumberOfGroupsChange(newCount)
+    const newCount = parseInt(e.target.value) || 2;
+    onNumberOfGroupsChange(newCount);
     // Reset group assignments when number changes
-    const newAssignments: { [memberId: string]: number | null } = {}
+    const newAssignments: { [memberId: string]: number | null } = {};
     Object.keys(groupAssignments).forEach((memberId) => {
       if (groupAssignments[memberId] !== null && (groupAssignments[memberId] as number) < newCount) {
-        newAssignments[memberId] = groupAssignments[memberId]
+        newAssignments[memberId] = groupAssignments[memberId];
       } else {
-        newAssignments[memberId] = null
+        newAssignments[memberId] = null;
       }
-    })
-    onGroupAssignmentsChange(newAssignments)
-  }
+    });
+    onGroupAssignmentsChange(newAssignments);
+  };
 
   const handleManualCreate = () => {
-    const assignedCount = Object.values(groupAssignments).filter((g) => g !== null).length
+    const assignedCount = Object.values(groupAssignments).filter((g) => g !== null).length;
     if (assignedCount === 0) {
-      toast.error('Veuillez assigner au moins un participant à un groupe.')
-      return
+      toast.error("Veuillez assigner au moins un participant à un groupe.");
+      return;
     }
 
     // Filter out null assignments and convert to number
-    const assignments: { [memberId: string]: number } = {}
+    const assignments: { [memberId: string]: number } = {};
     Object.keys(groupAssignments).forEach((memberId) => {
-      const groupIndex = groupAssignments[memberId]
+      const groupIndex = groupAssignments[memberId];
       if (groupIndex !== null) {
-        assignments[memberId] = groupIndex
+        assignments[memberId] = groupIndex;
       }
-    })
+    });
 
     createGroups.mutate(
       {
@@ -84,11 +84,11 @@ const CreateGroupModal = ({
       },
       {
         onSuccess: () => {
-          handleClose()
+          handleClose();
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleRandomCreate = () => {
     createGroups.mutate(
@@ -101,30 +101,25 @@ const CreateGroupModal = ({
       },
       {
         onSuccess: () => {
-          handleClose()
+          handleClose();
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h3 className="text-lg sm:text-xl font-bold text-gray-900">Créer des groupes</h3>
-          <button
-            onClick={handleClose}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
+          <button onClick={handleClose} className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <i className="fa-solid fa-times text-xl"></i>
           </button>
         </div>
-        
+
         <div className="space-y-4 sm:space-y-6">
           <div>
-            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-              Nombre de groupes
-            </label>
+            <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Nombre de groupes</label>
             <input
               type="number"
               min="2"
@@ -141,8 +136,8 @@ const CreateGroupModal = ({
               onClick={() => onRandomModeChange(false)}
               className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
                 !isRandomMode
-                  ? 'bg-gradient-to-r from-accent to-blue-600 text-white shadow-lg'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? "bg-gradient-to-r from-accent to-blue-600 text-white shadow-lg"
+                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
               <i className="fa-solid fa-hand-pointer mr-2"></i>
@@ -150,13 +145,13 @@ const CreateGroupModal = ({
             </button>
             <button
               onClick={() => {
-                onRandomModeChange(true)
-                onGroupAssignmentsChange({})
+                onRandomModeChange(true);
+                onGroupAssignmentsChange({});
               }}
               className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
                 isRandomMode
-                  ? 'bg-gradient-to-r from-success to-emerald-500 text-white shadow-lg'
-                  : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? "bg-gradient-to-r from-success to-emerald-500 text-white shadow-lg"
+                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
               }`}
             >
               <i className="fa-solid fa-shuffle mr-2"></i>
@@ -173,18 +168,23 @@ const CreateGroupModal = ({
                 </label>
                 <div className="space-y-2 sm:space-y-4 max-h-64 sm:max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                   {allParticipants.map((participant) => (
-                    <div key={participant.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 p-2 sm:p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all">
+                    <div
+                      key={participant.id}
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 p-2 sm:p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all"
+                    >
                       <div className="flex items-center flex-1 min-w-0">
-                        <span className="text-sm sm:text-base font-medium text-gray-900 truncate">{participant.name}</span>
+                        <span className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                          {participant.name}
+                        </span>
                       </div>
                       <select
-                        value={groupAssignments[participant.id] || ''}
+                        value={groupAssignments[participant.id] || ""}
                         onChange={(e) => {
-                          const groupId = e.target.value ? parseInt(e.target.value) : null
+                          const groupId = e.target.value ? parseInt(e.target.value) : null;
                           onGroupAssignmentsChange({
                             ...groupAssignments,
                             [participant.id]: groupId,
-                          })
+                          });
                         }}
                         className="sm:ml-4 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-xs sm:text-sm w-full sm:w-auto"
                       >
@@ -237,7 +237,8 @@ const CreateGroupModal = ({
                   <div className="text-xs sm:text-sm text-gray-700">
                     <p className="font-medium mb-1">Répartition automatique</p>
                     <p className="text-gray-600">
-                      Les {allParticipants.length} participants seront répartis aléatoirement en {numberOfGroups} groupes équilibrés.
+                      Les {allParticipants.length} participants seront répartis aléatoirement en {numberOfGroups}{" "}
+                      groupes équilibrés.
                     </p>
                   </div>
                 </div>
@@ -263,8 +264,7 @@ const CreateGroupModal = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateGroupModal
-
+export default CreateGroupModal;

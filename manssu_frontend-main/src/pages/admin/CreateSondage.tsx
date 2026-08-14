@@ -1,109 +1,111 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useUpcomingSessions } from '../../contexts/UpcomingSessionsContext'
-import { useCreateSondage } from '../../services/hooks/useSondages'
-import { CreatePollRequest } from '../../types/sondage'
-import SearchableDropdown from '../../components/SearchableDropdown'
-import PollConfiguration from '../../components/admin/PollConfiguration'
-import PollFormActions from '../../components/admin/PollFormActions'
-import FormInput from '../../components/FormInput'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useUpcomingSessions } from "../../contexts/UpcomingSessionsContext";
+import { useCreateSondage } from "../../services/hooks/useSondages";
+import { CreatePollRequest } from "../../types/sondage";
+import SearchableDropdown from "../../components/SearchableDropdown";
+import PollConfiguration from "../../components/admin/PollConfiguration";
+import PollFormActions from "../../components/admin/PollFormActions";
+import FormInput from "../../components/FormInput";
 
 interface QuestionOption {
-  id: number
-  label: string
+  id: number;
+  label: string;
 }
 
 interface Question {
-  id: number
-  question: string
-  description: string
-  singleResponse: boolean
-  options: QuestionOption[]
+  id: number;
+  question: string;
+  description: string;
+  singleResponse: boolean;
+  options: QuestionOption[];
 }
 
 const CreateSondage = () => {
-  const navigate = useNavigate()
-  const { upcomingSessions } = useUpcomingSessions()
-  const createSondage = useCreateSondage()
+  const navigate = useNavigate();
+  const { upcomingSessions } = useUpcomingSessions();
+  const createSondage = useCreateSondage();
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    sessionId: '',
-    startDate: '',
-    endDate: '',
-    visibility: 'realtime',
+    title: "",
+    description: "",
+    sessionId: "",
+    startDate: "",
+    endDate: "",
+    visibility: "realtime",
     anonymous: false,
-  })
+  });
 
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: 1,
-      question: '',
-      description: '',
+      question: "",
+      description: "",
       singleResponse: true,
       options: [
-    { id: 1, label: '' },
-    { id: 2, label: '' },
+        { id: 1, label: "" },
+        { id: 2, label: "" },
       ],
     },
-  ])
+  ]);
 
-  const [openTemplateDropdown, setOpenTemplateDropdown] = useState<Record<number, boolean>>({})
+  const [openTemplateDropdown, setOpenTemplateDropdown] = useState<Record<number, boolean>>({});
 
   const sessionOptions = upcomingSessions.map((session) => ({
     value: session.id,
-    label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString('fr-FR')}` : ''}`,
-  }))
+    label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString("fr-FR")}` : ""}`,
+  }));
 
   // Question management
   const addQuestion = () => {
-    const newQuestionId = Math.max(...questions.map(q => q.id), 0) + 1
+    const newQuestionId = Math.max(...questions.map((q) => q.id), 0) + 1;
     setQuestions([
       ...questions,
       {
         id: newQuestionId,
-        question: '',
-        description: '',
+        question: "",
+        description: "",
         singleResponse: true,
         options: [
-          { id: 1, label: '' },
-          { id: 2, label: '' },
+          { id: 1, label: "" },
+          { id: 2, label: "" },
         ],
       },
-    ])
-  }
+    ]);
+  };
 
   const removeQuestion = (questionId: number) => {
     if (questions.length > 1) {
-      setQuestions(questions.filter((q) => q.id !== questionId))
+      setQuestions(questions.filter((q) => q.id !== questionId));
     } else {
-      toast.error('Un sondage doit avoir au moins une question')
+      toast.error("Un sondage doit avoir au moins une question");
     }
-  }
+  };
 
-  const updateQuestion = (questionId: number, field: 'question' | 'description' | 'singleResponse', value: string | boolean) => {
-    setQuestions(
-      questions.map((q) => (q.id === questionId ? { ...q, [field]: value } : q))
-    )
-  }
+  const updateQuestion = (
+    questionId: number,
+    field: "question" | "description" | "singleResponse",
+    value: string | boolean,
+  ) => {
+    setQuestions(questions.map((q) => (q.id === questionId ? { ...q, [field]: value } : q)));
+  };
 
   // Option management per question
   const addOption = (questionId: number) => {
     setQuestions(
       questions.map((q) => {
         if (q.id === questionId) {
-          const newOptionId = Math.max(...q.options.map(opt => opt.id), 0) + 1
+          const newOptionId = Math.max(...q.options.map((opt) => opt.id), 0) + 1;
           return {
             ...q,
-            options: [...q.options, { id: newOptionId, label: '' }],
-          }
+            options: [...q.options, { id: newOptionId, label: "" }],
+          };
         }
-        return q
-      })
-    )
-  }
+        return q;
+      }),
+    );
+  };
 
   const removeOption = (questionId: number, optionId: number) => {
     setQuestions(
@@ -113,16 +115,16 @@ const CreateSondage = () => {
             return {
               ...q,
               options: q.options.filter((opt) => opt.id !== optionId),
-            }
+            };
           } else {
-            toast.error('Une question doit avoir au moins 2 options')
-            return q
+            toast.error("Une question doit avoir au moins 2 options");
+            return q;
           }
         }
-        return q
-      })
-    )
-  }
+        return q;
+      }),
+    );
+  };
 
   const updateOption = (questionId: number, optionId: number, label: string) => {
     setQuestions(
@@ -130,59 +132,57 @@ const CreateSondage = () => {
         if (q.id === questionId) {
           return {
             ...q,
-            options: q.options.map((opt) =>
-              opt.id === optionId ? { ...opt, label } : opt
-            ),
-          }
+            options: q.options.map((opt) => (opt.id === optionId ? { ...opt, label } : opt)),
+          };
         }
-        return q
-      })
-    )
-  }
+        return q;
+      }),
+    );
+  };
 
   // Predefined choice templates
   const predefinedTemplates = {
     yesNo: {
-      name: 'Oui/Non',
+      name: "Oui/Non",
       options: [
-        { id: 1, label: 'Oui' },
-        { id: 2, label: 'Non' },
+        { id: 1, label: "Oui" },
+        { id: 2, label: "Non" },
       ],
     },
     likert: {
-      name: 'Échelle de Likert',
+      name: "Échelle de Likert",
       options: [
-        { id: 1, label: 'Pas du tout d\'accord' },
-        { id: 2, label: 'Peu d\'accord' },
-        { id: 3, label: 'Neutre' },
-        { id: 4, label: 'D\'accord' },
-        { id: 5, label: 'Parfaitement d\'accord' },
+        { id: 1, label: "Pas du tout d'accord" },
+        { id: 2, label: "Peu d'accord" },
+        { id: 3, label: "Neutre" },
+        { id: 4, label: "D'accord" },
+        { id: 5, label: "Parfaitement d'accord" },
       ],
     },
     satisfaction: {
-      name: 'Échelle de satisfaction',
+      name: "Échelle de satisfaction",
       options: [
-        { id: 1, label: 'Très insatisfait' },
-        { id: 2, label: 'Insatisfait' },
-        { id: 3, label: 'Neutre' },
-        { id: 4, label: 'Satisfait' },
-        { id: 5, label: 'Très satisfait' },
+        { id: 1, label: "Très insatisfait" },
+        { id: 2, label: "Insatisfait" },
+        { id: 3, label: "Neutre" },
+        { id: 4, label: "Satisfait" },
+        { id: 5, label: "Très satisfait" },
       ],
     },
     frequency: {
-      name: 'Échelle de fréquence',
+      name: "Échelle de fréquence",
       options: [
-        { id: 1, label: 'Jamais' },
-        { id: 2, label: 'Rarement' },
-        { id: 3, label: 'Parfois' },
-        { id: 4, label: 'Souvent' },
-        { id: 5, label: 'Toujours' },
+        { id: 1, label: "Jamais" },
+        { id: 2, label: "Rarement" },
+        { id: 3, label: "Parfois" },
+        { id: 4, label: "Souvent" },
+        { id: 5, label: "Toujours" },
       ],
     },
-  }
+  };
 
   const applyTemplate = (questionId: number, templateKey: keyof typeof predefinedTemplates) => {
-    const template = predefinedTemplates[templateKey]
+    const template = predefinedTemplates[templateKey];
     setQuestions(
       questions.map((q) => {
         if (q.id === questionId) {
@@ -192,46 +192,46 @@ const CreateSondage = () => {
               id: idx + 1,
               label: opt.label,
             })),
-          }
+          };
         }
-        return q
-      })
-    )
-    setOpenTemplateDropdown({ ...openTemplateDropdown, [questionId]: false })
-    toast.success(`Modèle "${template.name}" appliqué`)
-  }
+        return q;
+      }),
+    );
+    setOpenTemplateDropdown({ ...openTemplateDropdown, [questionId]: false });
+    toast.success(`Modèle "${template.name}" appliqué`);
+  };
 
   const toggleTemplateDropdown = (questionId: number) => {
     setOpenTemplateDropdown({
       ...openTemplateDropdown,
       [questionId]: !openTemplateDropdown[questionId],
-    })
-  }
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formData.title) {
-      toast.error('Veuillez remplir le titre du sondage')
-      return
+      toast.error("Veuillez remplir le titre du sondage");
+      return;
     }
 
     if (!formData.startDate) {
-      toast.error('Veuillez sélectionner une date de début')
-      return
+      toast.error("Veuillez sélectionner une date de début");
+      return;
     }
 
     // Validate all questions
     for (const question of questions) {
       if (!question.question.trim()) {
-        toast.error('Veuillez remplir toutes les questions')
-        return
+        toast.error("Veuillez remplir toutes les questions");
+        return;
       }
 
-      const validOptions = question.options.filter(opt => opt.label.trim())
-    if (validOptions.length < 2) {
-        toast.error('Chaque question doit avoir au moins 2 options de réponse')
-      return
+      const validOptions = question.options.filter((opt) => opt.label.trim());
+      if (validOptions.length < 2) {
+        toast.error("Chaque question doit avoir au moins 2 options de réponse");
+        return;
       }
     }
 
@@ -241,7 +241,7 @@ const CreateSondage = () => {
       startDate: formData.startDate,
       endDate: formData.endDate || undefined,
       sessionId: formData.sessionId || undefined,
-      resultsVisibility: formData.visibility === 'realtime' ? 'realtime' : 'hidden',
+      resultsVisibility: formData.visibility === "realtime" ? "realtime" : "hidden",
       anonymous: formData.anonymous,
       questions: questions.map((q, idx) => ({
         question: q.question.trim(),
@@ -249,21 +249,20 @@ const CreateSondage = () => {
         singleResponse: q.singleResponse,
         orderIndex: idx,
         options: q.options
-          .filter(opt => opt.label.trim())
+          .filter((opt) => opt.label.trim())
           .map((opt, optIdx) => ({
             label: opt.label.trim(),
             orderIndex: optIdx,
           })),
       })),
-    }
+    };
 
     createSondage.mutate(pollData, {
       onSuccess: () => {
-        navigate('/admin/sondages')
+        navigate("/admin/sondages");
       },
-    })
-  }
-
+    });
+  };
 
   return (
     <div>
@@ -281,9 +280,7 @@ const CreateSondage = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Session
-            </label>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">Session</label>
             <SearchableDropdown
               value={formData.sessionId}
               onChange={(value) => setFormData({ ...formData, sessionId: value })}
@@ -330,16 +327,17 @@ const CreateSondage = () => {
         {/* Questions */}
         <div className="space-y-6">
           {questions.map((question, qIdx) => (
-            <div key={question.id} className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-8">
+            <div
+              key={question.id}
+              className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-8"
+            >
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center flex-1 min-w-0">
                   <div className="w-10 h-10 min-w-[2.5rem] bg-gradient-to-r from-primary to-red-500 text-white rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">
                     {qIdx + 1}
                   </div>
                   <div className="min-w-0">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Question {qIdx + 1}
-                    </h2>
+                    <h2 className="text-xl font-bold text-gray-900">Question {qIdx + 1}</h2>
                     <p className="text-gray-600 text-sm">Définissez la question et ses options</p>
                   </div>
                 </div>
@@ -360,7 +358,7 @@ const CreateSondage = () => {
                   placeholder="Posez votre question ici..."
                   rows={3}
                   value={question.question}
-                  onChange={(e) => updateQuestion(question.id, 'question', e.target.value)}
+                  onChange={(e) => updateQuestion(question.id, "question", e.target.value)}
                 />
 
                 <FormInput
@@ -368,31 +366,33 @@ const CreateSondage = () => {
                   placeholder="Description ou instructions supplémentaires..."
                   rows={2}
                   value={question.description}
-                  onChange={(e) => updateQuestion(question.id, 'description', e.target.value)}
-        />
+                  onChange={(e) => updateQuestion(question.id, "description", e.target.value)}
+                />
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-3">Type de réponse pour cette question</label>
+                  <label className="block text-sm font-semibold text-gray-900 mb-3">
+                    Type de réponse pour cette question
+                  </label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <label className="relative">
                       <input
                         type="radio"
                         name={`response-type-${question.id}`}
                         checked={question.singleResponse}
-                        onChange={() => updateQuestion(question.id, 'singleResponse', true)}
+                        onChange={() => updateQuestion(question.id, "singleResponse", true)}
                         className="sr-only"
                       />
                       <div
                         className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
                           question.singleResponse
-                            ? 'border-accent bg-accent/10'
-                            : 'border-gray-200 hover:border-accent/50'
+                            ? "border-accent bg-accent/10"
+                            : "border-gray-200 hover:border-accent/50"
                         }`}
                       >
                         <div className="text-center">
                           <i
                             className={`fa-solid fa-circle-dot text-2xl mb-2 ${
-                              question.singleResponse ? 'text-accent' : 'text-gray-400'
+                              question.singleResponse ? "text-accent" : "text-gray-400"
                             }`}
                           ></i>
                           <p className="font-semibold text-gray-900 text-sm">Choix unique</p>
@@ -404,20 +404,20 @@ const CreateSondage = () => {
                         type="radio"
                         name={`response-type-${question.id}`}
                         checked={!question.singleResponse}
-                        onChange={() => updateQuestion(question.id, 'singleResponse', false)}
+                        onChange={() => updateQuestion(question.id, "singleResponse", false)}
                         className="sr-only"
                       />
                       <div
                         className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
                           !question.singleResponse
-                            ? 'border-accent bg-accent/10'
-                            : 'border-gray-200 hover:border-accent/50'
+                            ? "border-accent bg-accent/10"
+                            : "border-gray-200 hover:border-accent/50"
                         }`}
                       >
                         <div className="text-center">
                           <i
                             className={`fa-solid fa-square-check text-2xl mb-2 ${
-                              !question.singleResponse ? 'text-accent' : 'text-gray-400'
+                              !question.singleResponse ? "text-accent" : "text-gray-400"
                             }`}
                           ></i>
                           <p className="font-semibold text-gray-900 text-sm">Choix multiples</p>
@@ -438,18 +438,17 @@ const CreateSondage = () => {
                       >
                         <i className="fa-solid fa-magic mr-1.5"></i>
                         Modèles prédéfinis
-                        <i className={`fa-solid fa-chevron-${openTemplateDropdown[question.id] ? 'up' : 'down'} ml-1.5 text-xs`}></i>
+                        <i
+                          className={`fa-solid fa-chevron-${openTemplateDropdown[question.id] ? "up" : "down"} ml-1.5 text-xs`}
+                        ></i>
                       </button>
                       {openTemplateDropdown[question.id] && (
                         <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => toggleTemplateDropdown(question.id)}
-                          ></div>
+                          <div className="fixed inset-0 z-10" onClick={() => toggleTemplateDropdown(question.id)}></div>
                           <div className="absolute right-0 sm:right-0 left-0 sm:left-auto top-full mt-2 w-full sm:w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-20">
                             <button
                               type="button"
-                              onClick={() => applyTemplate(question.id, 'yesNo')}
+                              onClick={() => applyTemplate(question.id, "yesNo")}
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                             >
                               <i className="fa-solid fa-check-double mr-2 text-primary"></i>
@@ -457,7 +456,7 @@ const CreateSondage = () => {
                             </button>
                             <button
                               type="button"
-                              onClick={() => applyTemplate(question.id, 'likert')}
+                              onClick={() => applyTemplate(question.id, "likert")}
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                             >
                               <i className="fa-solid fa-sliders mr-2 text-accent"></i>
@@ -465,7 +464,7 @@ const CreateSondage = () => {
                             </button>
                             <button
                               type="button"
-                              onClick={() => applyTemplate(question.id, 'satisfaction')}
+                              onClick={() => applyTemplate(question.id, "satisfaction")}
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                             >
                               <i className="fa-solid fa-face-smile mr-2 text-success"></i>
@@ -473,7 +472,7 @@ const CreateSondage = () => {
                             </button>
                             <button
                               type="button"
-                              onClick={() => applyTemplate(question.id, 'frequency')}
+                              onClick={() => applyTemplate(question.id, "frequency")}
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                             >
                               <i className="fa-solid fa-repeat mr-2 text-secondary"></i>
@@ -542,10 +541,13 @@ const CreateSondage = () => {
           onAnonymousChange={(value) => setFormData({ ...formData, anonymous: value })}
         />
 
-        <PollFormActions onSubmit={(e) => handleSubmit(e || ({} as React.FormEvent))} isLoading={createSondage.isPending} />
+        <PollFormActions
+          onSubmit={(e) => handleSubmit(e || ({} as React.FormEvent))}
+          isLoading={createSondage.isPending}
+        />
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default CreateSondage
+export default CreateSondage;

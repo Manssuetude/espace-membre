@@ -1,77 +1,70 @@
-import { useState, useMemo } from 'react'
-import { useSessions } from '../../services/hooks/useSessions'
-import { useCreatePollFromThemes, useLinkedThemes, useUnlinkedThemes } from '../../services/hooks/useThemes'
-import SearchableDropdown from '../SearchableDropdown'
-import { toast } from 'sonner'
+import { useState, useMemo } from "react";
+import { useSessions } from "../../services/hooks/useSessions";
+import { useCreatePollFromThemes, useLinkedThemes, useUnlinkedThemes } from "../../services/hooks/useThemes";
+import SearchableDropdown from "../SearchableDropdown";
+import { toast } from "sonner";
 
 interface CreatePollModalProps {
-  isOpen: boolean
-  onClose: () => void
-  isWindowOpen: boolean
-  onCreatePoll: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  isWindowOpen: boolean;
+  onCreatePoll: () => void;
 }
 
-const CreatePollModal = ({
-  isOpen,
-  onClose,
-  isWindowOpen,
-  onCreatePoll,
-}: CreatePollModalProps) => {
-  const { data: sessionsData } = useSessions({ status: 'upcoming', limit: 100 })
-  const { data: linkedThemesData } = useLinkedThemes()
-  const { data: unlinkedThemesData } = useUnlinkedThemes()
-  const createPollMutation = useCreatePollFromThemes()
-  
-  const sessions = sessionsData?.data || []
-  const linkedThemes = linkedThemesData || []
-  const unlinkedThemes = unlinkedThemesData || []
-  
-  const [selectedThemeIds, setSelectedThemeIds] = useState<string[]>([])
-  const [sessionId, setSessionId] = useState<string>('')
+const CreatePollModal = ({ isOpen, onClose, isWindowOpen, onCreatePoll }: CreatePollModalProps) => {
+  const { data: sessionsData } = useSessions({ status: "upcoming", limit: 100 });
+  const { data: linkedThemesData } = useLinkedThemes();
+  const { data: unlinkedThemesData } = useUnlinkedThemes();
+  const createPollMutation = useCreatePollFromThemes();
+
+  const sessions = sessionsData?.data || [];
+
+  const [selectedThemeIds, setSelectedThemeIds] = useState<string[]>([]);
+  const [sessionId, setSessionId] = useState<string>("");
 
   const sessionOptions = sessions.map((session) => ({
     value: session.id,
-    label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString('fr-FR')}` : ''}`,
-  }))
+    label: `${session.title}${session.date ? ` - ${new Date(session.date).toLocaleDateString("fr-FR")}` : ""}`,
+  }));
 
   // Separate themes into two categories
   const themesWithSessions = useMemo(() => {
-    return linkedThemes.map((theme) => ({
+    return (linkedThemesData || []).map((theme) => ({
       value: theme.id,
       label: theme.title,
-    }))
-  }, [linkedThemes])
+    }));
+  }, [linkedThemesData]);
 
   const themesWithoutSessions = useMemo(() => {
-    return unlinkedThemes.map((theme) => ({
+    return (unlinkedThemesData || []).map((theme) => ({
       value: theme.id,
       label: theme.title,
-    }))
-  }, [unlinkedThemes])
+    }));
+  }, [unlinkedThemesData]);
 
-  const totalThemes = themesWithSessions.length + themesWithoutSessions.length
+  const totalThemes = themesWithSessions.length + themesWithoutSessions.length;
 
   const handleThemeToggle = (themeId: string) => {
     setSelectedThemeIds((prev) => {
       if (prev.includes(themeId)) {
-        return prev.filter((id) => id !== themeId)
+        return prev.filter((id) => id !== themeId);
       } else {
-        return [...prev, themeId]
+        return [...prev, themeId];
       }
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (selectedThemeIds.length < 2) {
-      toast.error('Veuillez sélectionner au moins 2 thèmes')
-      return
+      toast.error("Veuillez sélectionner au moins 2 thèmes");
+      return;
     }
 
     if (!sessionId) {
-      toast.error('Veuillez sélectionner une session')
-      return
+      toast.error("Veuillez sélectionner une session");
+      return;
     }
 
     createPollMutation.mutate(
@@ -81,26 +74,23 @@ const CreatePollModal = ({
       },
       {
         onSuccess: () => {
-          onCreatePoll()
-          onClose()
-          setSelectedThemeIds([])
-          setSessionId('')
+          onCreatePoll();
+          onClose();
+          setSelectedThemeIds([]);
+          setSessionId("");
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-3 sm:mb-4">
           <h3 className="text-lg sm:text-xl font-bold text-gray-900">Créer un sondage</h3>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <i className="fa-solid fa-times text-xl"></i>
           </button>
         </div>
@@ -109,7 +99,8 @@ const CreatePollModal = ({
             <div className="flex items-start">
               <i className="fa-solid fa-exclamation-triangle text-yellow-600 mr-2 mt-0.5"></i>
               <p className="text-xs sm:text-sm text-yellow-800">
-                <strong>Note importante :</strong> La création de ce sondage fermera automatiquement la fenêtre de propositions de thèmes en cours.
+                <strong>Note importante :</strong> La création de ce sondage fermera automatiquement la fenêtre de
+                propositions de thèmes en cours.
               </p>
             </div>
           </div>
@@ -183,13 +174,12 @@ const CreatePollModal = ({
             </div>
             {selectedThemeIds.length > 0 && (
               <p className="text-xs text-gray-600 mt-2">
-                {selectedThemeIds.length} thème{selectedThemeIds.length > 1 ? 's' : ''} sélectionné{selectedThemeIds.length > 1 ? 's' : ''}
+                {selectedThemeIds.length} thème{selectedThemeIds.length > 1 ? "s" : ""} sélectionné
+                {selectedThemeIds.length > 1 ? "s" : ""}
               </p>
             )}
             {selectedThemeIds.length > 0 && selectedThemeIds.length < 2 && (
-              <p className="text-xs text-red-500 mt-1">
-                Veuillez sélectionner au moins 2 thèmes
-              </p>
+              <p className="text-xs text-red-500 mt-1">Veuillez sélectionner au moins 2 thèmes</p>
             )}
           </div>
 
@@ -228,15 +218,14 @@ const CreatePollModal = ({
                   Création...
                 </span>
               ) : (
-                'Créer le sondage'
+                "Créer le sondage"
               )}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreatePollModal
-
+export default CreatePollModal;

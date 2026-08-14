@@ -1,19 +1,20 @@
 interface WindowOpenBannerProps {
-  daysRemaining: number
-  startDate: string | null
-  endDate: string | null
+  daysRemaining: number;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 const WindowOpenBanner = ({ daysRemaining, startDate, endDate }: WindowOpenBannerProps) => {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return ''
-    const date = new Date(dateString)
-    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-  }
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  };
 
-  const dateRange = startDate && endDate
-    ? `Ouverte du ${formatDate(startDate)} au ${formatDate(endDate)}`
-    : 'Fenêtre de propositions ouverte'
+  const dateRange =
+    startDate && endDate
+      ? `Ouverte du ${formatDate(startDate)} au ${formatDate(endDate)}`
+      : "Fenêtre de propositions ouverte";
 
   return (
     <div className="mb-8 bg-gradient-to-r from-orange-50 via-red-50 to-orange-50 border-2 border-secondary/30 rounded-2xl p-4 sm:p-6 shadow-lg">
@@ -33,13 +34,12 @@ const WindowOpenBanner = ({ daysRemaining, startDate, endDate }: WindowOpenBanne
         <div className="text-left lg:text-right w-full sm:w-auto">
           <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Fermeture dans</p>
           <p className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-secondary to-orange-600 bg-clip-text text-transparent">
-            {daysRemaining} jour{daysRemaining > 1 ? 's' : ''}
+            {daysRemaining} jour{daysRemaining > 1 ? "s" : ""}
           </p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WindowOpenBanner
-
+export default WindowOpenBanner;

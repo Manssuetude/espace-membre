@@ -1,11 +1,11 @@
-import Dropdown from '../Dropdown'
+import Dropdown from "../Dropdown";
 
 interface MembersFiltersProps {
-  searchQuery: string
-  roleFilter: string
-  onSearchChange: (value: string) => void
-  onRoleFilterChange: (value: string) => void
-  onAddClick: () => void
+  searchQuery: string;
+  roleFilter: string;
+  onSearchChange: (value: string) => void;
+  onRoleFilterChange: (value: string) => void;
+  onAddClick: () => void;
 }
 
 const MembersFilters = ({
@@ -33,10 +33,10 @@ const MembersFilters = ({
             value={roleFilter}
             onChange={(e) => onRoleFilterChange(e.target.value)}
             options={[
-              { value: 'all', label: 'Tous les rôles' },
-              { value: 'member', label: 'Membres' },
-              { value: 'admins', label: 'Administrateurs' },
-              { value: 'super admins', label: 'Super administrateurs' },
+              { value: "all", label: "Tous les rôles" },
+              { value: "member", label: "Membres" },
+              { value: "admins", label: "Administrateurs" },
+              { value: "super admins", label: "Super administrateurs" },
             ]}
             className="min-w-[180px]"
           />
@@ -50,8 +50,7 @@ const MembersFilters = ({
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MembersFilters
-
+export default MembersFilters;

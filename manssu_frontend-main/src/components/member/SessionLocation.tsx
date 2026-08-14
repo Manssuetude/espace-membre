@@ -1,14 +1,13 @@
-import { Location } from '../../types/location'
+import { Location } from "../../types/location";
 
 interface SessionLocationProps {
-  location?: Location | null
-  isOnline: boolean
-  latitude?: number
-  longitude?: number
+  location?: Location | null;
+  isOnline: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 const SessionLocation = ({ location, isOnline, latitude, longitude }: SessionLocationProps) => {
-
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
       <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
@@ -42,9 +41,7 @@ const SessionLocation = ({ location, isOnline, latitude, longitude }: SessionLoc
                 <i className="fa-solid fa-building text-secondary text-xl"></i>
               </div>
               <div>
-                <p className="font-semibold text-gray-900 mb-1 break-words">
-                  {location.address || 'non défini'}
-                </p>
+                <p className="font-semibold text-gray-900 mb-1 break-words">{location.address || "non défini"}</p>
               </div>
             </div>
             {location.instructions && (
@@ -59,12 +56,12 @@ const SessionLocation = ({ location, isOnline, latitude, longitude }: SessionLoc
               </div>
             )}
             {location.googlePlaceId && (latitude || location.latitude) && (longitude || location.longitude) && (
-              <button 
+              <button
                 onClick={() => {
-                  const lat = latitude ?? location.latitude
-                  const lng = longitude ?? location.longitude
+                  const lat = latitude ?? location.latitude;
+                  const lng = longitude ?? location.longitude;
                   if (lat && lng) {
-                    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank')
+                    window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
                   }
                 }}
                 className="w-full px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:border-primary/30 transition-all flex items-center justify-center"
@@ -77,8 +74,7 @@ const SessionLocation = ({ location, isOnline, latitude, longitude }: SessionLoc
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SessionLocation
-
+export default SessionLocation;

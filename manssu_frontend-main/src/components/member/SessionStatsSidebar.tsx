@@ -1,11 +1,11 @@
 interface SessionStatsSidebarProps {
-  attendanceRate?: number
-  averageGrade?: number
+  attendanceRate?: number;
+  averageGrade?: number;
 }
 
 const SessionStatsSidebar = ({ attendanceRate, averageGrade }: SessionStatsSidebarProps) => {
   if (attendanceRate === undefined && averageGrade === undefined) {
-    return null
+    return null;
   }
 
   return (
@@ -40,8 +40,7 @@ const SessionStatsSidebar = ({ attendanceRate, averageGrade }: SessionStatsSideb
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SessionStatsSidebar
-
+export default SessionStatsSidebar;

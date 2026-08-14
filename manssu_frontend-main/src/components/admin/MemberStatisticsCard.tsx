@@ -1,7 +1,7 @@
-import { Member } from '../../types/member'
+import { Member } from "../../types/member";
 
 interface MemberStatisticsCardProps {
-  member: Member
+  member: Member;
 }
 
 const MemberStatisticsCard = ({ member }: MemberStatisticsCardProps) => {
@@ -35,8 +35,7 @@ const MemberStatisticsCard = ({ member }: MemberStatisticsCardProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MemberStatisticsCard
-
+export default MemberStatisticsCard;

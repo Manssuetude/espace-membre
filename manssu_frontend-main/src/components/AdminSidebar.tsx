@@ -1,37 +1,32 @@
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { toast } from 'sonner'
-import CollapsibleSection from './CollapsibleSection'
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { toast } from "sonner";
+import CollapsibleSection from "./CollapsibleSection";
 
 interface AdminSidebarProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout()
-    toast.success('Déconnexion réussie')
-    navigate('/auth/login')
-  }
+    logout();
+    toast.success("Déconnexion réussie");
+    navigate("/auth/login");
+  };
 
   return (
     <>
       {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />}
 
       {/* Sidebar */}
       <div
         className={`fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <div className="p-6 border-b border-gray-700 flex-shrink-0">
@@ -43,10 +38,7 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 <p className="text-sm text-gray-400">Tableau admin</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="lg:hidden text-gray-400 hover:text-white transition-colors"
-            >
+            <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-white transition-colors">
               <i className="fa-solid fa-times text-xl"></i>
             </button>
           </div>
@@ -62,8 +54,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
               className={({ isActive }) =>
                 `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
                   isActive
-                    ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                 }`
               }
             >
@@ -79,8 +71,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -93,8 +85,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -107,8 +99,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -121,8 +113,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -139,8 +131,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -153,8 +145,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -171,8 +163,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -185,8 +177,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
                     isActive
-                      ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   }`
                 }
               >
@@ -202,8 +194,8 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
               className={({ isActive }) =>
                 `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
                   isActive
-                    ? 'text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                    ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                 }`
               }
             >
@@ -213,27 +205,26 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
           </div>
         </nav>
 
-          <div className="px-4 pb-4 border-t border-gray-700 pt-4 flex-shrink-0 space-y-2">
-            <NavLink
-              to="/"
-              onClick={onClose}
-              className="flex items-center px-4 py-3 rounded-xl transition-all text-gray-300 hover:text-white hover:bg-gray-700/50 bg-gradient-to-r from-accent/20 to-blue-600/20 border border-accent/30"
-            >
-              <i className="fa-solid fa-user w-5 mr-3"></i>
-              Espace Membre
-            </NavLink>
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center px-4 py-3 rounded-xl transition-all text-gray-300 hover:text-white hover:bg-red-600/20 border border-red-600/30"
-            >
-              <i className="fa-solid fa-sign-out-alt w-5 mr-3"></i>
-              Se déconnecter
-            </button>
-          </div>
+        <div className="px-4 pb-4 border-t border-gray-700 pt-4 flex-shrink-0 space-y-2">
+          <NavLink
+            to="/"
+            onClick={onClose}
+            className="flex items-center px-4 py-3 rounded-xl transition-all text-gray-300 hover:text-white hover:bg-gray-700/50 bg-gradient-to-r from-accent/20 to-blue-600/20 border border-accent/30"
+          >
+            <i className="fa-solid fa-user w-5 mr-3"></i>
+            Espace Membre
+          </NavLink>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-3 rounded-xl transition-all text-gray-300 hover:text-white hover:bg-red-600/20 border border-red-600/30"
+          >
+            <i className="fa-solid fa-sign-out-alt w-5 mr-3"></i>
+            Se déconnecter
+          </button>
+        </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default AdminSidebar
-
+export default AdminSidebar;

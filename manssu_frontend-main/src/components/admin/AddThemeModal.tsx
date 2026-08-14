@@ -1,39 +1,39 @@
-import { useState } from 'react'
-import { useCreateThemeAdmin } from '../../services/hooks/useThemes'
+import { useState } from "react";
+import { useCreateThemeAdmin } from "../../services/hooks/useThemes";
 
 interface AddThemeModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const AddThemeModal = ({ isOpen, onClose }: AddThemeModalProps) => {
-  const createThemeAdmin = useCreateThemeAdmin()
+  const createThemeAdmin = useCreateThemeAdmin();
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
+    title: "",
+    description: "",
+    category: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Le titre est obligatoire'
+      newErrors.title = "Le titre est obligatoire";
     }
     if (!formData.description.trim()) {
-      newErrors.description = 'La description est obligatoire'
+      newErrors.description = "La description est obligatoire";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
-      return
+      return;
     }
 
     createThemeAdmin.mutate(
@@ -44,21 +44,21 @@ const AddThemeModal = ({ isOpen, onClose }: AddThemeModalProps) => {
       },
       {
         onSuccess: () => {
-          setFormData({ title: '', description: '', category: '' })
-          setErrors({})
-          onClose()
+          setFormData({ title: "", description: "", category: "" });
+          setErrors({});
+          onClose();
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleClose = () => {
-    setFormData({ title: '', description: '', category: '' })
-    setErrors({})
-    onClose()
-  }
+    setFormData({ title: "", description: "", category: "" });
+    setErrors({});
+    onClose();
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -74,11 +74,11 @@ const AddThemeModal = ({ isOpen, onClose }: AddThemeModalProps) => {
               placeholder="Ex: Gestion du stress"
               value={formData.title}
               onChange={(e) => {
-                setFormData({ ...formData, title: e.target.value })
-                if (errors.title) setErrors({ ...errors, title: '' })
+                setFormData({ ...formData, title: e.target.value });
+                if (errors.title) setErrors({ ...errors, title: "" });
               }}
               className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm sm:text-base ${
-                errors.title ? 'border-red-500' : 'border-gray-300'
+                errors.title ? "border-red-500" : "border-gray-300"
               }`}
             />
             {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
@@ -92,11 +92,11 @@ const AddThemeModal = ({ isOpen, onClose }: AddThemeModalProps) => {
               rows={4}
               value={formData.description}
               onChange={(e) => {
-                setFormData({ ...formData, description: e.target.value })
-                if (errors.description) setErrors({ ...errors, description: '' })
+                setFormData({ ...formData, description: e.target.value });
+                if (errors.description) setErrors({ ...errors, description: "" });
               }}
               className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none text-sm sm:text-base ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
+                errors.description ? "border-red-500" : "border-gray-300"
               }`}
             ></textarea>
             {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
@@ -130,15 +130,14 @@ const AddThemeModal = ({ isOpen, onClose }: AddThemeModalProps) => {
                   Création...
                 </>
               ) : (
-                'Ajouter'
+                "Ajouter"
               )}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddThemeModal
-
+export default AddThemeModal;

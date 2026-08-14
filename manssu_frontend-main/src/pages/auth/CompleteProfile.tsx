@@ -1,58 +1,58 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import FormInput from '../../components/FormInput'
-import Dropdown from '../../components/Dropdown'
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import FormInput from "../../components/FormInput";
+import Dropdown from "../../components/Dropdown";
 
 const CompleteProfile = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { email } = location.state || { email: '' }
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { email } = location.state || { email: "" };
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    country: 'FR',
-    studentNumber: '',
-    university: '',
-  })
+    firstName: "",
+    lastName: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
+    country: "FR",
+    studentNumber: "",
+    university: "",
+  });
 
   useEffect(() => {
     if (!email) {
-      navigate('/auth/login')
-      return
+      navigate("/auth/login");
+      return;
     }
-  }, [email, navigate])
+  }, [email, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     // Basic validation
     if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      alert('Veuillez remplir tous les champs obligatoires')
-      return
+      alert("Veuillez remplir tous les champs obligatoires");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     // Simulate API call
     setTimeout(() => {
-      setIsLoading(false)
-      alert('Profil complété avec succès !')
-      navigate('/')
-    }, 1000)
-  }
+      setIsLoading(false);
+      alert("Profil complété avec succès !");
+      navigate("/");
+    }, 1000);
+  };
 
   const countries = [
-    { value: 'FR', label: 'France' },
-    { value: 'BE', label: 'Belgique' },
-    { value: 'CH', label: 'Suisse' },
-    { value: 'CA', label: 'Canada' },
-    { value: 'US', label: 'États-Unis' },
-  ]
+    { value: "FR", label: "France" },
+    { value: "BE", label: "Belgique" },
+    { value: "CH", label: "Suisse" },
+    { value: "CA", label: "Canada" },
+    { value: "US", label: "États-Unis" },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100 font-inter py-8 px-4">
@@ -173,13 +173,13 @@ const CompleteProfile = () => {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-3 sm:gap-0 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6">
             <button
               type="button"
-              onClick={() => navigate('/auth/login')}
+              onClick={() => navigate("/auth/login")}
               className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 rounded-xl text-sm sm:text-base font-medium hover:bg-gray-50 transition-all"
             >
               <i className="fa-solid fa-times mr-2"></i>
               Annuler
             </button>
-            
+
             <button
               type="submit"
               disabled={isLoading}
@@ -201,8 +201,7 @@ const CompleteProfile = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CompleteProfile
-
+export default CompleteProfile;

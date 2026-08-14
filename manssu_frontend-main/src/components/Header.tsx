@@ -1,69 +1,68 @@
-import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { useAuth } from '../contexts/AuthContext'
-import { getUserAvatarUrl, getUserInitials, getUserDisplayName } from '../utils/userUtils'
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { getUserAvatarUrl, getUserInitials, getUserDisplayName } from "../utils/userUtils";
 
 interface HeaderProps {
-  title?: string
-  subtitle?: string
-  onMenuClick?: () => void
+  title?: string;
+  subtitle?: string;
+  onMenuClick?: () => void;
 }
 
-const Header = ({ title = 'Tableau de bord', subtitle = 'Bienvenue dans votre espace membre', onMenuClick }: HeaderProps) => {
-  const { user } = useAuth()
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  
-  const avatarUrl = getUserAvatarUrl(user)
-  const initials = getUserInitials(user)
-  const displayName = getUserDisplayName(user)
-  const userRole = 
-    user?.role === 'admin' || user?.role === 'super_admin' 
-      ? 'Administrateur' 
-      : user?.role === 'guest' 
-      ? 'Invité' 
-      : 'Membre actif'
+const Header = ({
+  title = "Tableau de bord",
+  subtitle = "Bienvenue dans votre espace membre",
+  onMenuClick,
+}: HeaderProps) => {
+  const { user } = useAuth();
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const avatarUrl = getUserAvatarUrl(user);
+  const initials = getUserInitials(user);
+  const displayName = getUserDisplayName(user);
+  const userRole =
+    user?.role === "admin" || user?.role === "super_admin"
+      ? "Administrateur"
+      : user?.role === "guest"
+        ? "Invité"
+        : "Membre actif";
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      
+      const currentScrollY = window.scrollY;
+
       // Only apply scroll behavior on mobile (screens smaller than lg)
       if (window.innerWidth < 1024) {
         // Show header when scrolling up or at the top
         if (currentScrollY < lastScrollY || currentScrollY < 10) {
-          setIsVisible(true)
-        } 
+          setIsVisible(true);
+        }
         // Hide header when scrolling down (but not at the very top)
         else if (currentScrollY > lastScrollY && currentScrollY > 50) {
-          setIsVisible(false)
+          setIsVisible(false);
         }
       } else {
         // Always visible on desktop
-        setIsVisible(true)
+        setIsVisible(true);
       }
-      
-      setLastScrollY(currentScrollY)
-    }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <header 
+    <header
       className={`bg-white/80 backdrop-blur-xl border-b border-gray-200/50 px-4 lg:px-8 py-6 lg:py-4 shadow-sm transition-transform duration-300 ease-in-out ${
-        isVisible 
-          ? 'translate-y-0' 
-          : '-translate-y-full'
+        isVisible ? "translate-y-0" : "-translate-y-full"
       } fixed top-0 left-0 right-0 lg:left-64 z-30`}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4 flex-1 min-w-0">
-          <button
-            onClick={onMenuClick}
-            className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
+          <button onClick={onMenuClick} className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors">
             <i className="fa-solid fa-bars text-xl"></i>
           </button>
           <div className="min-w-0 flex-1">
@@ -74,7 +73,10 @@ const Header = ({ title = 'Tableau de bord', subtitle = 'Bienvenue dans votre es
           </div>
         </div>
         <div className="flex items-center space-x-2 lg:space-x-3">
-          <Link to="/profil" className="flex items-center space-x-2 lg:space-x-3 cursor-pointer hover:opacity-80 transition-opacity">
+          <Link
+            to="/profil"
+            className="flex items-center space-x-2 lg:space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -92,10 +94,9 @@ const Header = ({ title = 'Tableau de bord', subtitle = 'Bienvenue dans votre es
             </div>
           </Link>
         </div>
-        </div>
+      </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
-
+export default Header;

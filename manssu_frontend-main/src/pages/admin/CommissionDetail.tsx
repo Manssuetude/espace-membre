@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   useCommission,
   useUpdateCommission,
@@ -12,70 +12,74 @@ import {
   useRejectApplication,
   useRemoveMember,
   useAddMember,
-} from '../../services/hooks/useCommissions'
-import { useMembers } from '../../services/hooks/useMembers'
-import { CommissionDetail as CommissionDetailType } from '../../types/commission'
-import SearchableDropdown from '../../components/SearchableDropdown'
+} from "../../services/hooks/useCommissions";
+import { useMembers } from "../../services/hooks/useMembers";
+import {
+  CommissionDetail as CommissionDetailType,
+  CommissionDetailWithSnakeCaseFallback,
+  FlexibleMemberEntry,
+} from "../../types/commission";
+import SearchableDropdown from "../../components/SearchableDropdown";
 
 const CommissionDetail = () => {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const isSuperAdmin = user?.role === 'super_admin'
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "super_admin";
 
-  const [activeTab, setActiveTab] = useState<'members' | 'applications'>('members')
+  const [activeTab, setActiveTab] = useState<"members" | "applications">("members");
 
   // Edit modal
-  const [showEditModal, setShowEditModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     maxMembers: null as number | null,
-    status: 'active' as 'active' | 'archived',
-  })
+    status: "active" as "active" | "archived",
+  });
 
   // Delete modal
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Leader modal
-  const [showLeaderModal, setShowLeaderModal] = useState(false)
-  const [selectedLeaderId, setSelectedLeaderId] = useState<string | null>(null)
+  const [showLeaderModal, setShowLeaderModal] = useState(false);
+  const [selectedLeaderId, setSelectedLeaderId] = useState<string | null>(null);
 
   // Reject modal
-  const [showRejectModal, setShowRejectModal] = useState(false)
-  const [rejectApplicationId, setRejectApplicationId] = useState<string | null>(null)
-  const [rejectReason, setRejectReason] = useState('')
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectApplicationId, setRejectApplicationId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   // Remove member modal
-  const [showRemoveMemberModal, setShowRemoveMemberModal] = useState(false)
-  const [removeMemberId, setRemoveMemberId] = useState<string | null>(null)
+  const [showRemoveMemberModal, setShowRemoveMemberModal] = useState(false);
+  const [removeMemberId, setRemoveMemberId] = useState<string | null>(null);
 
   // Add member modal
-  const [showAddMemberModal, setShowAddMemberModal] = useState(false)
-  const [selectedAddMemberId, setSelectedAddMemberId] = useState<string | null>(null)
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [selectedAddMemberId, setSelectedAddMemberId] = useState<string | null>(null);
 
   // Queries
-  const { data: commission, isLoading } = useCommission(id || '')
+  const { data: commission, isLoading } = useCommission(id || "");
 
-  const { data: applicationsData, isLoading: loadingApplications } = useCommissionApplications(
-    id || '',
-    { status: 'pending', limit: 50 }
-  )
+  const { data: applicationsData, isLoading: loadingApplications } = useCommissionApplications(id || "", {
+    status: "pending",
+    limit: 50,
+  });
 
-  const { data: membersData } = useMembers({ limit: 100 })
+  const { data: membersData } = useMembers({ limit: 100 });
 
   // Mutations
-  const updateMutation = useUpdateCommission()
-  const deleteMutation = useDeleteCommission()
-  const assignLeaderMutation = useAssignLeader()
-  const removeLeaderMutation = useRemoveLeader()
-  const approveMutation = useApproveApplication()
-  const rejectMutation = useRejectApplication()
-  const removeMemberMutation = useRemoveMember()
-  const addMemberMutation = useAddMember()
+  const updateMutation = useUpdateCommission();
+  const deleteMutation = useDeleteCommission();
+  const assignLeaderMutation = useAssignLeader();
+  const removeLeaderMutation = useRemoveLeader();
+  const approveMutation = useApproveApplication();
+  const rejectMutation = useRejectApplication();
+  const removeMemberMutation = useRemoveMember();
+  const addMemberMutation = useAddMember();
 
   const handleUpdate = () => {
-    if (!id || !editForm.name.trim()) return
+    if (!id || !editForm.name.trim()) return;
     updateMutation.mutate(
       {
         id,
@@ -88,47 +92,47 @@ const CommissionDetail = () => {
       },
       {
         onSuccess: () => {
-          setShowEditModal(false)
+          setShowEditModal(false);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleDelete = () => {
-    if (!id) return
+    if (!id) return;
     deleteMutation.mutate(id, {
       onSuccess: () => {
-        setShowDeleteModal(false)
-        navigate('/admin/commissions')
+        setShowDeleteModal(false);
+        navigate("/admin/commissions");
       },
-    })
-  }
+    });
+  };
 
   const handleAssignLeader = () => {
-    if (!id || !selectedLeaderId) return
+    if (!id || !selectedLeaderId) return;
     assignLeaderMutation.mutate(
       { id, data: { userId: selectedLeaderId } },
       {
         onSuccess: () => {
-          setShowLeaderModal(false)
-          setSelectedLeaderId(null)
+          setShowLeaderModal(false);
+          setSelectedLeaderId(null);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleRemoveLeader = () => {
-    if (!id) return
-    removeLeaderMutation.mutate(id)
-  }
+    if (!id) return;
+    removeLeaderMutation.mutate(id);
+  };
 
   const handleApprove = (applicationId: string) => {
-    if (!id) return
-    approveMutation.mutate({ commissionId: id, applicationId })
-  }
+    if (!id) return;
+    approveMutation.mutate({ commissionId: id, applicationId });
+  };
 
   const handleReject = () => {
-    if (!id || !rejectApplicationId) return
+    if (!id || !rejectApplicationId) return;
     rejectMutation.mutate(
       {
         commissionId: id,
@@ -137,76 +141,76 @@ const CommissionDetail = () => {
       },
       {
         onSuccess: () => {
-          setShowRejectModal(false)
-          setRejectApplicationId(null)
-          setRejectReason('')
+          setShowRejectModal(false);
+          setRejectApplicationId(null);
+          setRejectReason("");
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleRemoveMember = () => {
-    if (!id || !removeMemberId) return
+    if (!id || !removeMemberId) return;
     removeMemberMutation.mutate(
       { commissionId: id, userId: removeMemberId },
       {
         onSuccess: () => {
-          setShowRemoveMemberModal(false)
-          setRemoveMemberId(null)
+          setShowRemoveMemberModal(false);
+          setRemoveMemberId(null);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleAddMember = () => {
-    if (!id || !selectedAddMemberId) return
+    if (!id || !selectedAddMemberId) return;
     addMemberMutation.mutate(
       { commissionId: id, data: { userId: selectedAddMemberId } },
       {
         onSuccess: () => {
-          setShowAddMemberModal(false)
-          setSelectedAddMemberId(null)
+          setShowAddMemberModal(false);
+          setSelectedAddMemberId(null);
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const openEdit = (detail: CommissionDetailType) => {
     setEditForm({
       name: detail.name,
-      description: detail.description || '',
+      description: detail.description || "",
       maxMembers: detail.maxMembers,
       status: detail.status,
-    })
-    setShowEditModal(true)
-  }
+    });
+    setShowEditModal(true);
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-  }
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
-  const memberOptions = (membersData?.data || []).map((m: any) => ({
+  const memberOptions = (membersData?.data || []).map((m) => ({
     value: m.id,
     label: `${m.firstName} ${m.lastName}`,
-  }))
+  }));
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (!commission) {
     return (
       <div className="space-y-6">
         <button
-          onClick={() => navigate('/admin/commissions')}
+          onClick={() => navigate("/admin/commissions")}
           className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors"
         >
           <i className="fa-solid fa-arrow-left"></i>
@@ -219,23 +223,25 @@ const CommissionDetail = () => {
           <p className="text-gray-500 text-lg">Commission non trouvée</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const memberCount = commission.memberCount ?? (commission as any).member_count ?? 0
-  const maxMembers = commission.maxMembers ?? (commission as any).max_members
-  const pendingCount = commission.pendingApplicationsCount ?? (commission as any).pending_applications_count ?? 0
-  const leaderFirstName = commission.leader?.firstName || (commission.leader as any)?.first_name || ''
-  const leaderLastName = commission.leader?.lastName || (commission.leader as any)?.last_name || ''
-  const createdAt = commission.createdAt || (commission as any).created_at || ''
-  const updatedAt = commission.updatedAt || (commission as any).updated_at || ''
-  const canManage = isSuperAdmin || commission.isLeader
+  const commissionFallback = commission as CommissionDetailWithSnakeCaseFallback;
+  const memberCount = commissionFallback.memberCount ?? commissionFallback.member_count ?? 0;
+  const maxMembers = commissionFallback.maxMembers ?? commissionFallback.max_members;
+  const pendingCount =
+    commissionFallback.pendingApplicationsCount ?? commissionFallback.pending_applications_count ?? 0;
+  const leaderFirstName = commissionFallback.leader?.firstName || commissionFallback.leader?.first_name || "";
+  const leaderLastName = commissionFallback.leader?.lastName || commissionFallback.leader?.last_name || "";
+  const createdAt = commissionFallback.createdAt || commissionFallback.created_at || "";
+  const updatedAt = commissionFallback.updatedAt || commissionFallback.updated_at || "";
+  const canManage = isSuperAdmin || commission.isLeader;
 
   return (
     <div className="space-y-6">
       {/* Back button */}
       <button
-        onClick={() => navigate('/admin/commissions')}
+        onClick={() => navigate("/admin/commissions")}
         className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors"
       >
         <i className="fa-solid fa-arrow-left"></i>
@@ -250,16 +256,14 @@ const CommissionDetail = () => {
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{commission.name}</h1>
               <span
                 className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
-                  commission.status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-200 text-gray-600'
+                  commission.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"
                 }`}
               >
-                {commission.status === 'active' ? 'Active' : 'Archivée'}
+                {commission.status === "active" ? "Active" : "Archivée"}
               </span>
               {pendingCount > 0 && (
                 <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full whitespace-nowrap">
-                  {pendingCount} candidature{pendingCount > 1 ? 's' : ''} en attente
+                  {pendingCount} candidature{pendingCount > 1 ? "s" : ""} en attente
                 </span>
               )}
             </div>
@@ -328,7 +332,9 @@ const CommissionDetail = () => {
             <span className="text-xs sm:text-sm font-medium text-gray-500">Leader</span>
           </div>
           {commission.leader ? (
-            <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">{leaderFirstName} {leaderLastName}</p>
+            <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+              {leaderFirstName} {leaderLastName}
+            </p>
           ) : (
             <p className="text-gray-400 italic text-sm sm:text-base">Non assigné</p>
           )}
@@ -356,7 +362,7 @@ const CommissionDetail = () => {
             </div>
             <span className="text-xs sm:text-sm font-medium text-gray-500">Créée le</span>
           </div>
-          <p className="font-semibold text-gray-900 text-sm sm:text-base">{createdAt ? formatDate(createdAt) : '-'}</p>
+          <p className="font-semibold text-gray-900 text-sm sm:text-base">{createdAt ? formatDate(createdAt) : "-"}</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-5">
@@ -366,7 +372,7 @@ const CommissionDetail = () => {
             </div>
             <span className="text-xs sm:text-sm font-medium text-gray-500">Mise à jour</span>
           </div>
-          <p className="font-semibold text-gray-900 text-sm sm:text-base">{updatedAt ? formatDate(updatedAt) : '-'}</p>
+          <p className="font-semibold text-gray-900 text-sm sm:text-base">{updatedAt ? formatDate(updatedAt) : "-"}</p>
         </div>
       </div>
 
@@ -375,11 +381,11 @@ const CommissionDetail = () => {
         <div className="border-b border-gray-200 px-4 sm:px-6 overflow-x-auto">
           <div className="flex items-center gap-4 sm:gap-6 min-w-max">
             <button
-              onClick={() => setActiveTab('members')}
+              onClick={() => setActiveTab("members")}
               className={`py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
-                activeTab === 'members'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                activeTab === "members"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
               <i className="fa-solid fa-users mr-1 sm:mr-2"></i>
@@ -387,11 +393,11 @@ const CommissionDetail = () => {
             </button>
             {canManage && (
               <button
-                onClick={() => setActiveTab('applications')}
+                onClick={() => setActiveTab("applications")}
                 className={`py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
-                  activeTab === 'applications'
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                  activeTab === "applications"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
                 <i className="fa-solid fa-paper-plane mr-1 sm:mr-2"></i>
@@ -402,7 +408,7 @@ const CommissionDetail = () => {
         </div>
 
         <div className="p-4 sm:p-6">
-          {activeTab === 'members' ? (
+          {activeTab === "members" ? (
             <div className="space-y-3">
               {/* Add member button */}
               {canManage && (
@@ -416,14 +422,14 @@ const CommissionDetail = () => {
               )}
 
               {commission.members && commission.members.length > 0 ? (
-                commission.members.map((member: any) => {
-                  const userData = member.user || member
-                  const memberId = userData.id || member.userId || member.id
-                  const firstName = userData.firstName || userData.first_name || ''
-                  const lastName = userData.lastName || userData.last_name || ''
-                  const email = userData.email || ''
-                  const joinedAt = member.joinedAt || member.joined_at || member.createdAt || ''
-                  const leaderId = commission.leader?.id
+                (commission.members as FlexibleMemberEntry[]).map((member) => {
+                  const userData = member.user || member;
+                  const memberId = userData.id || member.userId || member.id || "";
+                  const firstName = userData.firstName || userData.first_name || "";
+                  const lastName = userData.lastName || userData.last_name || "";
+                  const email = userData.email || "";
+                  const joinedAt = member.joinedAt || member.joined_at || member.createdAt || "";
+                  const leaderId = commission.leader?.id;
 
                   return (
                     <div
@@ -432,8 +438,8 @@ const CommissionDetail = () => {
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-red-600 rounded-full flex items-center justify-center text-white text-sm sm:text-base font-medium flex-shrink-0">
-                          {firstName[0] || '?'}
-                          {lastName[0] || '?'}
+                          {firstName[0] || "?"}
+                          {lastName[0] || "?"}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-1 sm:gap-2">
@@ -448,11 +454,7 @@ const CommissionDetail = () => {
                             )}
                           </div>
                           <p className="text-xs sm:text-sm text-gray-500 truncate">{email}</p>
-                          {joinedAt && (
-                            <p className="text-xs text-gray-400">
-                              Membre depuis {formatDate(joinedAt)}
-                            </p>
-                          )}
+                          {joinedAt && <p className="text-xs text-gray-400">Membre depuis {formatDate(joinedAt)}</p>}
                         </div>
                       </div>
 
@@ -469,8 +471,8 @@ const CommissionDetail = () => {
                         {canManage && leaderId !== memberId && (
                           <button
                             onClick={() => {
-                              setRemoveMemberId(memberId)
-                              setShowRemoveMemberModal(true)
+                              setRemoveMemberId(memberId);
+                              setShowRemoveMemberModal(true);
                             }}
                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             title="Retirer le membre"
@@ -480,7 +482,7 @@ const CommissionDetail = () => {
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })
               ) : (
                 <div className="text-center py-8">
@@ -498,22 +500,23 @@ const CommissionDetail = () => {
                   <i className="fa-solid fa-spinner fa-spin text-2xl text-primary"></i>
                 </div>
               ) : applicationsData?.data && applicationsData.data.length > 0 ? (
-                applicationsData.data.map((application: any) => {
-                  const userData = application.user || application
-                  const userId = userData.id || application.userId || application.user_id || ''
-                  const firstName = userData.firstName || userData.first_name || ''
-                  const lastName = userData.lastName || userData.last_name || ''
-                  const email = userData.email || ''
-                  const createdAt = application.createdAt || application.created_at || ''
+                (applicationsData.data as FlexibleMemberEntry[]).map((application) => {
+                  const applicationId = application.id || "";
+                  const userData = application.user || application;
+                  const userId = userData.id || application.userId || application.user_id || "";
+                  const firstName = userData.firstName || userData.first_name || "";
+                  const lastName = userData.lastName || userData.last_name || "";
+                  const email = userData.email || "";
+                  const createdAt = application.createdAt || application.created_at || "";
 
                   return (
-                    <div key={application.id} className="p-3 sm:p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                    <div key={applicationId} className="p-3 sm:p-4 bg-yellow-50 rounded-xl border border-yellow-200">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 mb-2">
                             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white text-sm sm:text-base font-medium flex-shrink-0">
-                              {firstName[0] || '?'}
-                              {lastName[0] || '?'}
+                              {firstName[0] || "?"}
+                              {lastName[0] || "?"}
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-2">
@@ -538,16 +541,14 @@ const CommissionDetail = () => {
                           <div className="ml-0 sm:ml-[52px]">
                             <p className="text-sm text-gray-700 mb-2 whitespace-pre-line">{application.reason}</p>
                             {createdAt && (
-                              <p className="text-xs text-gray-500">
-                                Candidature soumise le {formatDate(createdAt)}
-                              </p>
+                              <p className="text-xs text-gray-500">Candidature soumise le {formatDate(createdAt)}</p>
                             )}
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2 self-end sm:self-start flex-shrink-0">
                           <button
-                            onClick={() => handleApprove(application.id)}
+                            onClick={() => handleApprove(applicationId)}
                             disabled={approveMutation.isPending}
                             className="px-2.5 sm:px-3 py-1.5 bg-green-100 text-green-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-green-200 transition-colors disabled:opacity-50"
                           >
@@ -562,8 +563,8 @@ const CommissionDetail = () => {
                           </button>
                           <button
                             onClick={() => {
-                              setRejectApplicationId(application.id)
-                              setShowRejectModal(true)
+                              setRejectApplicationId(applicationId);
+                              setShowRejectModal(true);
                             }}
                             className="px-2.5 sm:px-3 py-1.5 bg-red-100 text-red-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-red-200 transition-colors"
                           >
@@ -573,7 +574,7 @@ const CommissionDetail = () => {
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })
               ) : (
                 <div className="text-center py-8">
@@ -618,9 +619,7 @@ const CommissionDetail = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea
                   value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
@@ -630,12 +629,10 @@ const CommissionDetail = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre maximum de membres
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Nombre maximum de membres</label>
                 <input
                   type="number"
-                  value={editForm.maxMembers ?? ''}
+                  value={editForm.maxMembers ?? ""}
                   onChange={(e) =>
                     setEditForm({
                       ...editForm,
@@ -653,21 +650,21 @@ const CommissionDetail = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setEditForm({ ...editForm, status: 'active' })}
+                      onClick={() => setEditForm({ ...editForm, status: "active" })}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        editForm.status === 'active'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        editForm.status === "active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
                       Active
                     </button>
                     <button
-                      onClick={() => setEditForm({ ...editForm, status: 'archived' })}
+                      onClick={() => setEditForm({ ...editForm, status: "archived" })}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        editForm.status === 'archived'
-                          ? 'bg-gray-700 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        editForm.status === "archived"
+                          ? "bg-gray-700 text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
                       Archivée
@@ -714,9 +711,7 @@ const CommissionDetail = () => {
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i className="fa-solid fa-trash text-red-500 text-2xl"></i>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-                Supprimer la commission ?
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Supprimer la commission ?</h3>
               <p className="text-gray-600 text-center">
                 Cette action est irréversible. Tous les membres et candidatures seront supprimés.
               </p>
@@ -760,8 +755,8 @@ const CommissionDetail = () => {
                 <h3 className="text-xl font-bold text-gray-900">Assigner un leader</h3>
                 <button
                   onClick={() => {
-                    setShowLeaderModal(false)
-                    setSelectedLeaderId(null)
+                    setShowLeaderModal(false);
+                    setSelectedLeaderId(null);
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
@@ -774,7 +769,7 @@ const CommissionDetail = () => {
               <SearchableDropdown
                 label="Sélectionner un membre"
                 options={memberOptions}
-                value={selectedLeaderId || ''}
+                value={selectedLeaderId || ""}
                 onChange={(value) => setSelectedLeaderId(value)}
                 placeholder="Rechercher un membre..."
                 allowCustom={false}
@@ -784,8 +779,8 @@ const CommissionDetail = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-end gap-3">
               <button
                 onClick={() => {
-                  setShowLeaderModal(false)
-                  setSelectedLeaderId(null)
+                  setShowLeaderModal(false);
+                  setSelectedLeaderId(null);
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -822,9 +817,9 @@ const CommissionDetail = () => {
                 <h3 className="text-xl font-bold text-gray-900">Rejeter la candidature</h3>
                 <button
                   onClick={() => {
-                    setShowRejectModal(false)
-                    setRejectApplicationId(null)
-                    setRejectReason('')
+                    setShowRejectModal(false);
+                    setRejectApplicationId(null);
+                    setRejectReason("");
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
@@ -834,9 +829,7 @@ const CommissionDetail = () => {
             </div>
 
             <div className="p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Raison du rejet (optionnel)
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Raison du rejet (optionnel)</label>
               <textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
@@ -849,9 +842,9 @@ const CommissionDetail = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-end gap-3">
               <button
                 onClick={() => {
-                  setShowRejectModal(false)
-                  setRejectApplicationId(null)
-                  setRejectReason('')
+                  setShowRejectModal(false);
+                  setRejectApplicationId(null);
+                  setRejectReason("");
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -887,9 +880,7 @@ const CommissionDetail = () => {
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i className="fa-solid fa-user-minus text-red-500 text-2xl"></i>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-                Retirer ce membre ?
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Retirer ce membre ?</h3>
               <p className="text-gray-600 text-center">
                 Le membre sera retiré de la commission. Il pourra candidater à nouveau.
               </p>
@@ -898,8 +889,8 @@ const CommissionDetail = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-center gap-3">
               <button
                 onClick={() => {
-                  setShowRemoveMemberModal(false)
-                  setRemoveMemberId(null)
+                  setShowRemoveMemberModal(false);
+                  setRemoveMemberId(null);
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -933,47 +924,41 @@ const CommissionDetail = () => {
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-gray-900">
-                  Ajouter un membre
-                </h3>
+                <h3 className="text-xl font-bold text-gray-900">Ajouter un membre</h3>
                 <button
                   onClick={() => {
-                    setShowAddMemberModal(false)
-                    setSelectedAddMemberId(null)
+                    setShowAddMemberModal(false);
+                    setSelectedAddMemberId(null);
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <i className="fa-solid fa-times text-xl"></i>
                 </button>
               </div>
-              <p className="text-sm text-gray-500 mt-1">
-                Ajouter directement un membre sans passer par la candidature
-              </p>
+              <p className="text-sm text-gray-500 mt-1">Ajouter directement un membre sans passer par la candidature</p>
             </div>
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sélectionner un membre
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sélectionner un membre</label>
                 <SearchableDropdown
                   options={(() => {
                     const existingMemberIds = new Set(
-                      (commission?.members || []).map((m: any) => {
-                        const userData = m.user || m
-                        return userData.id || m.userId || m.id
-                      })
-                    )
+                      (commission?.members as FlexibleMemberEntry[] | undefined)?.map((m) => {
+                        const userData = m.user || m;
+                        return userData.id || m.userId || m.id;
+                      }) || [],
+                    );
 
                     return (membersData?.data || [])
-                      .filter((m: any) => m.role !== 'guest' && !existingMemberIds.has(m.id))
-                      .map((m: any) => ({
+                      .filter((m) => m.role !== "guest" && !existingMemberIds.has(m.id))
+                      .map((m) => ({
                         value: m.id,
                         label: `${m.firstName} ${m.lastName}`,
                         sublabel: m.email,
-                      }))
+                      }));
                   })()}
-                  value={selectedAddMemberId || ''}
+                  value={selectedAddMemberId || ""}
                   onChange={setSelectedAddMemberId}
                   placeholder="Rechercher un membre..."
                 />
@@ -983,8 +968,8 @@ const CommissionDetail = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-end gap-3">
               <button
                 onClick={() => {
-                  setShowAddMemberModal(false)
-                  setSelectedAddMemberId(null)
+                  setShowAddMemberModal(false);
+                  setSelectedAddMemberId(null);
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -1012,8 +997,7 @@ const CommissionDetail = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CommissionDetail
-
+export default CommissionDetail;

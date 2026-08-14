@@ -1,57 +1,53 @@
-import { useState } from 'react'
-import { useInvites, useCancelInvite } from '../../services/hooks/useInvitations'
-import { InviteStatus } from '../../types/invitation'
-import Dropdown from '../Dropdown'
+import { useState } from "react";
+import { useInvites, useCancelInvite } from "../../services/hooks/useInvitations";
+import { InviteStatus } from "../../types/invitation";
+import Dropdown from "../Dropdown";
 
 interface InvitationsListProps {
-  sessionId?: string
-  showSessionTitle?: boolean
+  sessionId?: string;
+  showSessionTitle?: boolean;
 }
 
 const InvitationsList = ({ sessionId, showSessionTitle = false }: InvitationsListProps) => {
-  const [statusFilter, setStatusFilter] = useState<InviteStatus | 'all'>('all')
-  const [emailSearch, setEmailSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<InviteStatus | "all">("all");
+  const [emailSearch, setEmailSearch] = useState("");
   const { data: invites, isLoading } = useInvites({
-    status: statusFilter !== 'all' ? statusFilter : undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
     session_id: sessionId,
     email: emailSearch || undefined,
-  })
-  const cancelInvite = useCancelInvite()
+  });
+  const cancelInvite = useCancelInvite();
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+    return new Date(dateStr).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const getStatusBadge = (status: InviteStatus) => {
     const statusConfig = {
-      pending: { label: 'En attente', color: 'bg-yellow-100 text-yellow-800' },
-      used: { label: 'Utilisée', color: 'bg-green-100 text-green-800' },
-      expired: { label: 'Expirée', color: 'bg-gray-100 text-gray-800' },
-      cancelled: { label: 'Annulée', color: 'bg-red-100 text-red-800' },
-    }
-    const config = statusConfig[status]
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-        {config.label}
-      </span>
-    )
-  }
+      pending: { label: "En attente", color: "bg-yellow-100 text-yellow-800" },
+      used: { label: "Utilisée", color: "bg-green-100 text-green-800" },
+      expired: { label: "Expirée", color: "bg-gray-100 text-gray-800" },
+      cancelled: { label: "Annulée", color: "bg-red-100 text-red-800" },
+    };
+    const config = statusConfig[status];
+    return <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>;
+  };
 
   const handleCancel = async (id: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir annuler cette invitation ?')) {
+    if (window.confirm("Êtes-vous sûr de vouloir annuler cette invitation ?")) {
       try {
-        await cancelInvite.mutateAsync(id)
+        await cancelInvite.mutateAsync(id);
       } catch (error) {
         // Error handled by mutation
       }
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -60,7 +56,7 @@ const InvitationsList = ({ sessionId, showSessionTitle = false }: InvitationsLis
           <i className="fa-solid fa-spinner fa-spin text-2xl text-primary"></i>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -69,7 +65,7 @@ const InvitationsList = ({ sessionId, showSessionTitle = false }: InvitationsLis
         <h3 className="text-lg font-semibold text-gray-900">Invitations</h3>
         {invites && invites.length > 0 && (
           <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-lg">
-            {invites.length} invitation{invites.length > 1 ? 's' : ''}
+            {invites.length} invitation{invites.length > 1 ? "s" : ""}
           </span>
         )}
       </div>
@@ -88,14 +84,14 @@ const InvitationsList = ({ sessionId, showSessionTitle = false }: InvitationsLis
         <div className="w-full sm:w-48">
           <Dropdown
             options={[
-              { value: 'all', label: 'Tous les statuts' },
-              { value: 'pending', label: 'En attente' },
-              { value: 'used', label: 'Utilisées' },
-              { value: 'expired', label: 'Expirées' },
-              { value: 'cancelled', label: 'Annulées' },
+              { value: "all", label: "Tous les statuts" },
+              { value: "pending", label: "En attente" },
+              { value: "used", label: "Utilisées" },
+              { value: "expired", label: "Expirées" },
+              { value: "cancelled", label: "Annulées" },
             ]}
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as InviteStatus | 'all')}
+            onChange={(e) => setStatusFilter(e.target.value as InviteStatus | "all")}
             placeholder="Filtrer par statut"
           />
         </div>
@@ -112,10 +108,7 @@ const InvitationsList = ({ sessionId, showSessionTitle = false }: InvitationsLis
       ) : (
         <div className="space-y-3">
           {invites.map((invite) => (
-            <div
-              key={invite.id}
-              className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all"
-            >
+            <div key={invite.id} className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
@@ -144,13 +137,9 @@ const InvitationsList = ({ sessionId, showSessionTitle = false }: InvitationsLis
                       </span>
                     )}
                   </div>
-                  {invite.usedByName && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      Utilisée par: {invite.usedByName}
-                    </p>
-                  )}
+                  {invite.usedByName && <p className="text-xs text-gray-500 mt-2">Utilisée par: {invite.usedByName}</p>}
                 </div>
-                {invite.status === 'pending' && (
+                {invite.status === "pending" && (
                   <button
                     onClick={() => handleCancel(invite.id)}
                     disabled={cancelInvite.isPending}
@@ -166,8 +155,7 @@ const InvitationsList = ({ sessionId, showSessionTitle = false }: InvitationsLis
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default InvitationsList
-
+export default InvitationsList;

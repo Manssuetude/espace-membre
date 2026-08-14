@@ -1,9 +1,9 @@
 const ThemeStatsSidebar = () => {
   const stats = [
-    { icon: 'fa-lightbulb', label: 'Total propositions', value: '42', color: 'accent' },
-    { icon: 'fa-check-circle', label: 'Validées', value: '38', color: 'success' },
-    { icon: 'fa-clock', label: 'En attente', value: '4', color: 'warning' },
-  ]
+    { icon: "fa-lightbulb", label: "Total propositions", value: "42", color: "accent" },
+    { icon: "fa-check-circle", label: "Validées", value: "38", color: "success" },
+    { icon: "fa-clock", label: "En attente", value: "4", color: "warning" },
+  ];
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
@@ -25,8 +25,7 @@ const ThemeStatsSidebar = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ThemeStatsSidebar
-
+export default ThemeStatsSidebar;

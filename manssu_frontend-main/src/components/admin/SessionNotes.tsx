@@ -1,25 +1,30 @@
-import { SessionRating } from '../../types/session'
-import { formatDateWithTime } from '../../utils/dateUtils'
+import { SessionRating } from "../../types/session";
+import { formatDateWithTime } from "../../utils/dateUtils";
 
 interface SessionNotesProps {
-  ratings: SessionRating[]
-  totalRatings: number
-  sessionId: string
-  ratingReminderSent?: boolean
-  onRemindRatings?: () => void
-  isReminding?: boolean
+  ratings: SessionRating[];
+  totalRatings: number;
+  sessionId: string;
+  ratingReminderSent?: boolean;
+  onRemindRatings?: () => void;
+  isReminding?: boolean;
 }
 
-const SessionNotes = ({ ratings, totalRatings, ratingReminderSent, onRemindRatings, isReminding }: SessionNotesProps) => {
+const SessionNotes = ({
+  ratings,
+  totalRatings,
+  ratingReminderSent,
+  onRemindRatings,
+  isReminding,
+}: SessionNotesProps) => {
   // Calculate average rating
-  const averageRating = ratings.length > 0
-    ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length
-    : 0
+  const averageRating =
+    ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length : 0;
 
   // Format date
   const formatDate = (dateStr: string) => {
-    return formatDateWithTime(dateStr)
-  }
+    return formatDateWithTime(dateStr);
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6">
@@ -72,7 +77,7 @@ const SessionNotes = ({ ratings, totalRatings, ratingReminderSent, onRemindRatin
                 <i
                   key={star}
                   className={`fa-solid fa-star text-lg sm:text-xl ${
-                    star <= Math.round(averageRating) ? 'text-warning' : 'text-gray-300'
+                    star <= Math.round(averageRating) ? "text-warning" : "text-gray-300"
                   }`}
                 ></i>
               ))}
@@ -106,15 +111,13 @@ const SessionNotes = ({ ratings, totalRatings, ratingReminderSent, onRemindRatin
                       <i
                         key={star}
                         className={`fa-solid fa-star text-sm sm:text-base ${
-                          star <= rating.rating ? 'text-warning' : 'text-gray-300'
+                          star <= rating.rating ? "text-warning" : "text-gray-300"
                         }`}
                       ></i>
                     ))}
                   </div>
                 </div>
-                {rating.comment && (
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-3">{rating.comment}</p>
-                )}
+                {rating.comment && <p className="text-sm text-gray-600 mt-2 line-clamp-3">{rating.comment}</p>}
               </div>
             ))}
           </div>
@@ -126,8 +129,7 @@ const SessionNotes = ({ ratings, totalRatings, ratingReminderSent, onRemindRatin
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default SessionNotes
-
+export default SessionNotes;

@@ -1,16 +1,22 @@
 interface ThemeProposalFormProps {
   formData: {
-    title: string
-    description: string
-    category: string
-  }
-  onFormDataChange: (data: { title: string; description: string; category: string }) => void
-  onSubmit: (e: React.FormEvent) => void
-  isLoading?: boolean
-  proposalsUsed?: number
+    title: string;
+    description: string;
+    category: string;
+  };
+  onFormDataChange: (data: { title: string; description: string; category: string }) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  isLoading?: boolean;
+  proposalsUsed?: number;
 }
 
-const ThemeProposalForm = ({ formData, onFormDataChange, onSubmit, isLoading = false, proposalsUsed = 0 }: ThemeProposalFormProps) => {
+const ThemeProposalForm = ({
+  formData,
+  onFormDataChange,
+  onSubmit,
+  isLoading = false,
+  proposalsUsed = 0,
+}: ThemeProposalFormProps) => {
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 lg:p-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
@@ -57,8 +63,8 @@ const ThemeProposalForm = ({ formData, onFormDataChange, onSubmit, isLoading = f
           <div className="text-sm text-gray-700">
             <p className="font-medium mb-1">Votre proposition sera vérifiée</p>
             <p className="text-gray-600">
-              Notre équipe examinera votre proposition avant de l'ajouter à la liste. Vous recevrez une
-              notification une fois validée.
+              Notre équipe examinera votre proposition avant de l'ajouter à la liste. Vous recevrez une notification une
+              fois validée.
             </p>
           </div>
         </div>
@@ -90,8 +96,7 @@ const ThemeProposalForm = ({ formData, onFormDataChange, onSubmit, isLoading = f
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default ThemeProposalForm
-
+export default ThemeProposalForm;

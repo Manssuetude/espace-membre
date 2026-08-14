@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 interface PollFormActionsProps {
-  onSubmit: (e?: React.FormEvent) => void
-  isLoading?: boolean
+  onSubmit: (e?: React.FormEvent) => void;
+  isLoading?: boolean;
 }
 
 const PollFormActions = ({ onSubmit, isLoading = false }: PollFormActionsProps) => {
@@ -17,8 +17,8 @@ const PollFormActions = ({ onSubmit, isLoading = false }: PollFormActionsProps) 
       <button
         type="submit"
         onClick={(e) => {
-          e.preventDefault()
-          onSubmit(e)
+          e.preventDefault();
+          onSubmit(e);
         }}
         disabled={isLoading}
         className="px-6 py-3 bg-gradient-to-r from-accent to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -36,8 +36,7 @@ const PollFormActions = ({ onSubmit, isLoading = false }: PollFormActionsProps) 
         )}
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default PollFormActions
-
+export default PollFormActions;

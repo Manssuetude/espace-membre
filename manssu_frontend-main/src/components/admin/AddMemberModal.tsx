@@ -1,20 +1,20 @@
-import FormInput from '../FormInput'
-import Dropdown from '../Dropdown'
+import FormInput from "../FormInput";
+import Dropdown from "../Dropdown";
 
 interface AddMemberModalProps {
-  isOpen: boolean
+  isOpen: boolean;
   formData: {
-    firstName: string
-    lastName: string
-    email: string
-    role: 'member' | 'admin' | 'super admin' | ''
-  }
-  errors: Record<string, string>
-  isLoading: boolean
-  onClose: () => void
-  onSubmit: (e: React.FormEvent) => void
-  onFormDataChange: (data: Partial<AddMemberModalProps['formData']>) => void
-  onErrorClear: (field: string) => void
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: "member" | "admin" | "super admin" | "";
+  };
+  errors: Record<string, string>;
+  isLoading: boolean;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onFormDataChange: (data: Partial<AddMemberModalProps["formData"]>) => void;
+  onErrorClear: (field: string) => void;
 }
 
 const AddMemberModal = ({
@@ -27,17 +27,14 @@ const AddMemberModal = ({
   onFormDataChange,
   onErrorClear,
 }: AddMemberModalProps) => {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-gray-900">Ajouter un membre</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
             <i className="fa-solid fa-times text-xl"></i>
           </button>
         </div>
@@ -48,8 +45,8 @@ const AddMemberModal = ({
               label="Prénom"
               value={formData.firstName}
               onChange={(e) => {
-                onFormDataChange({ firstName: e.target.value })
-                onErrorClear('firstName')
+                onFormDataChange({ firstName: e.target.value });
+                onErrorClear("firstName");
               }}
               error={errors.firstName}
               required
@@ -58,8 +55,8 @@ const AddMemberModal = ({
               label="Nom"
               value={formData.lastName}
               onChange={(e) => {
-                onFormDataChange({ lastName: e.target.value })
-                onErrorClear('lastName')
+                onFormDataChange({ lastName: e.target.value });
+                onErrorClear("lastName");
               }}
               error={errors.lastName}
               required
@@ -71,8 +68,8 @@ const AddMemberModal = ({
             type="email"
             value={formData.email}
             onChange={(e) => {
-              onFormDataChange({ email: e.target.value })
-              onErrorClear('email')
+              onFormDataChange({ email: e.target.value });
+              onErrorClear("email");
             }}
             error={errors.email}
             required
@@ -83,14 +80,14 @@ const AddMemberModal = ({
               label="Rôle"
               value={formData.role}
               onChange={(e) => {
-                onFormDataChange({ role: e.target.value as 'member' | 'admin' | 'super admin' | '' })
-                onErrorClear('role')
+                onFormDataChange({ role: e.target.value as "member" | "admin" | "super admin" | "" });
+                onErrorClear("role");
               }}
               options={[
-                { value: '', label: 'Sélectionner un rôle' },
-                { value: 'member', label: 'Membre' },
-                { value: 'admin', label: 'Administrateur' },
-                { value: 'super admin', label: 'Super Admin' },
+                { value: "", label: "Sélectionner un rôle" },
+                { value: "member", label: "Membre" },
+                { value: "admin", label: "Administrateur" },
+                { value: "super admin", label: "Super Admin" },
               ]}
               error={errors.role}
               required
@@ -122,8 +119,7 @@ const AddMemberModal = ({
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddMemberModal
-
+export default AddMemberModal;

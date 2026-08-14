@@ -1,9 +1,9 @@
 interface ResourceSessionContextProps {
-  sessionId: string
-  sessionTitle: string
-  sessionDate: string
-  addToSession: boolean
-  onAddToSessionChange: (checked: boolean) => void
+  sessionId: string;
+  sessionTitle: string;
+  sessionDate: string;
+  addToSession: boolean;
+  onAddToSessionChange: (checked: boolean) => void;
 }
 
 const ResourceSessionContext = ({
@@ -13,7 +13,7 @@ const ResourceSessionContext = ({
   addToSession,
   onAddToSessionChange,
 }: ResourceSessionContextProps) => {
-  if (!sessionId) return null
+  if (!sessionId) return null;
 
   return (
     <div className="bg-gradient-to-r from-primary/10 via-red-50 to-secondary/10 border-2 border-primary/20 rounded-2xl shadow-lg p-4 sm:p-6">
@@ -40,8 +40,7 @@ const ResourceSessionContext = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ResourceSessionContext
-
+export default ResourceSessionContext;

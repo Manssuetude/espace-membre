@@ -9,8 +9,7 @@ const FeedbackHeader = () => {
         <p className="text-gray-600">Votre avis nous aide à améliorer l'association</p>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FeedbackHeader
-
+export default FeedbackHeader;

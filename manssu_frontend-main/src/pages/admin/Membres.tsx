@@ -1,139 +1,150 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useMembers, useCreateMember, useDeleteMember, useSuspendMember, useUnsuspendMember, useUpdateMember } from '../../services/hooks/useMembers'
-import { useAuth } from '../../contexts/AuthContext'
-import { toast } from 'sonner'
-import { Member } from '../../types/member'
-import MembersStats from '../../components/admin/MembersStats'
-import MembersFilters from '../../components/admin/MembersFilters'
-import MembersTable from '../../components/admin/MembersTable'
-import AddMemberModal from '../../components/admin/AddMemberModal'
-import EditMemberModal from '../../components/admin/EditMemberModal'
-import CreateInviteModal from '../../components/admin/CreateInviteModal'
-import InvitationsList from '../../components/admin/InvitationsList'
-import InvitationRequestsList from '../../components/admin/InvitationRequestsList'
-import Pagination from '../../components/Pagination'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  useMembers,
+  useCreateMember,
+  useDeleteMember,
+  useSuspendMember,
+  useUnsuspendMember,
+  useUpdateMember,
+} from "../../services/hooks/useMembers";
+import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "sonner";
+import { Member } from "../../types/member";
+import MembersStats from "../../components/admin/MembersStats";
+import MembersFilters from "../../components/admin/MembersFilters";
+import MembersTable from "../../components/admin/MembersTable";
+import AddMemberModal from "../../components/admin/AddMemberModal";
+import EditMemberModal from "../../components/admin/EditMemberModal";
+import CreateInviteModal from "../../components/admin/CreateInviteModal";
+import InvitationsList from "../../components/admin/InvitationsList";
+import InvitationRequestsList from "../../components/admin/InvitationRequestsList";
+import Pagination from "../../components/Pagination";
 
 const Membres = () => {
-  const navigate = useNavigate()
-  const { user: currentUser } = useAuth()
-  const [roleFilter, setRoleFilter] = useState('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize] = useState(10)
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showCreateInviteModal, setShowCreateInviteModal] = useState(false)
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showCreateInviteModal, setShowCreateInviteModal] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    role: '' as 'member' | 'admin' | 'super admin' | '',
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
+    firstName: "",
+    lastName: "",
+    email: "",
+    role: "" as "member" | "admin" | "super admin" | "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: membersData, isLoading } = useMembers({
     search: searchQuery || undefined,
     page: currentPage,
     limit: pageSize,
-  })
+  });
 
-  const createMember = useCreateMember()
-  const deleteMember = useDeleteMember()
-  const suspendMember = useSuspendMember()
-  const unsuspendMember = useUnsuspendMember()
-  const updateMember = useUpdateMember()
-  
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
+  const createMember = useCreateMember();
+  const deleteMember = useDeleteMember();
+  const suspendMember = useSuspendMember();
+  const unsuspendMember = useUnsuspendMember();
+  const updateMember = useUpdateMember();
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [editFormData, setEditFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    role: undefined as 'member' | 'admin' | 'super_admin' | 'guest' | undefined,
-  })
-  const [editErrors, setEditErrors] = useState<Record<string, string>>({})
+    firstName: "",
+    lastName: "",
+    email: "",
+    role: undefined as "member" | "admin" | "super_admin" | "guest" | undefined,
+  });
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
 
   // Filter members by role on client side
   const members = (membersData?.data || []).filter((member) => {
-    if (roleFilter === 'all') return true
-    if (roleFilter === 'member') return member.role === 'member'
-    if (roleFilter === 'admins') return member.role === 'admin'
-    if (roleFilter === 'super admins') return member.role === 'super admin'
-    return true
-  })
+    if (roleFilter === "all") return true;
+    if (roleFilter === "member") return member.role === "member";
+    if (roleFilter === "admins") return member.role === "admin";
+    if (roleFilter === "super admins") return member.role === "super admin";
+    return true;
+  });
 
   // Reset to page 1 when filters change
   const handleRoleFilterChange = (value: string) => {
-    setRoleFilter(value)
-    setCurrentPage(1)
-  }
+    setRoleFilter(value);
+    setCurrentPage(1);
+  };
 
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value)
-    setCurrentPage(1)
-  }
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
 
   const handleSuspendMember = (memberId: string, memberName: string) => {
     if (window.confirm(`Êtes-vous sûr de vouloir suspendre ${memberName} ?`)) {
-      suspendMember.mutate(memberId)
+      suspendMember.mutate(memberId);
     }
-  }
+  };
 
   const handleUnsuspendMember = (memberId: string, memberName: string) => {
     if (window.confirm(`Êtes-vous sûr de vouloir réactiver ${memberName} ?`)) {
-      unsuspendMember.mutate(memberId)
+      unsuspendMember.mutate(memberId);
     }
-  }
+  };
 
   const handleDeleteMember = (memberId: string, memberName: string) => {
-    if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${memberName} ?\n\nCette action est permanente et ne peut pas être annulée. Toutes les données associées seront supprimées.`)) {
-      deleteMember.mutate(memberId)
+    if (
+      window.confirm(
+        `Êtes-vous sûr de vouloir supprimer ${memberName} ?\n\nCette action est permanente et ne peut pas être annulée. Toutes les données associées seront supprimées.`,
+      )
+    ) {
+      deleteMember.mutate(memberId);
     }
-  }
+  };
 
   const handleViewMember = (memberId: string) => {
-    navigate(`/admin/membres/${memberId}`)
-  }
+    navigate(`/admin/membres/${memberId}`);
+  };
 
   const handleEditMember = (member: Member) => {
-    setSelectedMember(member)
+    setSelectedMember(member);
     setEditFormData({
       firstName: member.firstName,
       lastName: member.lastName,
       email: member.email,
-      role: member.role === 'super admin' ? 'super_admin' : member.role,
-    })
-    setEditErrors({})
-    setShowEditModal(true)
-  }
+      role: member.role === "super admin" ? "super_admin" : member.role,
+    });
+    setEditErrors({});
+    setShowEditModal(true);
+  };
 
   const validateEditForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!editFormData.firstName.trim()) {
-      newErrors.firstName = 'Le prénom est obligatoire'
+      newErrors.firstName = "Le prénom est obligatoire";
     }
     if (!editFormData.lastName.trim()) {
-      newErrors.lastName = 'Le nom est obligatoire'
+      newErrors.lastName = "Le nom est obligatoire";
     }
     if (!editFormData.email.trim()) {
-      newErrors.email = 'L\'email est obligatoire'
+      newErrors.email = "L'email est obligatoire";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editFormData.email)) {
-      newErrors.email = 'Veuillez entrer une adresse email valide'
+      newErrors.email = "Veuillez entrer une adresse email valide";
     }
 
-    setEditErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setEditErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!selectedMember) return
-    
+    e.preventDefault();
+
+    if (!selectedMember) return;
+
     if (!validateEditForm()) {
-      toast.error('Veuillez corriger les erreurs dans le formulaire')
-      return
+      toast.error("Veuillez corriger les erreurs dans le formulaire");
+      return;
     }
 
     updateMember.mutate(
@@ -148,50 +159,50 @@ const Membres = () => {
       },
       {
         onSuccess: () => {
-          setShowEditModal(false)
-          setSelectedMember(null)
-          setEditFormData({ firstName: '', lastName: '', email: '', role: undefined })
-          setEditErrors({})
+          setShowEditModal(false);
+          setSelectedMember(null);
+          setEditFormData({ firstName: "", lastName: "", email: "", role: undefined });
+          setEditErrors({});
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleCloseEditModal = () => {
-    setShowEditModal(false)
-    setSelectedMember(null)
-    setEditFormData({ firstName: '', lastName: '', email: '', role: undefined })
-    setEditErrors({})
-  }
+    setShowEditModal(false);
+    setSelectedMember(null);
+    setEditFormData({ firstName: "", lastName: "", email: "", role: undefined });
+    setEditErrors({});
+  };
 
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = 'Le prénom est obligatoire'
+      newErrors.firstName = "Le prénom est obligatoire";
     }
     if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Le nom est obligatoire'
+      newErrors.lastName = "Le nom est obligatoire";
     }
     if (!formData.email.trim()) {
-      newErrors.email = 'L\'email est obligatoire'
+      newErrors.email = "L'email est obligatoire";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Veuillez entrer une adresse email valide'
+      newErrors.email = "Veuillez entrer une adresse email valide";
     }
     if (!formData.role) {
-      newErrors.role = 'Le rôle est obligatoire'
+      newErrors.role = "Le rôle est obligatoire";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!validateForm()) {
-      toast.error('Veuillez corriger les erreurs dans le formulaire')
-      return
+      toast.error("Veuillez corriger les erreurs dans le formulaire");
+      return;
     }
 
     createMember.mutate(
@@ -199,23 +210,23 @@ const Membres = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        role: formData.role as 'member' | 'admin' | 'super admin',
+        role: formData.role as "member" | "admin" | "super admin",
       },
       {
         onSuccess: () => {
-          setShowAddModal(false)
-          setFormData({ firstName: '', lastName: '', email: '', role: '' })
-          setErrors({})
+          setShowAddModal(false);
+          setFormData({ firstName: "", lastName: "", email: "", role: "" });
+          setErrors({});
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleCloseModal = () => {
-    setShowAddModal(false)
-    setFormData({ firstName: '', lastName: '', email: '', role: '' })
-    setErrors({})
-  }
+    setShowAddModal(false);
+    setFormData({ firstName: "", lastName: "", email: "", role: "" });
+    setErrors({});
+  };
 
   return (
     <div>
@@ -281,9 +292,9 @@ const Membres = () => {
         onFormDataChange={(data) => setFormData({ ...formData, ...data })}
         onErrorClear={(field) => {
           if (errors[field]) {
-            const newErrors = { ...errors }
-            delete newErrors[field]
-            setErrors(newErrors)
+            const newErrors = { ...errors };
+            delete newErrors[field];
+            setErrors(newErrors);
           }
         }}
       />
@@ -299,9 +310,9 @@ const Membres = () => {
         onFormDataChange={(data) => setEditFormData({ ...editFormData, ...data })}
         onErrorClear={(field) => {
           if (editErrors[field]) {
-            const newErrors = { ...editErrors }
-            delete newErrors[field]
-            setEditErrors(newErrors)
+            const newErrors = { ...editErrors };
+            delete newErrors[field];
+            setEditErrors(newErrors);
           }
         }}
       />
@@ -313,8 +324,7 @@ const Membres = () => {
         }}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Membres
-
+export default Membres;

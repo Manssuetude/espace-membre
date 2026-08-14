@@ -1,27 +1,27 @@
-import { useState } from 'react'
-import { Poll } from '../../types/sondage'
+import { useState } from "react";
+import { Poll } from "../../types/sondage";
 
 interface MemberSondageHistoryProps {
-  polls: (Poll & { memberResponse?: string })[]
+  polls: (Poll & { memberResponse?: string; userChoiceIds?: string[] })[];
 }
 
 const MemberSondageHistory = ({ polls }: MemberSondageHistoryProps) => {
-  const [expandedPolls, setExpandedPolls] = useState<Record<string, boolean>>({})
+  const [expandedPolls, setExpandedPolls] = useState<Record<string, boolean>>({});
 
   const togglePollExpansion = (pollId: string) => {
-    setExpandedPolls(prev => ({
+    setExpandedPolls((prev) => ({
       ...prev,
-      [pollId]: !prev[pollId]
-    }))
-  }
+      [pollId]: !prev[pollId],
+    }));
+  };
   const formatDateTime = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-  }
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
@@ -32,10 +32,7 @@ const MemberSondageHistory = ({ polls }: MemberSondageHistoryProps) => {
       {polls.length > 0 ? (
         <div className="space-y-4">
           {polls.map((poll) => (
-            <div
-              key={poll.id}
-              className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all"
-            >
+            <div key={poll.id} className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 mb-2">{poll.title}</h3>
@@ -44,13 +41,13 @@ const MemberSondageHistory = ({ polls }: MemberSondageHistoryProps) => {
                     <div className="mb-2 space-y-2">
                       {(expandedPolls[poll.id] ? poll.questions : poll.questions.slice(0, 2)).map((q, idx) => {
                         // Get the original index from the full questions array
-                        const originalIndex = poll.questions.findIndex(question => question.id === q.id)
+                        const originalIndex = poll.questions.findIndex((question) => question.id === q.id);
                         return (
                           <p key={q.id || idx} className="text-sm text-gray-600">
                             {poll.questions.length > 1 && `Q${originalIndex + 1}: `}
                             {q.question}
                           </p>
-                        )
+                        );
                       })}
                       {poll.questions.length > 2 && (
                         <button
@@ -72,7 +69,7 @@ const MemberSondageHistory = ({ polls }: MemberSondageHistoryProps) => {
                       )}
                     </div>
                   ) : poll.question ? (
-                  <p className="text-sm text-gray-600 mb-2">{poll.question}</p>
+                    <p className="text-sm text-gray-600 mb-2">{poll.question}</p>
                   ) : null}
                   <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
                     {poll.startDate && (
@@ -93,43 +90,43 @@ const MemberSondageHistory = ({ polls }: MemberSondageHistoryProps) => {
               </div>
               {/* Display options from first question (or legacy options) */}
               {(() => {
-                const firstQuestion = poll.questions && poll.questions.length > 0 ? poll.questions[0] : null
-                const options = firstQuestion?.options || poll.options || []
+                const firstQuestion = poll.questions && poll.questions.length > 0 ? poll.questions[0] : null;
+                const options = firstQuestion?.options || poll.options || [];
                 return options.length > 0 ? (
-                <div className="space-y-2">
+                  <div className="space-y-2">
                     {options.map((option) => {
-                    // Check if this option was selected by the member
-                    // Support both single response (memberResponse) and multiple response (userChoiceIds)
-                    const userChoiceIds = (poll as any).userChoiceIds || []
-                    const isMemberChoice = poll.memberResponse === option.id || userChoiceIds.includes(option.id)
-                    return (
-                      <div
-                        key={option.id}
-                        className={`flex items-center justify-between p-2 rounded-lg ${
-                          isMemberChoice ? 'bg-accent/10 border border-accent/30' : 'border border-transparent'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 flex-1">
-                          {isMemberChoice && (
-                            <i className="fa-solid fa-check-circle text-accent"></i>
-                          )}
-                          <span className={`text-sm ${isMemberChoice ? 'font-semibold text-accent' : 'text-gray-700'}`}>
-                            {option.label}
-                          </span>
-                        </div>
-                        {option.percentage > 0 && (
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-gradient-to-r from-accent to-blue-600 h-2 rounded-full"
-                              style={{ width: `${option.percentage}%` }}
-                            ></div>
+                      // Check if this option was selected by the member
+                      // Support both single response (memberResponse) and multiple response (userChoiceIds)
+                      const userChoiceIds = poll.userChoiceIds || [];
+                      const isMemberChoice = poll.memberResponse === option.id || userChoiceIds.includes(option.id);
+                      return (
+                        <div
+                          key={option.id}
+                          className={`flex items-center justify-between p-2 rounded-lg ${
+                            isMemberChoice ? "bg-accent/10 border border-accent/30" : "border border-transparent"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 flex-1">
+                            {isMemberChoice && <i className="fa-solid fa-check-circle text-accent"></i>}
+                            <span
+                              className={`text-sm ${isMemberChoice ? "font-semibold text-accent" : "text-gray-700"}`}
+                            >
+                              {option.label}
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-                ) : null
+                          {option.percentage > 0 && (
+                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-accent to-blue-600 h-2 rounded-full"
+                                style={{ width: `${option.percentage}%` }}
+                              ></div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : null;
               })()}
             </div>
           ))}
@@ -144,8 +141,7 @@ const MemberSondageHistory = ({ polls }: MemberSondageHistoryProps) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default MemberSondageHistory
-
+export default MemberSondageHistory;

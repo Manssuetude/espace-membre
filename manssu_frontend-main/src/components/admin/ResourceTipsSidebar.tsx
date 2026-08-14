@@ -4,7 +4,7 @@ const ResourceTipsSidebar = () => {
     "Décrivez clairement l'objectif et l'utilité",
     "Choisissez la bonne catégorie pour faciliter la recherche",
     "Ajoutez des tags pertinents",
-  ]
+  ];
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 sm:p-6">
@@ -21,8 +21,7 @@ const ResourceTipsSidebar = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ResourceTipsSidebar
-
+export default ResourceTipsSidebar;

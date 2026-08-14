@@ -1,5 +1,5 @@
 interface ResourcesSearchProps {
-  onProposeClick: () => void
+  onProposeClick: () => void;
 }
 
 const ResourcesSearch = ({ onProposeClick }: ResourcesSearchProps) => {
@@ -23,8 +23,7 @@ const ResourcesSearch = ({ onProposeClick }: ResourcesSearchProps) => {
         Proposer une ressource
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default ResourcesSearch
-
+export default ResourcesSearch;

@@ -1,30 +1,30 @@
 interface WindowClosedBannerProps {
-  nextOpeningDate: string | null
+  nextOpeningDate: string | null;
 }
 
 const WindowClosedBanner = ({ nextOpeningDate }: WindowClosedBannerProps) => {
   const calculateDaysUntilOpening = (dateString: string | null): number | null => {
-    if (!dateString) return null
-    const openingDate = new Date(dateString)
-    const now = new Date()
-    const diffTime = openingDate.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays > 0 ? diffDays : null
-  }
+    if (!dateString) return null;
+    const openingDate = new Date(dateString);
+    const now = new Date();
+    const diffTime = openingDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : null;
+  };
 
   const formatTimeUntilOpening = (days: number | null): string | null => {
-    if (!days) return null
-    if (days < 7) return `${days} jour${days > 1 ? 's' : ''}`
+    if (!days) return null;
+    if (days < 7) return `${days} jour${days > 1 ? "s" : ""}`;
     if (days < 30) {
-      const weeks = Math.floor(days / 7)
-      return `${weeks} semaine${weeks > 1 ? 's' : ''}`
+      const weeks = Math.floor(days / 7);
+      return `${weeks} semaine${weeks > 1 ? "s" : ""}`;
     }
-    const months = Math.floor(days / 30)
-    return `${months} mois`
-  }
+    const months = Math.floor(days / 30);
+    return `${months} mois`;
+  };
 
-  const daysUntilOpening = calculateDaysUntilOpening(nextOpeningDate)
-  const timeUntilOpening = formatTimeUntilOpening(daysUntilOpening)
+  const daysUntilOpening = calculateDaysUntilOpening(nextOpeningDate);
+  const timeUntilOpening = formatTimeUntilOpening(daysUntilOpening);
 
   return (
     <div className="mb-8 bg-gradient-to-r from-gray-50 via-slate-50 to-gray-50 border-2 border-gray-300/50 rounded-2xl p-6 shadow-lg">
@@ -48,8 +48,7 @@ const WindowClosedBanner = ({ nextOpeningDate }: WindowClosedBannerProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WindowClosedBanner
-
+export default WindowClosedBanner;

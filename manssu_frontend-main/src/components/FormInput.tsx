@@ -1,20 +1,20 @@
 interface FormInputProps {
-  label: string
-  type?: string
-  value: string
-  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  placeholder?: string
-  disabled?: boolean
-  readOnly?: boolean
-  required?: boolean
-  rows?: number
-  className?: string
-  error?: string
+  label: string;
+  type?: string;
+  value: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
+  required?: boolean;
+  rows?: number;
+  className?: string;
+  error?: string;
 }
 
 const FormInput = ({
   label,
-  type = 'text',
+  type = "text",
   value,
   onChange,
   placeholder,
@@ -22,15 +22,15 @@ const FormInput = ({
   readOnly = false,
   required = false,
   rows,
-  className = '',
+  className = "",
   error,
 }: FormInputProps) => {
   const baseClasses = `w-full px-4 py-3 rounded-xl border transition-all bg-gray-50 focus:bg-white ${
     error
-      ? 'border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
-      : 'border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary'
-  }`
-  const isTextarea = rows !== undefined
+      ? "border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+      : "border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+  }`;
+  const isTextarea = rows !== undefined;
 
   return (
     <div>
@@ -68,8 +68,7 @@ const FormInput = ({
         </p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default FormInput
-
+export default FormInput;

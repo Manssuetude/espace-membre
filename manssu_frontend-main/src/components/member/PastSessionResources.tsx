@@ -1,62 +1,63 @@
-import { useMemo, useState } from 'react'
-import { useResourceSessionsHistory } from '../../services/hooks/useResources'
-import { translateResourceType } from '../../utils/resourceUtils'
+import { useMemo, useState } from "react";
+import { useResourceSessionsHistory } from "../../services/hooks/useResources";
+import { translateResourceType } from "../../utils/resourceUtils";
 
 const PastSessionResources = () => {
-  const PAGE_LIMIT = 6
-  const [currentPage, setCurrentPage] = useState(1)
-  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({})
+  const PAGE_LIMIT = 6;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
 
   const { data: historyData, isLoading: isLoadingHistory } = useResourceSessionsHistory({
     page: currentPage,
     limit: PAGE_LIMIT,
-  })
+  });
 
-  const totalPages = historyData?.totalPages || 1
-  const totalItems = historyData?.total || 0
+  const totalPages = historyData?.totalPages || 1;
+  const totalItems = historyData?.total || 0;
 
   const sessionsWithResources = useMemo(() => {
-    const entries = historyData?.data || []
+    const entries = historyData?.data || [];
 
-    return entries.map((entry) => {
-      const session = entry.session
-        if (!session) return null
+    return entries
+      .map((entry) => {
+        const session = entry.session;
+        if (!session) return null;
 
-      const formattedResources = entry.resources.map((resource) => {
+        const formattedResources = entry.resources.map((resource) => {
           const getIcon = (type: string) => {
             switch (type) {
-              case 'file':
-                return 'fa-file-pdf'
-              case 'video':
-                return 'fa-video'
-              case 'audio':
-                return 'fa-headphones'
-              case 'folder':
-                return 'fa-folder'
+              case "file":
+                return "fa-file-pdf";
+              case "video":
+                return "fa-video";
+              case "audio":
+                return "fa-headphones";
+              case "folder":
+                return "fa-folder";
               default:
-                return 'fa-file'
+                return "fa-file";
             }
-          }
+          };
 
           const getColor = (type: string) => {
             switch (type) {
-              case 'file':
-                return 'primary'
-              case 'video':
-                return 'accent'
-              case 'audio':
-                return 'success'
-              case 'folder':
-                return 'secondary'
+              case "file":
+                return "primary";
+              case "video":
+                return "accent";
+              case "audio":
+                return "success";
+              case "folder":
+                return "secondary";
               default:
-                return 'primary'
+                return "primary";
             }
-          }
+          };
 
-          let typeDisplay = translateResourceType(resource.type)
+          let typeDisplay = translateResourceType(resource.type);
           if (resource.fileSize) {
-            const sizeMB = (resource.fileSize / (1024 * 1024)).toFixed(1)
-            typeDisplay = `${typeDisplay} • ${sizeMB} MB`
+            const sizeMB = (resource.fileSize / (1024 * 1024)).toFixed(1);
+            typeDisplay = `${typeDisplay} • ${sizeMB} MB`;
           }
 
           return {
@@ -66,49 +67,45 @@ const PastSessionResources = () => {
             type: typeDisplay,
             color: getColor(resource.type),
             link: resource.link,
-          }
-        })
+          };
+        });
 
         return {
           id: session.id,
           title: session.title,
           date: session.date
-            ? new Date(session.date).toLocaleDateString('fr-FR', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
+            ? new Date(session.date).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
               })
-            : 'Date inconnue',
+            : "Date inconnue",
           resources: formattedResources,
-        }
+        };
       })
       .filter((session) => session !== null)
       .sort((a, b) => {
-        if (!a || !b) return 0
-        const dateA = historyData?.data
-          ?.find((entry) => entry.session.id === a.id)
-          ?.session.date
-        const dateB = historyData?.data
-          ?.find((entry) => entry.session.id === b.id)
-          ?.session.date
-        if (!dateA || !dateB) return 0
-        return new Date(dateB).getTime() - new Date(dateA).getTime()
-      })
-  }, [historyData])
+        if (!a || !b) return 0;
+        const dateA = historyData?.data?.find((entry) => entry.session.id === a.id)?.session.date;
+        const dateB = historyData?.data?.find((entry) => entry.session.id === b.id)?.session.date;
+        if (!dateA || !dateB) return 0;
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      });
+  }, [historyData]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages || newPage === currentPage) {
-      return
+      return;
     }
-    setCurrentPage(newPage)
-  }
+    setCurrentPage(newPage);
+  };
 
   if (isLoadingHistory) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
         <i className="fa-solid fa-spinner fa-spin text-2xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (!sessionsWithResources || sessionsWithResources.length === 0) {
@@ -122,11 +119,13 @@ const PastSessionResources = () => {
           <div className="w-16 h-16 bg-gradient-to-br from-secondary/10 to-orange-600/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <i className="fa-solid fa-folder-open text-secondary text-2xl"></i>
           </div>
-          <p className="text-gray-500 text-sm font-medium mb-1">Aucune ressource disponible pour les sessions passées</p>
+          <p className="text-gray-500 text-sm font-medium mb-1">
+            Aucune ressource disponible pour les sessions passées
+          </p>
           <p className="text-gray-400 text-xs">Les ressources des sessions terminées apparaîtront ici</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -150,19 +149,19 @@ const PastSessionResources = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {session.resources.map((resource, rIdx) => {
               const colorClasses = {
-                primary: 'from-primary/20 to-red-500/20 text-primary border-primary/30',
-                accent: 'from-accent/20 to-blue-600/20 text-accent border-accent/30',
-                success: 'from-success/20 to-emerald-600/20 text-success border-success/30',
-                secondary: 'from-secondary/20 to-orange-600/20 text-secondary border-secondary/30',
-              }
+                primary: "from-primary/20 to-red-500/20 text-primary border-primary/30",
+                accent: "from-accent/20 to-blue-600/20 text-accent border-accent/30",
+                success: "from-success/20 to-emerald-600/20 text-success border-success/30",
+                secondary: "from-secondary/20 to-orange-600/20 text-secondary border-secondary/30",
+              };
               const bgClasses = {
-                primary: 'from-primary to-red-500',
-                accent: 'from-accent to-blue-600',
-                success: 'from-success to-emerald-600',
-                secondary: 'from-secondary to-orange-600',
-              }
-              const colorClass = colorClasses[resource.color as keyof typeof colorClasses] || colorClasses.primary
-              const bgClass = bgClasses[resource.color as keyof typeof bgClasses] || bgClasses.primary
+                primary: "from-primary to-red-500",
+                accent: "from-accent to-blue-600",
+                success: "from-success to-emerald-600",
+                secondary: "from-secondary to-orange-600",
+              };
+              const colorClass = colorClasses[resource.color as keyof typeof colorClasses] || colorClasses.primary;
+              const bgClass = bgClasses[resource.color as keyof typeof bgClasses] || bgClasses.primary;
 
               return (
                 <div
@@ -170,7 +169,9 @@ const PastSessionResources = () => {
                   className={`bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 hover:shadow-xl hover:border-${resource.color}/30 transition-all group`}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`w-14 h-14 bg-gradient-to-br ${colorClass} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <div
+                      className={`w-14 h-14 bg-gradient-to-br ${colorClass} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}
+                    >
                       <i className={`fa-solid ${resource.icon} text-${resource.color} text-2xl`}></i>
                     </div>
                   </div>
@@ -179,19 +180,21 @@ const PastSessionResources = () => {
                     {resource.description ? (
                       <>
                         <p className="text-sm text-gray-600">
-                          {expandedDescriptions[`${session.id}-${rIdx}`] || !resource.description || resource.description.length <= 120
+                          {expandedDescriptions[`${session.id}-${rIdx}`] ||
+                          !resource.description ||
+                          resource.description.length <= 120
                             ? resource.description
                             : `${resource.description.substring(0, 120)}...`}
                         </p>
                         {resource.description && resource.description.length > 120 && (
                           <button
                             onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
+                              e.preventDefault();
+                              e.stopPropagation();
                               setExpandedDescriptions((prev) => ({
                                 ...prev,
                                 [`${session.id}-${rIdx}`]: !prev[`${session.id}-${rIdx}`],
-                              }))
+                              }));
                             }}
                             className="text-xs text-primary hover:text-primary/80 font-medium mt-1 flex items-center"
                           >
@@ -215,7 +218,9 @@ const PastSessionResources = () => {
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                     <span className="flex items-center">
-                      <i className={`fa-solid ${resource.icon === 'fa-file-pdf' ? 'fa-file' : resource.icon === 'fa-video' ? 'fa-play' : resource.icon === 'fa-link' ? 'fa-external-link' : 'fa-file'} mr-1`}></i>
+                      <i
+                        className={`fa-solid ${resource.icon === "fa-file-pdf" ? "fa-file" : resource.icon === "fa-video" ? "fa-play" : resource.icon === "fa-link" ? "fa-external-link" : "fa-file"} mr-1`}
+                      ></i>
                       {resource.type}
                     </span>
                   </div>
@@ -225,10 +230,10 @@ const PastSessionResources = () => {
                     rel="noopener noreferrer"
                     className={`w-full py-2.5 bg-gradient-to-r ${bgClass} text-white font-medium rounded-lg hover:shadow-lg transition-all block text-center`}
                   >
-                    {resource.icon === 'fa-video' ? 'Regarder' : resource.icon === 'fa-link' ? 'Accéder' : 'Consulter'}
+                    {resource.icon === "fa-video" ? "Regarder" : resource.icon === "fa-link" ? "Accéder" : "Consulter"}
                   </a>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -245,7 +250,7 @@ const PastSessionResources = () => {
             Précédent
           </button>
           <div className="text-sm text-gray-500">
-            Page <span className="font-semibold text-gray-800">{currentPage}</span> sur{' '}
+            Page <span className="font-semibold text-gray-800">{currentPage}</span> sur{" "}
             <span className="font-semibold text-gray-800">{totalPages}</span>
           </div>
           <button
@@ -259,8 +264,7 @@ const PastSessionResources = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PastSessionResources
-
+export default PastSessionResources;

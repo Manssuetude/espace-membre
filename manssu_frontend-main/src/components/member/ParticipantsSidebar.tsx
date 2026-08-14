@@ -1,37 +1,37 @@
-import { Attendant } from '../../types/session'
+import { Attendant } from "../../types/session";
 
 interface ParticipantsSidebarProps {
-  attendants?: Attendant[]
-  totalRegistered?: number
-  currentUserId?: string
+  attendants?: Attendant[];
+  totalRegistered?: number;
+  currentUserId?: string;
 }
 
 const getAttendantAvatarUrl = (avatar: string | null): string | null => {
-  if (!avatar) return null
-  
+  if (!avatar) return null;
+
   // If avatar is already a full URL, return it
-  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-    return avatar
+  if (avatar.startsWith("http://") || avatar.startsWith("https://")) {
+    return avatar;
   }
-  
+
   // Otherwise, construct the URL
-  return `https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/${avatar}`
-}
+  return `https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/${avatar}`;
+};
 
 const getAttendantInitials = (firstName: string, lastName: string): string => {
-  const first = firstName?.trim() || ''
-  const last = lastName?.trim() || ''
-  
+  const first = firstName?.trim() || "";
+  const last = lastName?.trim() || "";
+
   if (first && last) {
-    return `${first[0]}${last[0]}`.toUpperCase()
+    return `${first[0]}${last[0]}`.toUpperCase();
   } else if (first) {
-    return first[0].toUpperCase()
+    return first[0].toUpperCase();
   } else if (last) {
-    return last[0].toUpperCase()
+    return last[0].toUpperCase();
   }
-  
-  return 'U'
-}
+
+  return "U";
+};
 
 const ParticipantsSidebar = ({ attendants = [], totalRegistered, currentUserId }: ParticipantsSidebarProps) => {
   return (
@@ -56,9 +56,9 @@ const ParticipantsSidebar = ({ attendants = [], totalRegistered, currentUserId }
         <div className="flex-1 overflow-hidden flex flex-col min-h-0">
           <div className="space-y-3 overflow-y-auto max-h-[400px] pr-2">
             {attendants.map((attendant) => {
-              const isCurrentUser = currentUserId === attendant.id
-              const avatarUrl = getAttendantAvatarUrl(attendant.avatar)
-              const initials = getAttendantInitials(attendant.firstName, attendant.lastName)
+              const isCurrentUser = currentUserId === attendant.id;
+              const avatarUrl = getAttendantAvatarUrl(attendant.avatar);
+              const initials = getAttendantInitials(attendant.firstName, attendant.lastName);
 
               return (
                 <div key={attendant.id} className="flex items-center space-x-3">
@@ -66,18 +66,20 @@ const ParticipantsSidebar = ({ attendants = [], totalRegistered, currentUserId }
                     <img
                       src={avatarUrl}
                       alt={attendant.name}
-                      className={`w-10 h-10 rounded-full object-cover ring-2 ${isCurrentUser ? 'ring-primary/20' : 'ring-gray-200'}`}
+                      className={`w-10 h-10 rounded-full object-cover ring-2 ${isCurrentUser ? "ring-primary/20" : "ring-gray-200"}`}
                     />
                   ) : (
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ring-2 ${isCurrentUser ? 'ring-primary/20 bg-primary/10' : 'ring-gray-200 bg-gray-100'}`}>
-                      <span className={`text-xs font-semibold ${isCurrentUser ? 'text-primary' : 'text-gray-600'}`}>
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center ring-2 ${isCurrentUser ? "ring-primary/20 bg-primary/10" : "ring-gray-200 bg-gray-100"}`}
+                    >
+                      <span className={`text-xs font-semibold ${isCurrentUser ? "text-primary" : "text-gray-600"}`}>
                         {initials}
                       </span>
                     </div>
                   )}
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900">{attendant.name}</p>
-                    <p className="text-xs text-gray-500">{isCurrentUser ? 'Vous' : 'Membre'}</p>
+                    <p className="text-xs text-gray-500">{isCurrentUser ? "Vous" : "Membre"}</p>
                   </div>
                   {attendant.attended && (
                     <span className="px-2 py-1 bg-success/10 text-success text-xs font-medium rounded-lg">
@@ -86,14 +88,13 @@ const ParticipantsSidebar = ({ attendants = [], totalRegistered, currentUserId }
                     </span>
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ParticipantsSidebar
-
+export default ParticipantsSidebar;

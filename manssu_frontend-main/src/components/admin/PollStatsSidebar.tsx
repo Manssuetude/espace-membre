@@ -1,9 +1,9 @@
 interface PollStatsSidebarProps {
-  totalResponses: number
-  totalMembers: number
-  participation: number
-  activeMembers: number
-  inactiveMembers: number
+  totalResponses: number;
+  totalMembers: number;
+  participation: number;
+  activeMembers: number;
+  inactiveMembers: number;
 }
 
 const PollStatsSidebar = ({
@@ -22,13 +22,18 @@ const PollStatsSidebar = ({
           <div className="text-sm text-gray-600">Réponses reçues</div>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-3">
-          <div className="bg-gradient-to-r from-accent to-blue-600 h-3 rounded-full" style={{ width: `${Math.round(participation)}%` }}></div>
+          <div
+            className="bg-gradient-to-r from-accent to-blue-600 h-3 rounded-full"
+            style={{ width: `${Math.round(participation)}%` }}
+          ></div>
         </div>
         <div className="flex justify-between text-sm text-gray-600">
           <span>{Math.round(participation)}% de participation</span>
-          <span>{totalResponses}/{totalMembers} membres</span>
+          <span>
+            {totalResponses}/{totalMembers} membres
+          </span>
         </div>
-        
+
         <div className="border-t border-gray-200 pt-4">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">Membres actifs</span>
@@ -45,8 +50,7 @@ const PollStatsSidebar = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PollStatsSidebar
-
+export default PollStatsSidebar;

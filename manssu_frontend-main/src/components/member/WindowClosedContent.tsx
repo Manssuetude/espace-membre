@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 const WindowClosedContent = () => {
   return (
@@ -27,8 +27,7 @@ const WindowClosedContent = () => {
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WindowClosedContent
-
+export default WindowClosedContent;

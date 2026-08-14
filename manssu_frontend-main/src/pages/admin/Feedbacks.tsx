@@ -1,103 +1,102 @@
-import { useState, useMemo } from 'react'
-import { useFeedbacks, useUpdateFeedback, useDeleteFeedback } from '../../services/hooks/useFeedback'
-import { useMembers } from '../../services/hooks/useMembers'
-import Dropdown from '../../components/Dropdown'
+import { useState, useMemo } from "react";
+import { useFeedbacks, useUpdateFeedback, useDeleteFeedback } from "../../services/hooks/useFeedback";
+import { useMembers } from "../../services/hooks/useMembers";
+import Dropdown from "../../components/Dropdown";
 
 const Feedbacks = () => {
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch feedbacks
   const { data: feedbacksData, isLoading: isLoadingFeedbacks } = useFeedbacks({
-    status: statusFilter !== 'all' ? statusFilter : undefined,
-    category: categoryFilter !== 'all' ? categoryFilter : undefined,
+    status: statusFilter !== "all" ? statusFilter : undefined,
+    category: categoryFilter !== "all" ? categoryFilter : undefined,
     limit: 100,
-  })
+  });
 
   // Fetch members to get user names
-  const { data: membersData } = useMembers({ limit: 100 })
-  const members = membersData?.data || []
+  const { data: membersData } = useMembers({ limit: 100 });
 
   // Create a map of user IDs to member names
   const memberMap = useMemo(() => {
-    const map: Record<string, { name: string; avatar: string | null }> = {}
-    members.forEach((member) => {
+    const map: Record<string, { name: string; avatar: string | null }> = {};
+    (membersData?.data || []).forEach((member) => {
       if (member.id) {
         map[member.id] = {
           name: member.name || `${member.firstName} ${member.lastName}`,
           avatar: member.avatar || null,
-        }
+        };
       }
-    })
-    return map
-  }, [members])
+    });
+    return map;
+  }, [membersData]);
 
-  const feedbacks = feedbacksData?.data || []
+  const feedbacks = useMemo(() => feedbacksData?.data || [], [feedbacksData]);
 
   // Filter feedbacks by search term
   const filteredFeedbacks = useMemo(() => {
-    if (!searchTerm) return feedbacks
+    if (!searchTerm) return feedbacks;
 
-    const search = searchTerm.toLowerCase()
+    const search = searchTerm.toLowerCase();
     return feedbacks.filter(
       (feedback) =>
         feedback.subject.toLowerCase().includes(search) ||
         feedback.message.toLowerCase().includes(search) ||
-        (feedback.submittedBy && memberMap[feedback.submittedBy]?.name.toLowerCase().includes(search))
-    )
-  }, [feedbacks, searchTerm, memberMap])
+        (feedback.submittedBy && memberMap[feedback.submittedBy]?.name.toLowerCase().includes(search)),
+    );
+  }, [feedbacks, searchTerm, memberMap]);
 
   // Calculate stats
   const stats = useMemo(() => {
-    const total = feedbacks.length
-    const newCount = feedbacks.filter((f) => f.status === 'new').length
-    return { total, newCount }
-  }, [feedbacks])
+    const total = feedbacks.length;
+    const newCount = feedbacks.filter((f) => f.status === "new").length;
+    return { total, newCount };
+  }, [feedbacks]);
 
-  const updateFeedbackMutation = useUpdateFeedback()
-  const deleteFeedbackMutation = useDeleteFeedback()
+  const updateFeedbackMutation = useUpdateFeedback();
+  const deleteFeedbackMutation = useDeleteFeedback();
 
-  const handleStatusChange = (feedbackId: string, newStatus: 'new' | 'read' | 'resolved') => {
+  const handleStatusChange = (feedbackId: string, newStatus: "new" | "read" | "resolved") => {
     updateFeedbackMutation.mutate({
       id: feedbackId,
       data: { status: newStatus },
-    })
-  }
+    });
+  };
 
   const handleDelete = (feedbackId: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce feedback ?')) {
-      deleteFeedbackMutation.mutate(feedbackId)
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce feedback ?")) {
+      deleteFeedbackMutation.mutate(feedbackId);
     }
-  }
+  };
 
   // Format time ago
   const formatTimeAgo = (dateStr: string | null) => {
-    if (!dateStr) return 'Date inconnue'
-    const date = new Date(dateStr)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (!dateStr) return "Date inconnue";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffMins < 60) {
-      return `Il y a ${diffMins} min`
+      return `Il y a ${diffMins} min`;
     } else if (diffHours < 24) {
-      return `Il y a ${diffHours}h`
+      return `Il y a ${diffHours}h`;
     } else if (diffDays === 1) {
-      return 'Il y a 1j'
+      return "Il y a 1j";
     } else {
-      return `Il y a ${diffDays}j`
+      return `Il y a ${diffDays}j`;
     }
-  }
+  };
 
   if (isLoadingFeedbacks) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   return (
@@ -148,10 +147,10 @@ const Feedbacks = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               options={[
-                { value: 'all', label: 'Tous les statuts' },
-                { value: 'new', label: 'Nouveau' },
-                { value: 'read', label: 'Lu' },
-                { value: 'resolved', label: 'Résolu' },
+                { value: "all", label: "Tous les statuts" },
+                { value: "new", label: "Nouveau" },
+                { value: "read", label: "Lu" },
+                { value: "resolved", label: "Résolu" },
               ]}
               className="min-w-[150px]"
             />
@@ -159,9 +158,9 @@ const Feedbacks = () => {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               options={[
-                { value: 'all', label: 'Toutes les catégories' },
-                { value: 'Session', label: 'Session' },
-                { value: 'Général', label: 'Général' },
+                { value: "all", label: "Toutes les catégories" },
+                { value: "Session", label: "Session" },
+                { value: "Général", label: "Général" },
               ]}
               className="min-w-[150px]"
             />
@@ -184,12 +183,15 @@ const Feedbacks = () => {
       ) : (
         <div className="space-y-4">
           {filteredFeedbacks.map((feedback) => {
-            const authorInfo = feedback.submittedBy && !feedback.anonymous ? memberMap[feedback.submittedBy] : null
-            const authorName = feedback.anonymous ? 'Anonyme' : authorInfo?.name || 'Utilisateur inconnu'
-            const authorAvatar = authorInfo?.avatar
+            const authorInfo = feedback.submittedBy && !feedback.anonymous ? memberMap[feedback.submittedBy] : null;
+            const authorName = feedback.anonymous ? "Anonyme" : authorInfo?.name || "Utilisateur inconnu";
+            const authorAvatar = authorInfo?.avatar;
 
             return (
-              <div key={feedback.id} className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg border border-gray-200/50 p-4 sm:p-6 hover:shadow-xl transition-all">
+              <div
+                key={feedback.id}
+                className="bg-white/80 backdrop-blur-xl rounded-xl shadow-lg border border-gray-200/50 p-4 sm:p-6 hover:shadow-xl transition-all"
+              >
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
                   <div className="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
                     {authorAvatar && !feedback.anonymous ? (
@@ -206,21 +208,27 @@ const Feedbacks = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 sm:space-x-3 mb-2">
                         <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{authorName}</h4>
-                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">{feedback.category}</span>
-                        <span className="px-2 py-1 bg-accent/10 text-accent rounded text-xs font-medium">{feedback.type}</span>
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">
+                          {feedback.category}
+                        </span>
+                        <span className="px-2 py-1 bg-accent/10 text-accent rounded text-xs font-medium">
+                          {feedback.type}
+                        </span>
                         {feedback.anonymous && (
-                          <span className="px-2 py-1 bg-accent/10 text-accent rounded text-xs font-medium">Anonyme</span>
+                          <span className="px-2 py-1 bg-accent/10 text-accent rounded text-xs font-medium">
+                            Anonyme
+                          </span>
                         )}
                         <span
                           className={`px-2 py-1 rounded text-xs font-medium ${
-                            feedback.status === 'new'
-                              ? 'bg-primary/10 text-primary'
-                              : feedback.status === 'read'
-                              ? 'bg-accent/10 text-accent'
-                              : 'bg-success/10 text-success'
+                            feedback.status === "new"
+                              ? "bg-primary/10 text-primary"
+                              : feedback.status === "read"
+                                ? "bg-accent/10 text-accent"
+                                : "bg-success/10 text-success"
                           }`}
                         >
-                          {feedback.status === 'new' ? 'Nouveau' : feedback.status === 'read' ? 'Lu' : 'Résolu'}
+                          {feedback.status === "new" ? "Nouveau" : feedback.status === "read" ? "Lu" : "Résolu"}
                         </span>
                       </div>
                       <h5 className="font-medium text-gray-900 text-sm sm:text-base mb-1">{feedback.subject}</h5>
@@ -231,7 +239,7 @@ const Feedbacks = () => {
                             <i
                               key={star}
                               className={`fa-solid fa-star text-sm ${
-                                star <= feedback.rating! ? 'text-warning' : 'text-gray-300'
+                                star <= feedback.rating! ? "text-warning" : "text-gray-300"
                               }`}
                             ></i>
                           ))}
@@ -243,20 +251,22 @@ const Feedbacks = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-between w-full sm:w-auto sm:justify-start gap-2">
-                    <span className="text-xs sm:text-sm text-gray-500 sm:hidden">{formatTimeAgo(feedback.submittedAt)}</span>
+                    <span className="text-xs sm:text-sm text-gray-500 sm:hidden">
+                      {formatTimeAgo(feedback.submittedAt)}
+                    </span>
                     <div className="flex items-center space-x-2">
-                      {feedback.status === 'new' && (
+                      {feedback.status === "new" && (
                         <button
-                          onClick={() => handleStatusChange(feedback.id, 'read')}
+                          onClick={() => handleStatusChange(feedback.id, "read")}
                           className="px-3 py-2 bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition-all text-xs sm:text-sm"
                           title="Marquer comme lu"
                         >
                           <i className="fa-solid fa-check"></i>
                         </button>
                       )}
-                      {feedback.status === 'read' && (
+                      {feedback.status === "read" && (
                         <button
-                          onClick={() => handleStatusChange(feedback.id, 'resolved')}
+                          onClick={() => handleStatusChange(feedback.id, "resolved")}
                           className="px-3 py-2 bg-success/10 text-success rounded-lg hover:bg-success/20 transition-all text-xs sm:text-sm"
                           title="Marquer comme résolu"
                         >
@@ -274,13 +284,12 @@ const Feedbacks = () => {
                   </div>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Feedbacks
-
+export default Feedbacks;

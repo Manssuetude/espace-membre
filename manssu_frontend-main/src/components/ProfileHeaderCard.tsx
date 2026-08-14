@@ -1,18 +1,20 @@
-import { getUserAvatarUrl, getUserInitials } from '../utils/userUtils'
-import { User } from '../types/auth'
+import { getUserAvatarUrl, getUserInitials } from "../utils/userUtils";
+import { User } from "../types/auth";
 
 interface ProfileHeaderCardProps {
-  user: User | null
-  memberSince: string
-  sessionsCount: number
-  status: string
+  user: User | null;
+  memberSince: string;
+  sessionsCount: number;
+  status: string;
 }
 
 const ProfileHeaderCard = ({ user, memberSince, sessionsCount, status }: ProfileHeaderCardProps) => {
-  const avatarUrl = getUserAvatarUrl(user)
-  const initials = getUserInitials(user)
-  const displayName = user?.name || (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email || 'Utilisateur')
-  
+  const avatarUrl = getUserAvatarUrl(user);
+  const initials = getUserInitials(user);
+  const displayName =
+    user?.name ||
+    (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email || "Utilisateur");
+
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 lg:p-8 mb-8">
       <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
@@ -45,8 +47,7 @@ const ProfileHeaderCard = ({ user, memberSince, sessionsCount, status }: Profile
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfileHeaderCard
-
+export default ProfileHeaderCard;

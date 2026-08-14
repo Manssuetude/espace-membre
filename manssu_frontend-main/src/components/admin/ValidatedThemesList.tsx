@@ -1,11 +1,11 @@
 interface ValidatedTheme {
-  title: string
-  proposedBy: string
-  when: string
+  title: string;
+  proposedBy: string;
+  when: string;
 }
 
 interface ValidatedThemesListProps {
-  themes: ValidatedTheme[]
+  themes: ValidatedTheme[];
 }
 
 const ValidatedThemesList = ({ themes }: ValidatedThemesListProps) => {
@@ -29,7 +29,10 @@ const ValidatedThemesList = ({ themes }: ValidatedThemesListProps) => {
           </div>
         ) : (
           themes.map((theme, idx) => (
-            <div key={idx} className="p-3 sm:p-5 bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-lg transition-all">
+            <div
+              key={idx}
+              className="p-3 sm:p-5 bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-lg transition-all"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0 pr-2">
                   <h4 className="font-semibold text-gray-900 text-base sm:text-lg mb-2">{theme.title}</h4>
@@ -50,8 +53,7 @@ const ValidatedThemesList = ({ themes }: ValidatedThemesListProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ValidatedThemesList
-
+export default ValidatedThemesList;

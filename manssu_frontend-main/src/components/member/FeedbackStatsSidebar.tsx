@@ -1,21 +1,21 @@
-import { useMemo } from 'react'
-import { useMyFeedbacks } from '../../services/hooks/useFeedback'
+import { useMemo } from "react";
+import { useMyFeedbacks } from "../../services/hooks/useFeedback";
 
 const FeedbackStatsSidebar = () => {
-  const { data: feedbacksData } = useMyFeedbacks({ limit: 100 })
-  const feedbacks = feedbacksData?.data || []
+  const { data: feedbacksData } = useMyFeedbacks({ limit: 100 });
 
   const stats = useMemo(() => {
-    const total = feedbacks.length
-    const resolved = feedbacks.filter((f) => f.status === 'read' || f.status === 'resolved').length
-    const pending = feedbacks.filter((f) => f.status === 'new').length
+    const feedbacks = feedbacksData?.data || [];
+    const total = feedbacks.length;
+    const resolved = feedbacks.filter((f) => f.status === "read" || f.status === "resolved").length;
+    const pending = feedbacks.filter((f) => f.status === "new").length;
 
     return [
-      { icon: 'fa-comment-dots', label: 'Total envoyés', value: total.toString(), color: 'accent' },
-      { icon: 'fa-check-circle', label: 'Traités', value: resolved.toString(), color: 'success' },
-      { icon: 'fa-clock', label: 'En attente', value: pending.toString(), color: 'warning' },
-    ]
-  }, [feedbacks])
+      { icon: "fa-comment-dots", label: "Total envoyés", value: total.toString(), color: "accent" },
+      { icon: "fa-check-circle", label: "Traités", value: resolved.toString(), color: "success" },
+      { icon: "fa-clock", label: "En attente", value: pending.toString(), color: "warning" },
+    ];
+  }, [feedbacksData]);
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
@@ -24,7 +24,7 @@ const FeedbackStatsSidebar = () => {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`flex items-center justify-between p-3 bg-gradient-to-r from-${stat.color}/10 to-${stat.color === 'accent' ? 'blue-600' : stat.color === 'success' ? 'emerald-600' : 'yellow-600'}/10 rounded-xl`}
+            className={`flex items-center justify-between p-3 bg-gradient-to-r from-${stat.color}/10 to-${stat.color === "accent" ? "blue-600" : stat.color === "success" ? "emerald-600" : "yellow-600"}/10 rounded-xl`}
           >
             <div className="flex items-center">
               <i className={`fa-solid ${stat.icon} text-${stat.color} mr-3`}></i>
@@ -35,8 +35,7 @@ const FeedbackStatsSidebar = () => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FeedbackStatsSidebar
-
+export default FeedbackStatsSidebar;

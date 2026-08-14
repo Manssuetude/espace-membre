@@ -1,37 +1,37 @@
-import { Session } from '../../types/session'
+import { Session } from "../../types/session";
 
 interface NextSessionBannerProps {
-  nextSession: Session | null
-  pendingCount: number
+  nextSession: Session | null;
+  pendingCount: number;
 }
 
 const NextSessionBanner = ({ nextSession, pendingCount }: NextSessionBannerProps) => {
   // Format session date
   const formattedDate = nextSession?.date
     ? (() => {
-        const sessionDate = new Date(nextSession.date)
-        const day = sessionDate.getDate()
+        const sessionDate = new Date(nextSession.date);
+        const day = sessionDate.getDate();
         const monthNames = [
-          'Janvier',
-          'Février',
-          'Mars',
-          'Avril',
-          'Mai',
-          'Juin',
-          'Juillet',
-          'Août',
-          'Septembre',
-          'Octobre',
-          'Novembre',
-          'Décembre',
-        ]
-        const month = monthNames[sessionDate.getMonth()]
-        return `${day} ${month} ${sessionDate.getFullYear()}`
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
+        ];
+        const month = monthNames[sessionDate.getMonth()];
+        return `${day} ${month} ${sessionDate.getFullYear()}`;
       })()
-    : 'Date non définie'
+    : "Date non définie";
 
   if (!nextSession) {
-    return null
+    return null;
   }
 
   return (
@@ -56,8 +56,7 @@ const NextSessionBanner = ({ nextSession, pendingCount }: NextSessionBannerProps
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NextSessionBanner
-
+export default NextSessionBanner;

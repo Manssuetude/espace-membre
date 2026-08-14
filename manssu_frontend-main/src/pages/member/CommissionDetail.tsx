@@ -1,63 +1,60 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
-import {
-  useCommission,
-  useApplyToCommission,
-  useWithdrawApplication,
-} from '../../services/hooks/useCommissions'
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { useCommission, useApplyToCommission, useWithdrawApplication } from "../../services/hooks/useCommissions";
+import { CommissionDetailWithSnakeCaseFallback, FlexibleMemberEntry } from "../../types/commission";
 
 const CommissionDetail = () => {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { user } = useAuth()
-  const isGuest = user?.role === 'guest'
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isGuest = user?.role === "guest";
 
-  const { data: commission, isLoading } = useCommission(id || '')
+  const { data: commission, isLoading } = useCommission(id || "");
 
-  const [showApplyModal, setShowApplyModal] = useState(false)
-  const [applyReason, setApplyReason] = useState('')
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [applyReason, setApplyReason] = useState("");
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
-  const applyMutation = useApplyToCommission()
-  const withdrawMutation = useWithdrawApplication()
+  const applyMutation = useApplyToCommission();
+  const withdrawMutation = useWithdrawApplication();
 
   const handleApply = () => {
-    if (!id || applyReason.trim().length < 10) return
+    if (!id || applyReason.trim().length < 10) return;
     applyMutation.mutate(
       { id, data: { reason: applyReason } },
       {
         onSuccess: () => {
-          setShowApplyModal(false)
-          setApplyReason('')
+          setShowApplyModal(false);
+          setApplyReason("");
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   const handleWithdraw = () => {
-    if (!id) return
+    if (!id) return;
     withdrawMutation.mutate(id, {
       onSuccess: () => {
-        setShowWithdrawModal(false)
+        setShowWithdrawModal(false);
       },
-    })
-  }
+    });
+  };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-  }
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   if (!commission) {
@@ -77,19 +74,20 @@ const CommissionDetail = () => {
           <p className="text-gray-500 text-lg">Commission non trouvée</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const memberCount = commission.memberCount ?? (commission as any).member_count ?? 0
-  const maxMembers = commission.maxMembers ?? (commission as any).max_members
-  const pendingApp = commission.myPendingApplication ?? (commission as any).my_pending_application
-  const isMember = commission.isMember ?? (commission as any).is_member ?? false
-  const isLeader = commission.isLeader ?? (commission as any).is_leader ?? false
-  const leaderFirstName = commission.leader?.firstName || (commission.leader as any)?.first_name || ''
-  const leaderLastName = commission.leader?.lastName || (commission.leader as any)?.last_name || ''
-  const createdAt = commission.createdAt || (commission as any).created_at || ''
-  const updatedAt = commission.updatedAt || (commission as any).updated_at || ''
-  const isFull = maxMembers !== null && maxMembers !== undefined && memberCount >= maxMembers
+  const commissionFallback = commission as CommissionDetailWithSnakeCaseFallback;
+  const memberCount = commissionFallback.memberCount ?? commissionFallback.member_count ?? 0;
+  const maxMembers = commissionFallback.maxMembers ?? commissionFallback.max_members;
+  const pendingApp = commissionFallback.myPendingApplication ?? commissionFallback.my_pending_application;
+  const isMember = commissionFallback.isMember ?? commissionFallback.is_member ?? false;
+  const isLeader = commissionFallback.isLeader ?? commissionFallback.is_leader ?? false;
+  const leaderFirstName = commissionFallback.leader?.firstName || commissionFallback.leader?.first_name || "";
+  const leaderLastName = commissionFallback.leader?.lastName || commissionFallback.leader?.last_name || "";
+  const createdAt = commissionFallback.createdAt || commissionFallback.created_at || "";
+  const updatedAt = commissionFallback.updatedAt || commissionFallback.updated_at || "";
+  const isFull = maxMembers !== null && maxMembers !== undefined && memberCount >= maxMembers;
 
   return (
     <div className="space-y-6">
@@ -114,12 +112,10 @@ const CommissionDetail = () => {
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{commission.name}</h1>
                 <span
                   className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
-                    commission.status === 'active'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-gray-200 text-gray-600'
+                    commission.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"
                   }`}
                 >
-                  {commission.status === 'active' ? 'Active' : 'Archivée'}
+                  {commission.status === "active" ? "Active" : "Archivée"}
                 </span>
               </div>
               {commission.description && (
@@ -133,7 +129,7 @@ const CommissionDetail = () => {
             {isMember ? (
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 text-sm font-medium rounded-xl">
                 <i className="fa-solid fa-check"></i>
-                {isLeader ? 'Leader' : 'Membre'}
+                {isLeader ? "Leader" : "Membre"}
               </span>
             ) : pendingApp ? (
               <div className="flex items-center gap-2">
@@ -149,7 +145,7 @@ const CommissionDetail = () => {
                   <i className="fa-solid fa-xmark"></i>
                 </button>
               </div>
-            ) : !isGuest && commission.status === 'active' && !isFull ? (
+            ) : !isGuest && commission.status === "active" && !isFull ? (
               <button
                 onClick={() => setShowApplyModal(true)}
                 className="px-5 py-2.5 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary/90 transition-colors flex items-center gap-2"
@@ -173,7 +169,9 @@ const CommissionDetail = () => {
             <span className="text-xs sm:text-sm font-medium text-gray-500">Leader</span>
           </div>
           {commission.leader ? (
-            <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">{leaderFirstName} {leaderLastName}</p>
+            <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+              {leaderFirstName} {leaderLastName}
+            </p>
           ) : (
             <p className="text-gray-400 italic text-sm sm:text-base">Aucun leader assigné</p>
           )}
@@ -203,7 +201,7 @@ const CommissionDetail = () => {
             </div>
             <span className="text-xs sm:text-sm font-medium text-gray-500">Créée le</span>
           </div>
-          <p className="font-semibold text-gray-900 text-sm sm:text-base">{createdAt ? formatDate(createdAt) : '-'}</p>
+          <p className="font-semibold text-gray-900 text-sm sm:text-base">{createdAt ? formatDate(createdAt) : "-"}</p>
         </div>
 
         {/* Updated at */}
@@ -214,22 +212,24 @@ const CommissionDetail = () => {
             </div>
             <span className="text-xs sm:text-sm font-medium text-gray-500">Mise à jour</span>
           </div>
-          <p className="font-semibold text-gray-900 text-sm sm:text-base">{updatedAt ? formatDate(updatedAt) : '-'}</p>
+          <p className="font-semibold text-gray-900 text-sm sm:text-base">{updatedAt ? formatDate(updatedAt) : "-"}</p>
         </div>
       </div>
 
       {/* Status notices */}
-      {commission.status === 'archived' && (
+      {commission.status === "archived" && (
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center gap-3">
           <i className="fa-solid fa-archive text-gray-500"></i>
           <p className="text-gray-600">Cette commission est archivée et n'accepte plus de candidatures.</p>
         </div>
       )}
 
-      {isFull && commission.status === 'active' && (
+      {isFull && commission.status === "active" && (
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-center gap-3">
           <i className="fa-solid fa-user-lock text-orange-500"></i>
-          <p className="text-orange-700">Cette commission est complète ({memberCount}/{maxMembers} membres).</p>
+          <p className="text-orange-700">
+            Cette commission est complète ({memberCount}/{maxMembers} membres).
+          </p>
         </div>
       )}
 
@@ -247,22 +247,20 @@ const CommissionDetail = () => {
 
         {commission.members && commission.members.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {commission.members.map((member: any) => {
-              const userData = member.user || member
-              const memberId = userData.id || member.userId || member.id
-              const firstName = userData.firstName || userData.first_name || ''
-              const lastName = userData.lastName || userData.last_name || ''
-              const email = userData.email || ''
-              const joinedAt = member.joinedAt || member.joined_at || ''
-              const isLeaderMember = commission.leader?.id === memberId
+            {(commission.members as FlexibleMemberEntry[]).map((member) => {
+              const userData = member.user || member;
+              const memberId = userData.id || member.userId || member.id;
+              const firstName = userData.firstName || userData.first_name || "";
+              const lastName = userData.lastName || userData.last_name || "";
+              const email = userData.email || "";
+              const joinedAt = member.joinedAt || member.joined_at || "";
+              const isLeaderMember = commission.leader?.id === memberId;
 
               return (
-                <div
-                  key={member.id}
-                  className="flex items-center gap-3 p-3 sm:p-4 bg-gray-50 rounded-xl"
-                >
+                <div key={member.id} className="flex items-center gap-3 p-3 sm:p-4 bg-gray-50 rounded-xl">
                   <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-red-600 rounded-full flex items-center justify-center text-white text-sm sm:text-base font-medium flex-shrink-0">
-                    {firstName[0] || '?'}{lastName[0] || '?'}
+                    {firstName[0] || "?"}
+                    {lastName[0] || "?"}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-1 sm:gap-2">
@@ -277,14 +275,10 @@ const CommissionDetail = () => {
                       )}
                     </div>
                     <p className="text-xs sm:text-sm text-gray-500 truncate">{email}</p>
-                    {joinedAt && (
-                      <p className="text-xs text-gray-400">
-                        Membre depuis {formatDate(joinedAt)}
-                      </p>
-                    )}
+                    {joinedAt && <p className="text-xs text-gray-400">Membre depuis {formatDate(joinedAt)}</p>}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         ) : (
@@ -306,8 +300,8 @@ const CommissionDetail = () => {
                 <h3 className="text-xl font-bold text-gray-900">Candidater à cette commission</h3>
                 <button
                   onClick={() => {
-                    setShowApplyModal(false)
-                    setApplyReason('')
+                    setShowApplyModal(false);
+                    setApplyReason("");
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
@@ -336,9 +330,7 @@ const CommissionDetail = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all resize-none"
                     placeholder="Expliquez pourquoi vous souhaitez rejoindre cette commission et ce que vous pouvez y apporter (minimum 10 caractères)..."
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {applyReason.length} / 2000 caractères (minimum 10)
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{applyReason.length} / 2000 caractères (minimum 10)</p>
                 </div>
               </div>
             </div>
@@ -346,8 +338,8 @@ const CommissionDetail = () => {
             <div className="p-6 border-t border-gray-200 flex items-center justify-end gap-3">
               <button
                 onClick={() => {
-                  setShowApplyModal(false)
-                  setApplyReason('')
+                  setShowApplyModal(false);
+                  setApplyReason("");
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
@@ -383,9 +375,7 @@ const CommissionDetail = () => {
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i className="fa-solid fa-triangle-exclamation text-red-500 text-2xl"></i>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-                Retirer votre candidature ?
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">Retirer votre candidature ?</h3>
               <p className="text-gray-600 text-center">
                 Êtes-vous sûr de vouloir retirer votre candidature ? Cette action est irréversible.
               </p>
@@ -420,8 +410,7 @@ const CommissionDetail = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CommissionDetail
-
+export default CommissionDetail;

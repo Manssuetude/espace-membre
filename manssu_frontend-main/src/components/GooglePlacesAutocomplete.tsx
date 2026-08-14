@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from "react";
 
 // Declare google namespace for TypeScript
 declare global {
@@ -6,69 +6,78 @@ declare global {
     google: {
       maps: {
         places: {
-          Autocomplete: new (input: HTMLInputElement, options?: { componentRestrictions?: { country: string[] } }) => {
-            addListener: (event: string, callback: () => void) => void
+          Autocomplete: new (
+            input: HTMLInputElement,
+            options?: { componentRestrictions?: { country: string[] } },
+          ) => {
+            addListener: (event: string, callback: () => void) => void;
             getPlace: () => {
-              formatted_address: string
-              place_id: string
+              formatted_address: string;
+              place_id: string;
               geometry: {
                 location: {
-                  lat: () => number
-                  lng: () => number
-                }
-              }
-            }
-          }
+                  lat: () => number;
+                  lng: () => number;
+                };
+              };
+            };
+          };
           PlaceResult: {
-            formatted_address: string
-            place_id: string
+            formatted_address: string;
+            place_id: string;
             geometry: {
               location: {
-                lat: () => number
-                lng: () => number
-              }
-            }
-          }
-        }
-      }
-    }
+                lat: () => number;
+                lng: () => number;
+              };
+            };
+          };
+        };
+      };
+    };
   }
 }
 
+type GoogleAutocompleteInstance = InstanceType<Window["google"]["maps"]["places"]["Autocomplete"]>;
+type GooglePlaceResult = ReturnType<GoogleAutocompleteInstance["getPlace"]>;
+
 interface GooglePlacesAutocompleteProps {
-  value: string
-  onChange: (address: string, placeId: string, longitude: number, latitude: number) => void
-  placeholder?: string
-  className?: string
-  error?: string
-  onPlaceSelect?: (place: any) => void
+  value: string;
+  onChange: (address: string, placeId: string, longitude: number, latitude: number) => void;
+  placeholder?: string;
+  className?: string;
+  error?: string;
+  onPlaceSelect?: (place: GooglePlaceResult) => void;
 }
 
 const GooglePlacesAutocomplete = ({
   value,
   onChange,
-  placeholder = 'Rechercher une adresse...',
-  className = '',
+  placeholder = "Rechercher une adresse...",
+  className = "",
   error,
   onPlaceSelect,
 }: GooglePlacesAutocompleteProps) => {
-  const inputRef = useRef<HTMLInputElement>(null)
-  const autocompleteRef = useRef<any>(null)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const isSettingPlaceRef = useRef(false)
+  const inputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<GoogleAutocompleteInstance | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const isSettingPlaceRef = useRef(false);
 
   useEffect(() => {
     // Load Google Places API script
     const loadGooglePlaces = () => {
       if (window.google && window.google.maps && window.google.maps.places) {
-        setIsLoaded(true)
-        return
+        setIsLoaded(true);
+        return;
       }
 
-      const apiKey = import.meta.env.VITE_REACT_GOOGLE_PLACES_API_KEY || import.meta.env.REACT_GOOGLE_PLACES_API_KEY || import.meta.env.VITE_GOOGLE_PLACES_API_KEY
+      const apiKey =
+        import.meta.env.VITE_REACT_GOOGLE_PLACES_API_KEY ||
+        import.meta.env.REACT_GOOGLE_PLACES_API_KEY ||
+        import.meta.env.VITE_GOOGLE_PLACES_API_KEY;
       if (!apiKey) {
-        console.error('Google Places API key not found')
-        return
+        console.error("Google Places API key not found");
+        return;
       }
 
       // Check if script is already loading
@@ -76,65 +85,65 @@ const GooglePlacesAutocomplete = ({
         // Wait for it to load
         const checkInterval = setInterval(() => {
           if (window.google && window.google.maps && window.google.maps.places) {
-            setIsLoaded(true)
-            clearInterval(checkInterval)
+            setIsLoaded(true);
+            clearInterval(checkInterval);
           }
-        }, 100)
-        return
+        }, 100);
+        return;
       }
 
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&region=fr`
-      script.async = true
-      script.defer = true
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&region=fr`;
+      script.async = true;
+      script.defer = true;
       script.onload = () => {
-        setIsLoaded(true)
-      }
-      document.head.appendChild(script)
-    }
+        setIsLoaded(true);
+      };
+      document.head.appendChild(script);
+    };
 
-    loadGooglePlaces()
-  }, [])
+    loadGooglePlaces();
+  }, []);
 
   useEffect(() => {
-    if (!isLoaded || !inputRef.current) return
+    if (!isLoaded || !inputRef.current) return;
 
     // Initialize autocomplete
     const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-      componentRestrictions: { country: ['fr'] }, // Restrict to France
-    })
+      componentRestrictions: { country: ["fr"] }, // Restrict to France
+    });
 
-    autocompleteRef.current = autocomplete
+    autocompleteRef.current = autocomplete;
 
     // Handle place selection
     const handlePlaceChanged = () => {
-      const place = autocomplete.getPlace()
+      const place = autocomplete.getPlace();
       if (place.formatted_address && place.place_id && place.geometry?.location && inputRef.current) {
         // Set flag to prevent onChange from firing with partial text
-        isSettingPlaceRef.current = true
-        
+        isSettingPlaceRef.current = true;
+
         // Extract coordinates
-        const latitude = place.geometry.location.lat()
-        const longitude = place.geometry.location.lng()
-        
+        const latitude = place.geometry.location.lat();
+        const longitude = place.geometry.location.lng();
+
         // Update parent state with full address, place ID, and coordinates
-        onChange(place.formatted_address, place.place_id, longitude, latitude)
+        onChange(place.formatted_address, place.place_id, longitude, latitude);
         if (onPlaceSelect) {
-          onPlaceSelect(place)
+          onPlaceSelect(place);
         }
         // Reset flag after a short delay
         setTimeout(() => {
-          isSettingPlaceRef.current = false
-        }, 100)
+          isSettingPlaceRef.current = false;
+        }, 100);
       }
-    }
+    };
 
-    autocomplete.addListener('place_changed', handlePlaceChanged)
+    autocomplete.addListener("place_changed", handlePlaceChanged);
 
     return () => {
       // Cleanup is handled automatically by Google Maps API
-    }
-  }, [isLoaded, onChange, onPlaceSelect])
+    };
+  }, [isLoaded, onChange, onPlaceSelect]);
 
   return (
     <div>
@@ -149,14 +158,14 @@ const GooglePlacesAutocomplete = ({
               // When typing manually, we can't provide placeId, longitude, latitude
               // So we pass empty string and 0,0 for coordinates
               // The validation will catch this when trying to save
-              onChange(e.target.value, '', 0, 0)
+              onChange(e.target.value, "", 0, 0);
             }
           }}
           placeholder={placeholder}
           className={`w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all bg-gray-50 focus:bg-white text-sm sm:text-base ${
             error
-              ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500'
-              : 'border-gray-300 focus:ring-primary/20 focus:border-primary'
+              ? "border-red-500 focus:ring-red-500/20 focus:border-red-500"
+              : "border-gray-300 focus:ring-primary/20 focus:border-primary"
           } ${className}`}
         />
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -170,8 +179,7 @@ const GooglePlacesAutocomplete = ({
         </p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default GooglePlacesAutocomplete
-
+export default GooglePlacesAutocomplete;

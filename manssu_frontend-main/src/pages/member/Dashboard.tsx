@@ -1,25 +1,25 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useMemberDashboard } from '../../services/hooks/useDashboard'
-import { useRegisterForSession } from '../../services/hooks/useSessions'
-import StatCard from '../../components/StatCard'
-import SessionCard from '../../components/SessionCard'
-import QuickActionButton from '../../components/QuickActionButton'
-import ResourceCard from '../../components/ResourceCard'
-import { translateResourceType } from '../../utils/resourceUtils'
-import CreateInvitationRequestModal from '../../components/member/CreateInvitationRequestModal'
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useMemberDashboard } from "../../services/hooks/useDashboard";
+import { useRegisterForSession } from "../../services/hooks/useSessions";
+import StatCard from "../../components/StatCard";
+import SessionCard from "../../components/SessionCard";
+import QuickActionButton from "../../components/QuickActionButton";
+import ResourceCard from "../../components/ResourceCard";
+import { translateResourceType } from "../../utils/resourceUtils";
+import CreateInvitationRequestModal from "../../components/member/CreateInvitationRequestModal";
 
 const Dashboard = () => {
-  const { data: dashboardData, isLoading } = useMemberDashboard()
-  const registerForSession = useRegisterForSession()
-  const [showInviteModal, setShowInviteModal] = useState(false)
+  const { data: dashboardData, isLoading } = useMemberDashboard();
+  const registerForSession = useRegisterForSession();
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
       </div>
-    )
+    );
   }
 
   const stats = dashboardData?.stats || {
@@ -27,26 +27,21 @@ const Dashboard = () => {
     sessionsCompleted: 0,
     newResources: 0,
     participationRate: 0,
-  }
+  };
 
-  const upcomingSessions = dashboardData?.upcomingSessions || []
-  const activePolls = dashboardData?.activePolls || []
-  const recentResources = dashboardData?.recentResources || []
+  const upcomingSessions = dashboardData?.upcomingSessions || [];
+  const activePolls = dashboardData?.activePolls || [];
+  const recentResources = dashboardData?.recentResources || [];
 
   const handleRegister = (sessionId: string) => {
-    registerForSession.mutate(sessionId)
-  }
+    registerForSession.mutate(sessionId);
+  };
 
   return (
     <div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard
-          label="Membres actifs"
-          value={String(stats.activeMembers)}
-          icon="fa-users"
-          color="primary"
-        />
+        <StatCard label="Membres actifs" value={String(stats.activeMembers)} icon="fa-users" color="primary" />
         <StatCard
           label="Sessions effectuées"
           value={String(stats.sessionsCompleted)}
@@ -80,42 +75,58 @@ const Dashboard = () => {
             </div>
             <div className="space-y-4">
               {upcomingSessions.length > 0 ? (
-                upcomingSessions.slice(0, 2).map((session) => {
-                  if (!session.date) {
-                    return null
-                  }
-                  const sessionDate = new Date(session.date)
-                  const day = sessionDate.getDate()
-                  const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
-                  const month = monthNames[sessionDate.getMonth()]
-                  const weekdayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
-                  const weekday = weekdayNames[sessionDate.getDay()]
-                  const timeStr = `${weekday} ${day} ${month} • ${session.startTime || ''} - ${session.endTime || ''}`
-                  
-                  // Convert location to string
-                  const locationStr = session.location?.address || 'Non défini'
-                  
-                  const isPastSession = session.status === 'completed' || 
-                    (session.date ? new Date(session.date) < new Date() : false)
+                upcomingSessions
+                  .slice(0, 2)
+                  .map((session) => {
+                    if (!session.date) {
+                      return null;
+                    }
+                    const sessionDate = new Date(session.date);
+                    const day = sessionDate.getDate();
+                    const monthNames = [
+                      "Jan",
+                      "Fév",
+                      "Mar",
+                      "Avr",
+                      "Mai",
+                      "Jun",
+                      "Jul",
+                      "Aoû",
+                      "Sep",
+                      "Oct",
+                      "Nov",
+                      "Déc",
+                    ];
+                    const month = monthNames[sessionDate.getMonth()];
+                    const weekdayNames = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+                    const weekday = weekdayNames[sessionDate.getDay()];
+                    const timeStr = `${weekday} ${day} ${month} • ${session.startTime || ""} - ${session.endTime || ""}`;
 
-                  return (
-                    <SessionCard
-                      key={session.id}
-                      id={session.id}
-                      day={day}
-                      month={month}
-                      title={session.title}
-                      time={timeStr}
-                      location={locationStr}
-                      participants={`${session.registered}/${session.maxParticipants}`}
-                      status={session.isRegistered ? 'registered' : 'available'}
-                      color="primary"
-                      onRegister={handleRegister}
-                      isRegistering={registerForSession.isPending}
-                      isPastSession={isPastSession}
-                    />
-                  )
-                }).filter(Boolean)
+                    // Convert location to string
+                    const locationStr = session.location?.address || "Non défini";
+
+                    const isPastSession =
+                      session.status === "completed" || (session.date ? new Date(session.date) < new Date() : false);
+
+                    return (
+                      <SessionCard
+                        key={session.id}
+                        id={session.id}
+                        day={day}
+                        month={month}
+                        title={session.title}
+                        time={timeStr}
+                        location={locationStr}
+                        participants={`${session.registered}/${session.maxParticipants}`}
+                        status={session.isRegistered ? "registered" : "available"}
+                        color="primary"
+                        onRegister={handleRegister}
+                        isRegistering={registerForSession.isPending}
+                        isPastSession={isPastSession}
+                      />
+                    );
+                  })
+                  .filter(Boolean)
               ) : (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -140,48 +151,45 @@ const Dashboard = () => {
               {activePolls.length > 0 ? (
                 activePolls.map((poll) => {
                   const formatEndDate = (dateStr?: string | null) => {
-                    if (!dateStr) return ''
-                    const date = new Date(dateStr)
-                    return date.toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                  }
-                  
+                    if (!dateStr) return "";
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    });
+                  };
+
                   return (
-                  <Link
-                    key={poll.id}
-                    to="/sondages"
-                    className="p-5 border border-gray-200 rounded-xl bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all block"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-1">
-                          {poll.title}
-                        </h4>
-                        <p className="text-sm text-gray-600 flex items-center">
-                          <i className="fa-solid fa-users mr-2 text-accent"></i>
-                          {poll.totalResponses} réponses
-                        </p>
+                    <Link
+                      key={poll.id}
+                      to="/sondages"
+                      className="p-5 border border-gray-200 rounded-xl bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-all block"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 mb-1">{poll.title}</h4>
+                          <p className="text-sm text-gray-600 flex items-center">
+                            <i className="fa-solid fa-users mr-2 text-accent"></i>
+                            {poll.totalResponses} réponses
+                          </p>
+                        </div>
+                        <span className="px-4 py-2 bg-gradient-to-r from-accent to-blue-600 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-accent/30 transition-all">
+                          Participer
+                        </span>
                       </div>
-                      <span className="px-4 py-2 bg-gradient-to-r from-accent to-blue-600 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-accent/30 transition-all">
-                        Participer
-                      </span>
-                    </div>
-                    {poll.daysLeft !== undefined && poll.daysLeft !== null && (
-                      <div className="flex items-center text-xs text-gray-500">
-                        <i className="fa-solid fa-clock mr-1"></i>
-                        {poll.daysLeft === 0 
-                          ? 'Dernier jour pour voter'
-                          : poll.daysLeft < 0
-                          ? `Terminé le ${formatEndDate(poll.endDate)}`
-                          : `Se termine dans ${poll.daysLeft} jour${poll.daysLeft > 1 ? 's' : ''}`
-                        }
-                      </div>
-                    )}
-                  </Link>
-                )
+                      {poll.daysLeft !== undefined && poll.daysLeft !== null && (
+                        <div className="flex items-center text-xs text-gray-500">
+                          <i className="fa-solid fa-clock mr-1"></i>
+                          {poll.daysLeft === 0
+                            ? "Dernier jour pour voter"
+                            : poll.daysLeft < 0
+                              ? `Terminé le ${formatEndDate(poll.endDate)}`
+                              : `Se termine dans ${poll.daysLeft} jour${poll.daysLeft > 1 ? "s" : ""}`}
+                        </div>
+                      )}
+                    </Link>
+                  );
                 })
               ) : (
                 <div className="text-center py-12">
@@ -211,7 +219,9 @@ const Dashboard = () => {
                       <i className="fa-solid fa-lightbulb text-white text-xl"></i>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 text-sm sm:text-base">Fenêtre de propositions ouverte</p>
+                      <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                        Fenêtre de propositions ouverte
+                      </p>
                       <p className="text-xs sm:text-sm text-gray-600 mt-1">
                         Proposez vos idées de thèmes pour les prochaines sessions
                       </p>
@@ -243,24 +253,9 @@ const Dashboard = () => {
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h3>
             <div className="space-y-3">
-              <QuickActionButton
-                icon="fa-comment-dots"
-                label="Envoyer un feedback"
-                color="primary"
-                to="/feedback"
-              />
-              <QuickActionButton
-                icon="fa-calendar-days"
-                label="Voir les sessions"
-                color="accent"
-                to="/sessions"
-              />
-              <QuickActionButton
-                icon="fa-lightbulb"
-                label="Proposer un thème"
-                color="secondary"
-                to="/proposer-theme"
-              />
+              <QuickActionButton icon="fa-comment-dots" label="Envoyer un feedback" color="primary" to="/feedback" />
+              <QuickActionButton icon="fa-calendar-days" label="Voir les sessions" color="accent" to="/sessions" />
+              <QuickActionButton icon="fa-lightbulb" label="Proposer un thème" color="secondary" to="/proposer-theme" />
               <QuickActionButton
                 icon="fa-user-plus"
                 label="Inviter un membre"
@@ -282,28 +277,28 @@ const Dashboard = () => {
               {recentResources.length > 0 ? (
                 recentResources.slice(0, 3).map((resource) => {
                   const iconMap: Record<string, string> = {
-                    file: 'fa-file-pdf',
-                    video: 'fa-video',
-                    audio: 'fa-podcast',
-                    folder: 'fa-folder',
-                  }
-                  const colorMap: Record<string, 'primary' | 'accent' | 'secondary'> = {
-                    file: 'primary',
-                    video: 'accent',
-                    audio: 'secondary',
-                    folder: 'secondary',
-                  }
-                  
+                    file: "fa-file-pdf",
+                    video: "fa-video",
+                    audio: "fa-podcast",
+                    folder: "fa-folder",
+                  };
+                  const colorMap: Record<string, "primary" | "accent" | "secondary"> = {
+                    file: "primary",
+                    video: "accent",
+                    audio: "secondary",
+                    folder: "secondary",
+                  };
+
                   return (
                     <ResourceCard
                       key={resource.id}
-                      icon={iconMap[resource.type] || 'fa-file'}
+                      icon={iconMap[resource.type] || "fa-file"}
                       title={resource.title}
                       type={resource.category || translateResourceType(resource.type)}
-                      color={colorMap[resource.type] || 'primary'}
+                      color={colorMap[resource.type] || "primary"}
                       to="/ressources"
                     />
-                  )
+                  );
                 })
               ) : (
                 <div className="text-center py-12">
@@ -325,8 +320,7 @@ const Dashboard = () => {
         onSuccess={() => setShowInviteModal(false)}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
-
+export default Dashboard;

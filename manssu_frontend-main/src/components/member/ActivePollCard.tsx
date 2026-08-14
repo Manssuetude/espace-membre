@@ -1,15 +1,15 @@
-import { useState } from 'react'
-import PollOption from '../PollOption'
-import { Poll } from '../../types/sondage'
-import { formatDate } from '../../utils/dateUtils'
+import { useState } from "react";
+import PollOption from "../PollOption";
+import { Poll } from "../../types/sondage";
+import { formatDate } from "../../utils/dateUtils";
 
 interface ActivePollCardProps {
-  poll: Poll
-  selectedOptions: Record<string, string | string[]> // { questionId: optionId } for single, { questionId: optionIds[] } for multiple
-  onSelectOption: (pollId: string, questionId: string, optionId: string, singleResponse: boolean) => void
-  onVote: (pollId: string) => void
-  isVoting: boolean
-  getColorForOption: (index: number) => 'primary' | 'accent' | 'secondary'
+  poll: Poll;
+  selectedOptions: Record<string, string | string[]>; // { questionId: optionId } for single, { questionId: optionIds[] } for multiple
+  onSelectOption: (pollId: string, questionId: string, optionId: string, singleResponse: boolean) => void;
+  onVote: (pollId: string) => void;
+  isVoting: boolean;
+  getColorForOption: (index: number) => "primary" | "accent" | "secondary";
 }
 
 const ActivePollCard = ({
@@ -20,33 +20,38 @@ const ActivePollCard = ({
   isVoting,
   getColorForOption,
 }: ActivePollCardProps) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
   // Use questions array if available, otherwise fallback to legacy format
-  const questions = poll.questions && poll.questions.length > 0 
-    ? poll.questions 
-    : poll.question 
-      ? [{
-          id: 'legacy-question',
-          question: poll.question,
-          description: poll.description,
-          orderIndex: 0,
-          singleResponse: poll.singleResponse ?? true,
-          options: poll.options || [],
-          userVote: poll.userVote || null,
-        }]
-      : []
-  
+  const questions =
+    poll.questions && poll.questions.length > 0
+      ? poll.questions
+      : poll.question
+        ? [
+            {
+              id: "legacy-question",
+              question: poll.question,
+              description: poll.description,
+              orderIndex: 0,
+              singleResponse: poll.singleResponse ?? true,
+              options: poll.options || [],
+              userVote: poll.userVote || null,
+            },
+          ]
+        : [];
+
   // Check if user has voted on all questions
-  const hasVoted = questions.length > 0 && questions.every(q => {
-    const userVote = q.userVote
-    if (!userVote) return false
-    if (Array.isArray(userVote)) return userVote.length > 0
-    return true
-  })
+  const hasVoted =
+    questions.length > 0 &&
+    questions.every((q) => {
+      const userVote = q.userVote;
+      if (!userVote) return false;
+      if (Array.isArray(userVote)) return userVote.length > 0;
+      return true;
+    });
 
   const formatVoteDate = (dateStr: string | null) => {
-    return formatDate(dateStr, { includeTime: true })
-  }
+    return formatDate(dateStr, { includeTime: true });
+  };
 
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 lg:p-8 mb-6">
@@ -62,11 +67,10 @@ const ActivePollCard = ({
               <span className="flex items-center">
                 <i className="fa-solid fa-clock mr-2 text-warning"></i>
                 {poll.daysLeft < 0 && poll.endDate
-                  ? `Terminé le ${new Date(poll.endDate).toLocaleDateString('fr-FR')}`
+                  ? `Terminé le ${new Date(poll.endDate).toLocaleDateString("fr-FR")}`
                   : poll.daysLeft === 0
-                  ? "Dernier jour pour voter"
-                  : `Se termine dans ${poll.daysLeft} jour${poll.daysLeft > 1 ? 's' : ''}`
-                }
+                    ? "Dernier jour pour voter"
+                    : `Se termine dans ${poll.daysLeft} jour${poll.daysLeft > 1 ? "s" : ""}`}
               </span>
             )}
           </p>
@@ -81,35 +85,35 @@ const ActivePollCard = ({
         <div className="space-y-6 mb-6">
           {(isExpanded ? questions : questions.slice(0, 2)).map((question, qIdx) => {
             // Get the original index from the full questions array
-            const originalIndex = questions.findIndex(q => q.id === question.id)
-            const questionUserVote = question.userVote
+            const originalIndex = questions.findIndex((q) => q.id === question.id);
+            const questionUserVote = question.userVote;
             // Normalize userVote to array format for easier handling
-            const userVotesArray = questionUserVote 
-              ? Array.isArray(questionUserVote) 
-                ? questionUserVote 
+            const userVotesArray = questionUserVote
+              ? Array.isArray(questionUserVote)
+                ? questionUserVote
                 : [questionUserVote]
-              : []
-            const hasVotedOnQuestion = userVotesArray.length > 0
-            const questionSelection = selectedOptions[question.id]
-            const userVotedOptionIds = userVotesArray.map(v => v.optionId)
-            
+              : [];
+            const hasVotedOnQuestion = userVotesArray.length > 0;
+            const questionSelection = selectedOptions[question.id];
+            const userVotedOptionIds = userVotesArray.map((v) => v.optionId);
+
             // Handle both single (string) and multiple (string[]) selections
             // Priority: current selection state > saved vote
             const isSelectedOption = (optionId: string): boolean => {
               // If user has made a selection in the current session, use that
               if (questionSelection) {
                 if (Array.isArray(questionSelection)) {
-                  return questionSelection.includes(optionId)
+                  return questionSelection.includes(optionId);
                 }
-                return questionSelection === optionId
+                return questionSelection === optionId;
               }
               // Otherwise, fall back to saved vote
               if (hasVotedOnQuestion && userVotedOptionIds.includes(optionId)) {
-                return true
+                return true;
               }
-              return false
-            }
-            
+              return false;
+            };
+
             return (
               <div key={question.id || qIdx} className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0">
                 <div className="mb-4">
@@ -117,9 +121,7 @@ const ActivePollCard = ({
                     {questions.length > 1 && `Question ${originalIndex + 1}: `}
                     {question.question}
                   </h4>
-                  {question.description && (
-                    <p className="text-sm text-gray-600 mb-4">{question.description}</p>
-                  )}
+                  {question.description && <p className="text-sm text-gray-600 mb-4">{question.description}</p>}
                 </div>
 
                 {/* Show user's vote if they've voted on this question */}
@@ -130,19 +132,15 @@ const ActivePollCard = ({
                         <div className="flex items-center mb-2">
                           <i className="fa-solid fa-check-circle text-primary mr-2"></i>
                           <span className="text-sm font-medium text-gray-900">
-                            {userVotesArray.length > 1 ? 'Vos choix :' : 'Votre choix :'}
+                            {userVotesArray.length > 1 ? "Vos choix :" : "Votre choix :"}
                           </span>
                         </div>
                         <div className="ml-6 space-y-1">
                           {userVotesArray.map((vote, voteIdx) => (
                             <div key={voteIdx} className="flex items-center justify-between">
-                              <span className="text-sm text-primary font-semibold">
-                                • {vote.optionLabel}
-                              </span>
+                              <span className="text-sm text-primary font-semibold">• {vote.optionLabel}</span>
                               {vote.votedAt && (
-                                <span className="text-xs text-gray-500 ml-2">
-                                  {formatVoteDate(vote.votedAt)}
-                                </span>
+                                <span className="text-xs text-gray-500 ml-2">{formatVoteDate(vote.votedAt)}</span>
                               )}
                             </div>
                           ))}
@@ -156,9 +154,9 @@ const ActivePollCard = ({
                 {question.options && question.options.length > 0 && (
                   <div className="space-y-4">
                     {question.options.map((option, index) => {
-                      const isUserVote = hasVotedOnQuestion && userVotedOptionIds.includes(option.id)
-                      const isSelected = isSelectedOption(option.id)
-                      
+                      const isUserVote = hasVotedOnQuestion && userVotedOptionIds.includes(option.id);
+                      const isSelected = isSelectedOption(option.id);
+
                       return (
                         <div key={option.id} className="relative">
                           <PollOption
@@ -181,12 +179,12 @@ const ActivePollCard = ({
                             </div>
                           )}
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 )}
               </div>
-            )
+            );
           })}
           {questions.length > 2 && (
             <button
@@ -213,16 +211,16 @@ const ActivePollCard = ({
         <p className="text-sm text-gray-500">
           {hasVoted
             ? "Vous pouvez modifier vos réponses jusqu'à la fermeture du sondage"
-            : `Veuillez répondre à ${questions.length > 1 ? 'toutes les questions' : 'la question'}`}
+            : `Veuillez répondre à ${questions.length > 1 ? "toutes les questions" : "la question"}`}
         </p>
         <button
           onClick={() => onVote(poll.id)}
           disabled={
-            Object.keys(selectedOptions).length === 0 || 
-            Object.values(selectedOptions).every(sel => {
+            Object.keys(selectedOptions).length === 0 ||
+            Object.values(selectedOptions).every((sel) => {
               // Check if selection is empty (empty array or empty string)
-              if (Array.isArray(sel)) return sel.length === 0
-              return !sel
+              if (Array.isArray(sel)) return sel.length === 0;
+              return !sel;
             }) ||
             isVoting
           }
@@ -234,15 +232,14 @@ const ActivePollCard = ({
               Enregistrement...
             </span>
           ) : hasVoted ? (
-            'Modifier mon vote'
+            "Modifier mon vote"
           ) : (
-            'Voter'
+            "Voter"
           )}
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ActivePollCard
-
+export default ActivePollCard;

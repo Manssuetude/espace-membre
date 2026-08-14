@@ -1,18 +1,18 @@
 interface DropdownOption {
-  value: string
-  label: string
+  value: string;
+  label: string;
 }
 
 interface DropdownProps {
-  label?: string
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
-  options: DropdownOption[]
-  placeholder?: string
-  disabled?: boolean
-  required?: boolean
-  className?: string
-  error?: string
+  label?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options: DropdownOption[];
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  className?: string;
+  error?: string;
 }
 
 const Dropdown = ({
@@ -23,14 +23,14 @@ const Dropdown = ({
   placeholder,
   disabled = false,
   required = false,
-  className = '',
+  className = "",
   error,
 }: DropdownProps) => {
   const baseClasses = `w-full px-4 py-3 pr-10 rounded-xl border transition-all bg-gray-50 focus:bg-white appearance-none cursor-pointer ${
     error
-      ? 'border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500'
-      : 'border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary'
-  }`
+      ? "border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+      : "border-gray-300 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+  }`;
 
   return (
     <div>
@@ -46,7 +46,7 @@ const Dropdown = ({
           onChange={onChange}
           disabled={disabled}
           required={required}
-          className={`${baseClasses} ${className} ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
+          className={`${baseClasses} ${className} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
         >
           {placeholder && (
             <option value="" disabled>
@@ -70,7 +70,7 @@ const Dropdown = ({
         </p>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Dropdown
+export default Dropdown;

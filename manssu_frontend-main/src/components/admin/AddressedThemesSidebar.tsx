@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 interface AddressedTheme {
-  title: string
-  lastSession: string
-  nextSession: string
-  sessions: number
+  title: string;
+  lastSession: string;
+  nextSession: string;
+  sessions: number;
 }
 
 interface AddressedThemesSidebarProps {
-  themes: AddressedTheme[]
+  themes: AddressedTheme[];
 }
 
 const AddressedThemesSidebar = ({ themes }: AddressedThemesSidebarProps) => {
@@ -26,20 +26,23 @@ const AddressedThemesSidebar = ({ themes }: AddressedThemesSidebarProps) => {
           </div>
         ) : (
           themes.map((theme, idx) => (
-            <div key={idx} className="p-3 sm:p-4 bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-all">
+            <div
+              key={idx}
+              className="p-3 sm:p-4 bg-gradient-to-r from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-all"
+            >
               <h4 className="font-medium text-gray-900 text-xs sm:text-sm mb-2">{theme.title}</h4>
               <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-gray-600 mb-3">
                 <span className="flex items-center">
                   <i className="fa-solid fa-calendar-check mr-1.5 text-accent"></i>
-                  {theme.sessions} session{theme.sessions > 1 ? 's' : ''}
+                  {theme.sessions} session{theme.sessions > 1 ? "s" : ""}
                 </span>
-                {theme.nextSession && theme.nextSession !== 'N/A' && (
+                {theme.nextSession && theme.nextSession !== "N/A" && (
                   <span className="flex items-center">
                     <i className="fa-solid fa-calendar-plus mr-1.5 text-primary"></i>
                     Prochaine session: {theme.nextSession}
                   </span>
                 )}
-                {theme.lastSession && theme.lastSession !== 'N/A' && (
+                {theme.lastSession && theme.lastSession !== "N/A" && (
                   <span className="flex items-center">
                     <i className="fa-solid fa-calendar mr-1.5 text-gray-400"></i>
                     Dernière session: {theme.lastSession}
@@ -58,8 +61,7 @@ const AddressedThemesSidebar = ({ themes }: AddressedThemesSidebarProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddressedThemesSidebar
-
+export default AddressedThemesSidebar;
