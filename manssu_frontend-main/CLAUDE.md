@@ -46,7 +46,7 @@ Le routage complet est déclaré dans `src/App.tsx`.
 
 ## Environment (`.env`)
 
-- `VITE_BACKEND_URL` — URL de l'API (dev `http://127.0.0.1:8000`, prod `https://api.manssuetude.com`).
+- `VITE_BACKEND_URL` — URL de l'API (dev `http://127.0.0.1:8000`, prod `https://apis.manssuetude.com`).
 - `VITE_REACT_GOOGLE_PLACES_API_KEY` — Google Places (autocomplétion d'adresses, `GooglePlacesAutocomplete`).
 
 Les variables exposées au client **doivent** être préfixées `VITE_`.

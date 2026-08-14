@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Espace Membre Manssuétude** est la plateforme membre/administrateur de l'association Manssuétude (association intellectuelle française). C'est un mono-repo à deux applications indépendantes :
 
-- **`manssu_backend-main/`** — API REST **FastAPI** (Python), SQLAlchemy + Alembic, PostgreSQL (local en dev, Supabase en prod). Authentification par **OTP e-mail + JWT**. Stockage fichiers sur **Cloudflare R2**. Servie en prod sur `https://api.manssuetude.com`.
+- **`manssu_backend-main/`** — API REST **FastAPI** (Python), SQLAlchemy + Alembic, PostgreSQL (local en dev, Supabase en prod). Authentification par **OTP e-mail + JWT**. Stockage fichiers sur **Cloudflare R2**. Servie en prod sur `https://apis.manssuetude.com`.
 - **`manssu_frontend-main/`** — SPA **React 18 + TypeScript + Vite**, Tailwind CSS, React Router, TanStack Query, axios. Déployée sur **Vercel** (`https://membres.manssuetude.com`).
 
 Le frontend consomme exclusivement l'API backend via axios. Aucune logique métier ni accès DB côté front.
@@ -108,7 +108,7 @@ Domaines miroir entre back (`api/v1/`, `services/`, `models/`) et front (`servic
 - `FRONTEND_BASE_URL` (liens d'invitation), `GOOGLE_PLACES_API_KEY`.
 
 ### Frontend (`.env`)
-- `VITE_BACKEND_URL` — URL de l'API (dev `http://127.0.0.1:8000`, prod `https://api.manssuetude.com`).
+- `VITE_BACKEND_URL` — URL de l'API (dev `http://127.0.0.1:8000`, prod `https://apis.manssuetude.com`).
 - `VITE_REACT_GOOGLE_PLACES_API_KEY` — Google Places (autocomplétion d'adresses).
 
 ## Database

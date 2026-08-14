@@ -4,7 +4,7 @@ Guidance pour Claude Code dans **`manssu_backend-main/`**. Vue d'ensemble du mon
 
 ## Overview
 
-API REST **FastAPI** de l'espace membre Manssuétude. SQLAlchemy 2.0 + Alembic, PostgreSQL (locale en dev, Supabase en prod). Auth **OTP e-mail + JWT**. Stockage fichiers **Cloudflare R2**. Servie en prod sur `https://api.manssuetude.com`.
+API REST **FastAPI** de l'espace membre Manssuétude. SQLAlchemy 2.0 + Alembic, PostgreSQL (locale en dev, Supabase en prod). Auth **OTP e-mail + JWT**. Stockage fichiers **Cloudflare R2**. Servie en prod sur `https://apis.manssuetude.com`.
 
 ## Commands
 

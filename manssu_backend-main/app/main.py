@@ -298,8 +298,8 @@ logger.info(f"Local network IPs allowed: {settings.CORS_ALLOW_LOCAL_NETWORK}")
 cors_origins = list(settings.CORS_ORIGINS) if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
 
 # Add production API domain to allowed origins if not already present
-if "https://api.manssuetude.com" not in cors_origins:
-    cors_origins.append("https://api.manssuetude.com")
+if "https://apis.manssuetude.com" not in cors_origins:
+    cors_origins.append("https://apis.manssuetude.com")
 
 # If local network is allowed, use regex pattern for local network IPs + explicit origins
 # Otherwise, just use explicit origins
