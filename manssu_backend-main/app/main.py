@@ -1,3 +1,4 @@
+import os
 import logging
 import time
 import json
@@ -12,21 +13,7 @@ from starlette.responses import StreamingResponse
 import io
 from app.core.config import settings
 
-# Create logs directory if it doesn't exist
-log_dir = Path("logs")
-log_dir.mkdir(exist_ok=True)
-
-# Configure file logging
-log_file = log_dir / f"app_{datetime.now().strftime('%Y%m%d')}.log"
-file_handler = logging.FileHandler(log_file, encoding='utf-8')
-file_handler.setLevel(logging.INFO)
-file_formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-file_handler.setFormatter(file_formatter)
-
-# Configure console logging
+# Configure console logging (captured by Vercel's function logs in production)
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 console_formatter = logging.Formatter(
@@ -38,11 +25,24 @@ console_handler.setFormatter(console_formatter)
 # Configure root logger
 root_logger = logging.getLogger()
 root_logger.setLevel(logging.INFO)
-root_logger.addHandler(file_handler)
 root_logger.addHandler(console_handler)
 
+# File logging only outside Vercel: its filesystem is read-only/ephemeral,
+# so writing to logs/ would fail there. Useful for local dev debugging.
+if not os.environ.get("VERCEL"):
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    log_file = log_dir / f"app_{datetime.now().strftime('%Y%m%d')}.log"
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+    file_formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    file_handler.setFormatter(file_formatter)
+    root_logger.addHandler(file_handler)
+
 logger = logging.getLogger(__name__)
-logger.info(f"Logging to file: {log_file.absolute()}")
 
 # Import routers
 from app.api.v1 import auth, users, sessions, themes, resources, polls, feedbacks, locations, dashboard, invites, activity_templates, questionnaires, commissions, library
