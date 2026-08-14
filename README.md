@@ -6,31 +6,87 @@
 
 ## Vision
 
-Espace membre où les adhérents de Manssuétude gèrent leur profil, consultent les sessions, thèmes, ressources, sondages, questionnaires, commissions et la bibliothèque de l'association. Les administrateurs y pilotent l'ensemble (membres, invitations, contenus, statistiques).
+Manssuétude est une association intellectuelle française. L'**espace membre** est l'outil interne où les adhérents gèrent leur profil, s'inscrivent aux sessions, proposent et consultent des thèmes de débat, accèdent aux ressources et à la bibliothèque, répondent aux sondages et questionnaires, et participent aux commissions/groupes de travail. Les administrateurs y pilotent l'ensemble : membres, invitations, contenus, statistiques.
 
-Le repo contient deux applications **indépendantes** déployées séparément :
-
-| App                    | Rôle                                          |
-| ----------------------- | ---------------------------------------------- |
-| `manssu_backend-main/`  | API REST FastAPI, source de vérité des données |
-| `manssu_frontend-main/` | SPA React consommant l'API via axios           |
-
-Le frontend ne contient aucune logique métier ni accès DB : tout passe par l'API.
+C'est un projet **hobby / budget zéro** : toute l'infrastructure (hébergement, base de données, stockage, e-mail) tourne sur des offres gratuites ou à très faible coût.
 
 ---
 
-## Stack
+## Structure du repo
 
-| Couche            | Technologie                                                    |
-| ------------------ | ---------------------------------------------------------------- |
-| Frontend           | React 18, TypeScript, Vite, Tailwind CSS, TanStack Query, axios |
-| Backend            | FastAPI (Python), SQLAlchemy 2.0, Alembic, Pydantic v2           |
-| Base de données    | PostgreSQL — locale en dev, Supabase en prod                    |
-| Authentification   | OTP e-mail (6 chiffres) + JWT (`HS256`, 7 jours)                |
-| Stockage fichiers  | Cloudflare R2                                                    |
-| Emails             | Resend (API HTTP)                                                |
-| Déploiement        | Vercel (2 projets séparés : `apis.manssuetude.com`, `membre.manssuetude.com`) |
-| CI                 | GitHub Actions (`.github/workflows/ci.yml`)                     |
+Mono-repo Git contenant **deux applications indépendantes**, déployées séparément :
+
+```
+espace_membre/
+├── manssu_backend-main/     API REST FastAPI (Python)
+├── manssu_frontend-main/    SPA React + TypeScript
+├── database/                 Scripts one-off DB (gitignoré, secrets locaux uniquement)
+├── docs/                     Documentation transverse (workflows git, etc.)
+└── .github/workflows/        CI GitHub Actions
+```
+
+Le frontend consomme **exclusivement** l'API backend via axios — aucune logique métier ni accès base de données côté client. Les deux apps ont chacune leur propre `CLAUDE.md` détaillant leurs conventions internes.
+
+---
+
+## Stack technique
+
+| Couche              | Technologie                                                                 |
+| -------------------- | ------------------------------------------------------------------------------ |
+| Frontend             | React 18, TypeScript (strict), Vite, Tailwind CSS, React Router, TanStack Query, axios |
+| Backend               | FastAPI (Python), SQLAlchemy 2.0, Alembic, Pydantic v2                        |
+| Base de données       | PostgreSQL — locale en dev, [Supabase](https://supabase.com) en production    |
+| Authentification      | OTP e-mail (code à 6 chiffres, expiration 10 min) → JWT (`HS256`, 7 jours)     |
+| Stockage fichiers     | Cloudflare R2 (compatible S3)                                                  |
+| Emails transactionnels| [Resend](https://resend.com) (API HTTP)                                       |
+| Hébergement           | Vercel — 2 projets serverless séparés (root directory par app)                |
+| CI                    | GitHub Actions (`.github/workflows/ci.yml`)                                   |
+| Qualité frontend      | ESLint (0 warning toléré), Prettier, Husky (pre-commit/pre-push)              |
+
+### Domaines de production
+
+| App      | Domaine                                          |
+| --------- | --------------------------------------------------- |
+| Backend   | `https://apis.manssuetude.com`                      |
+| Frontend  | `https://membre.manssuetude.com`                    |
+
+---
+
+## Architecture
+
+### Backend (`manssu_backend-main/`) — couches à dépendances descendantes
+
+```
+API Route (app/api/v1/<domaine>.py)
+  → Dependencies (app/dependencies.py)     ← get_current_user / _admin / _super_admin
+  → Schema (app/schemas/<domaine>.py)      ← validation & sérialisation Pydantic
+  → Service (app/services/<domaine>_service.py)  ← logique métier, seule couche orchestrant plusieurs models
+      → Model (app/models/<entité>.py)     ← SQLAlchemy ORM
+          → Database (app/database.py)     ← session PostgreSQL
+```
+
+`app/core/` regroupe la config (`config.py`, settings Pydantic), la sécurité (JWT/hash), le cache et les exceptions custom. `app/main.py` monte l'app FastAPI, le middleware CORS (avec support réseau local en dev) et les routeurs.
+
+### Frontend (`manssu_frontend-main/`) — SPA par rôle
+
+```
+Page (src/pages/{auth,member,admin}/)
+  → Hook TanStack Query (src/services/hooks/use*.ts)
+      → Module API (src/services/api/*.ts)
+          → apiClient axios (src/services/api/client.ts)  ← JWT, erreurs globales (toasts, 401 → logout)
+```
+
+Routes protégées par rôle (`ProtectedRoute`, `BlockGuestRoute`), layouts dédiés (`MemberLayout`, `AdminLayout`).
+
+### Domaines fonctionnels (miroir back ↔ front)
+
+`auth/users` · `sessions` (+ invitations de session) · `themes` · `resources` (+ feedbacks) · `polls/sondages` · `questionnaires` · `commissions` (+ work groups) · `library/bibliothèque` (+ prêts) · `locations` · `invites` (demandes d'invitation) · `activity_templates` · `dashboard`.
+
+### Rôles & authentification
+
+- Auth sans mot de passe : OTP envoyé par e-mail (Resend), échangé contre un JWT valable 7 jours
+- Rôles hiérarchiques sur `User.role` : `super_admin` > `admin` > membre
+- Seuls les comptes `status == "active"` sont authentifiés ; pas d'accès admin par défaut
 
 ---
 
@@ -42,12 +98,12 @@ Le frontend ne contient aucune logique métier ni accès DB : tout passe par l'A
 cd manssu_backend-main
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # renseigner les variables (voir manssu_backend-main/CLAUDE.md)
+cp .env.example .env   # renseigner les variables, voir CLAUDE.md du backend
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
-API sur `http://localhost:8000` — docs Swagger sur `/docs`.
+API sur `http://localhost:8000` — Swagger `/docs`, ReDoc `/redoc`.
 
 ### Frontend
 
@@ -64,12 +120,12 @@ SPA sur `http://localhost:5173`.
 
 ## Variables d'environnement
 
-Détail complet par app :
+Détail complet dans les `.env.example` de chaque app et dans leur `CLAUDE.md` respectif :
 
-- Backend : voir la section *Environment* de [`manssu_backend-main/CLAUDE.md`](manssu_backend-main/CLAUDE.md) (DB, `SECRET_KEY`, Resend, CORS, R2, `FRONTEND_BASE_URL`, Google Places)
-- Frontend : `VITE_BACKEND_URL`, `VITE_REACT_GOOGLE_PLACES_API_KEY`
+- **Backend** — DB (locale ou Supabase), `SECRET_KEY`, Resend (`RESEND_API_KEY`/`FROM_EMAIL`/`FROM_NAME`), CORS, R2 (`R2_*`), `FRONTEND_BASE_URL`, Google Places
+- **Frontend** — `VITE_BACKEND_URL`, `VITE_REACT_GOOGLE_PLACES_API_KEY`
 
-⚠️ Ne jamais commiter de fichier `.env` réel — tous sont ignorés par Git. Les secrets de production sont configurés directement dans les projets Vercel (dashboard), pas dans le repo.
+⚠️ Aucun `.env` réel n'est commité (gitignoré dans les deux apps). Les secrets de production vivent uniquement dans les variables d'environnement des projets Vercel.
 
 ---
 
@@ -77,53 +133,45 @@ Détail complet par app :
 
 **Backend** (`manssu_backend-main/`)
 
-| Commande                                  | Description                    |
-| ------------------------------------------ | -------------------------------- |
-| `uvicorn app.main:app --reload`            | Lance l'API en local             |
-| `alembic revision --autogenerate -m "msg"` | Génère une migration            |
-| `alembic upgrade head`                     | Applique les migrations         |
-| `pytest`                                   | Lance les tests                 |
+| Commande                                    | Description                |
+| --------------------------------------------- | ----------------------------- |
+| `uvicorn app.main:app --reload`               | Lance l'API en local          |
+| `alembic revision --autogenerate -m "msg"`    | Génère une migration         |
+| `alembic upgrade head`                        | Applique les migrations      |
+| `pytest`                                      | Lance les tests               |
 
 **Frontend** (`manssu_frontend-main/`)
 
-| Commande                | Description                          |
-| ------------------------- | --------------------------------------- |
-| `npm run dev`             | Lance Vite en local                    |
-| `npm run build`           | `tsc` + build Vite production          |
-| `npm run preview`         | Prévisualise le build                  |
-| `npm run lint`            | ESLint (`--max-warnings 0`)            |
-| `npm run format:check`    | Vérifie le formatage Prettier          |
+| Commande                | Description                       |
+| ------------------------- | ------------------------------------ |
+| `npm run dev`              | Lance Vite en local                  |
+| `npm run build`            | `tsc --noEmit` + build Vite prod     |
+| `npm run preview`          | Prévisualise le build                |
+| `npm run lint`             | ESLint (`--max-warnings 0`)          |
+| `npm run format:check`     | Vérifie le formatage Prettier        |
 
 ---
 
-## Architecture rapide
+## Git, CI et déploiement
 
-**Backend** — routes → dependencies (auth) → schemas Pydantic → services (logique métier) → models SQLAlchemy → DB. Voir [`manssu_backend-main/CLAUDE.md`](manssu_backend-main/CLAUDE.md).
+Modèle de branches : `main` (protégée, production) / `front` (travail frontend) / `back` (travail backend). Détail complet — conventions de commit, PR, checks CI obligatoires, hooks Husky : [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
 
-**Frontend** — pages par rôle (`auth/`, `member/`, `admin/`) → hooks TanStack Query → modules API axios → `apiClient` (injection JWT, gestion d'erreurs globale). Voir [`manssu_frontend-main/CLAUDE.md`](manssu_frontend-main/CLAUDE.md).
-
-Domaines fonctionnels partagés entre back et front : auth/users, sessions, themes, resources/feedbacks, polls/sondages, questionnaires, commissions/work_groups, library, locations, invites, activity_templates, dashboard.
-
----
-
-## Git & CI
-
-Voir [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md) pour le modèle de branches (`main` / `front` / `back`), les conventions de commit, les checks CI obligatoires et les hooks Husky (frontend).
-
-`main` est protégée : PR requise, checks `frontend` + `backend` obligatoires, pas de force-push. Le merge dans `main` déclenche le déploiement Vercel des deux apps.
+- `main` exige une **pull request** pour merger (pas de push direct, y compris admins) et les checks CI `frontend` + `backend` au vert
+- Chaque push (branche ou PR) déclenche la CI : lint + format + build côté frontend, compilation côté backend
+- Un merge dans `main` déclenche le déploiement automatique des deux projets Vercel
 
 ---
 
 ## Documentation complète
 
-| Document                                                     | Description                              |
-| --------------------------------------------------------------- | ------------------------------------------- |
-| [CLAUDE.md](CLAUDE.md)                                           | Vue d'ensemble du mono-repo                |
-| [manssu_backend-main/CLAUDE.md](manssu_backend-main/CLAUDE.md)   | Architecture et conventions backend        |
-| [manssu_frontend-main/CLAUDE.md](manssu_frontend-main/CLAUDE.md) | Architecture et conventions frontend       |
-| [docs/WORKFLOWS.md](docs/WORKFLOWS.md)                           | Branches, commits, PR, CI, hooks           |
-| [manssu_backend-main/docs/](manssu_backend-main/docs/)           | Guides API par domaine                     |
-| [manssu_frontend-main/PROJECT_OVERVIEW.md](manssu_frontend-main/PROJECT_OVERVIEW.md) | Vue d'ensemble frontend |
+| Document                                                                       | Description                              |
+| ---------------------------------------------------------------------------------- | -------------------------------------------- |
+| [CLAUDE.md](CLAUDE.md)                                                             | Vue d'ensemble du mono-repo (pour Claude Code) |
+| [manssu_backend-main/CLAUDE.md](manssu_backend-main/CLAUDE.md)                     | Architecture et conventions backend        |
+| [manssu_frontend-main/CLAUDE.md](manssu_frontend-main/CLAUDE.md)                   | Architecture et conventions frontend       |
+| [docs/WORKFLOWS.md](docs/WORKFLOWS.md)                                             | Branches, commits, PR, CI, hooks Husky     |
+| [manssu_backend-main/docs/](manssu_backend-main/docs/)                             | Guides API détaillés par domaine (auth, sessions, thèmes, ressources, sondages, questionnaires, commissions, bibliothèque, locations, invitations, templates d'activité, restrictions invités) |
+| [manssu_frontend-main/PROJECT_OVERVIEW.md](manssu_frontend-main/PROJECT_OVERVIEW.md) | Vue d'ensemble frontend                    |
 
 ---
 
