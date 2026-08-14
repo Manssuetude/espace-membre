@@ -13,6 +13,17 @@ export interface PaginatedResponse<T> {
   totalPages: number;
 }
 
+export interface UserListStats {
+  totalMembers?: number;
+  activeMembers?: number;
+  administrators?: number;
+  pending?: number;
+}
+
+export interface PaginatedUsersResponse<T> extends PaginatedResponse<T> {
+  stats: UserListStats;
+}
+
 export interface ApiError {
   message: string;
   code?: string;

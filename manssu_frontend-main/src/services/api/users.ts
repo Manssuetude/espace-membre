@@ -1,5 +1,5 @@
 import apiClient from "./client";
-import { ApiResponse, PaginatedResponse } from "../../types/api";
+import { ApiResponse, PaginatedUsersResponse } from "../../types/api";
 import { User } from "../../types/auth";
 
 export interface UserUpdateRequest {
@@ -54,8 +54,8 @@ export const usersApi = {
 
   // Get all users (admin only)
   // GET /api/v1/users
-  getUsers: async (params?: GetUsersParams): Promise<ApiResponse<PaginatedResponse<User>>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<User>>>("/api/v1/users", {
+  getUsers: async (params?: GetUsersParams): Promise<ApiResponse<PaginatedUsersResponse<User>>> => {
+    const response = await apiClient.get<ApiResponse<PaginatedUsersResponse<User>>>("/api/v1/users", {
       params,
     });
     return response.data;

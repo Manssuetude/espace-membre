@@ -70,7 +70,8 @@ export const membersApi = {
     page?: number;
     limit?: number;
   }): Promise<ApiResponse<MembersResponse>> => {
-    // Fetch filtered users
+    // The backend already computes stats over the full table in the same query
+    // as the paginated list — no need for a second round-trip.
     const response = await usersApi.getUsers({
       search: params?.search,
       status: params?.status === "all" ? undefined : (params?.status as "active" | "suspended" | undefined),
@@ -78,34 +79,11 @@ export const membersApi = {
       limit: params?.limit,
     });
 
-    // Fetch all users (without filters) to calculate stats
-    // Use maximum limit (100) and fetch all pages if needed
-    const allUsers: User[] = [];
-    let currentPage = 1;
-    let hasMore = true;
-    const maxLimit = 100; // Maximum allowed by API
-
-    while (hasMore) {
-      const pageResponse = await usersApi.getUsers({
-        page: currentPage,
-        limit: maxLimit,
-      });
-
-      allUsers.push(...pageResponse.data.data);
-
-      // Check if there are more pages
-      hasMore = currentPage < pageResponse.data.totalPages;
-      currentPage++;
-
-      // Safety limit to prevent infinite loops
-      if (currentPage > 100) break;
-    }
-
     const stats: MemberStats = {
-      totalMembers: allUsers.length,
-      activeMembers: allUsers.filter((u: User) => u.status === "active").length,
-      administrators: allUsers.filter((u: User) => u.role === "admin" || u.role === "super_admin").length,
-      inactive: allUsers.filter((u: User) => u.status === "suspended" || !u.status).length,
+      totalMembers: response.data.stats.totalMembers ?? 0,
+      activeMembers: response.data.stats.activeMembers ?? 0,
+      administrators: response.data.stats.administrators ?? 0,
+      inactive: response.data.stats.pending ?? 0,
     };
 
     return {
