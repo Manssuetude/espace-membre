@@ -46,7 +46,7 @@ Domaines : auth, users, sessions (+ session_invites), themes, resources (+ feedb
 - **Rôles & statut** — `User.role` : `super_admin` > `admin` > membre ; garde-fous `get_current_admin` / `get_current_super_admin`. Seul `User.status == "active"` est authentifié. **Ne pas réintroduire d'accès admin par défaut.** Restrictions invités : voir `docs/GUEST_USER_RESTRICTIONS.md`.
 - **Exceptions** — lever les exceptions custom de `app/core/exceptions.py` (`UnauthorizedException`, `ForbiddenException`, …), pas de `HTTPException` brute dispersée.
 - **Migrations** — toute évolution de schéma = nouvelle révision Alembic (`app/models/` modifié → `alembic revision --autogenerate` → relire le fichier généré → `alembic upgrade head`). Ne jamais modifier la DB à la main ni éditer une migration déjà appliquée.
-- **E-mail** — OTP/invitations via `app/services/email_service.py` (SMTP Infomaniak et/ou MailerSend).
+- **E-mail** — OTP/invitations via `app/services/email_service.py` (Resend).
 - **Fichiers** — uploads sur Cloudflare R2 via `app/services/r2_storage_service.py` (`USE_R2=True`) ; URLs publiques/signées, pas de stockage disque en prod.
 - **Imports circulaires** — importer les models à l'intérieur des fonctions quand nécessaire (pattern déjà utilisé dans `dependencies.py`).
 
@@ -55,7 +55,7 @@ Domaines : auth, users, sessions (+ session_invites), themes, resources (+ feedb
 - `ENVIRONMENT` — `development` (DB locale) | `production` (Supabase).
 - DB locale : `LOCAL_DB_HOST/USER/PASSWORD/PORT/NAME`. DB prod : `DB_USER`, `DB_PASSWORD`, `SUPABASE_HOST`, `DB_PORT`, `DB_NAME`.
 - `SECRET_KEY` (auto-généré si absent — **à fixer en prod**), `ACCESS_TOKEN_EXPIRE_MINUTES`.
-- E-mail : `SMTP_*` (Infomaniak), `MAILERSEND_API_KEY`, `MAILERSEND_FROM_EMAIL`.
+- E-mail : `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`.
 - `CORS_ORIGINS` (CSV), `CORS_ALLOW_LOCAL_NETWORK`.
 - R2 : `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT_URL`, `R2_BUCKET_NAME`, `R2_PUBLIC_BASE_URL`, `R2_SIGNED_URL_EXPIRATION`.
 - `FRONTEND_BASE_URL` (liens d'invitation), `GOOGLE_PLACES_API_KEY`.

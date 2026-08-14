@@ -86,7 +86,7 @@ Domaines miroir entre back (`api/v1/`, `services/`, `models/`) et front (`servic
 - **Rôles** — `role` sur `User` : `super_admin` > `admin` > membre. Statut utilisateur : seul `status == "active"` est authentifié. **Ne pas réintroduire d'accès admin par défaut.**
 - **Exceptions** — utiliser les exceptions custom de `app/core/exceptions.py` (`UnauthorizedException`, `ForbiddenException`, …).
 - **Migrations** — toute évolution de schéma passe par une révision Alembic (`app/models/` → `alembic revision --autogenerate`). Ne jamais modifier la DB à la main.
-- **E-mail** — OTP/invitations via SMTP Infomaniak (et/ou MailerSend), voir `app/services/email_service.py`.
+- **E-mail** — OTP/invitations via Resend, voir `app/services/email_service.py`.
 - **Fichiers** — uploads sur Cloudflare R2 via `app/services/r2_storage_service.py` (`USE_R2=True`).
 
 ### Frontend
@@ -102,7 +102,7 @@ Domaines miroir entre back (`api/v1/`, `services/`, `models/`) et front (`servic
 - `ENVIRONMENT` — `development` (DB locale) ou `production` (Supabase).
 - DB locale : `LOCAL_DB_HOST/USER/PASSWORD/PORT/NAME`. DB prod : `DB_USER`, `DB_PASSWORD`, `SUPABASE_HOST`, `DB_PORT`, `DB_NAME`.
 - `SECRET_KEY` (JWT ; auto-généré si absent), `ACCESS_TOKEN_EXPIRE_MINUTES`.
-- E-mail : `SMTP_*` (Infomaniak), `MAILERSEND_API_KEY`, `MAILERSEND_FROM_EMAIL`.
+- E-mail : `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`.
 - `CORS_ORIGINS` (CSV), `CORS_ALLOW_LOCAL_NETWORK`.
 - R2 : `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT_URL`, `R2_BUCKET_NAME`, `R2_PUBLIC_BASE_URL`.
 - `FRONTEND_BASE_URL` (liens d'invitation), `GOOGLE_PLACES_API_KEY`.

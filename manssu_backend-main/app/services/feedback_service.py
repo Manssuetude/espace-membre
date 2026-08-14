@@ -7,6 +7,7 @@ from app.models.feedback import Feedback
 from app.schemas.feedback import CreateFeedbackRequest, UpdateFeedbackRequest, FeedbackResponse
 from app.schemas.common import PaginatedResponse
 from app.core.cache import list_cache, dashboard_cache
+from app.services.email_service import ResendEmailService
 
 
 class FeedbackService:
@@ -110,10 +111,9 @@ class FeedbackService:
         self._invalidate_cache()
 
         # Notify all active admins about the new feedback
-        from app.services.email_service import SMTPEmailService
         from app.models.user import User
 
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
 
         active_admins = self.db.query(User).filter(
             User.status == "active",

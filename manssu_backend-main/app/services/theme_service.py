@@ -18,6 +18,7 @@ from app.schemas.theme import (
     ThemeWindowResponse
 )
 from app.schemas.common import PaginatedResponse
+from app.services.email_service import ResendEmailService
 from app.schemas.user import UserSummary
 from app.core.cache import list_cache, dashboard_cache
 
@@ -145,10 +146,9 @@ class ThemeService:
             logger.info(f"Sending emails for earliest window {window.id} with end_date {end_date}")
         
         if should_send_emails:
-            from app.services.email_service import SMTPEmailService
             from app.models.user import User
             
-            email_service = SMTPEmailService()
+            email_service = ResendEmailService()
             active_users = self.db.query(User).filter(
                 User.status == "active",
                 User.role != "guest"
@@ -234,9 +234,8 @@ class ThemeService:
         self._invalidate_cache()
         
         # Send email notifications to all active members
-        from app.services.email_service import SMTPEmailService
         from app.models.user import User
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         active_users = self.db.query(User).filter(
             User.status == "active",
             User.role != "guest"
@@ -634,9 +633,8 @@ class ThemeService:
         self.db.refresh(poll)
         
         # Send email notifications to all active members
-        from app.services.email_service import SMTPEmailService
         from app.models.user import User
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         active_users = self.db.query(User).filter(
             User.status == "active",
             User.role != "guest"

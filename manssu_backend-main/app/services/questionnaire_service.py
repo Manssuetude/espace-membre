@@ -12,6 +12,7 @@ from app.models.questionnaire import (
     QuestionnaireAnswer,
 )
 from app.models.user import User
+from app.services.email_service import ResendEmailService
 from app.schemas.questionnaire import (
     CreateQuestionnaireRequest,
     UpdateQuestionnaireRequest,
@@ -361,10 +362,9 @@ class QuestionnaireService:
 
         # If questionnaire was just published, notify all active members
         if previous_status != "published" and questionnaire.status == "published":
-            from app.services.email_service import SMTPEmailService
             from app.models.user import User
 
-            email_service = SMTPEmailService()
+            email_service = ResendEmailService()
 
             end_date_str = None
             if questionnaire.end_date:

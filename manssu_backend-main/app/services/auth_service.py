@@ -10,14 +10,14 @@ from app.models.session import SessionRegistration
 from app.core.config import settings
 from app.core.security import generate_otp, get_otp_expiry, create_access_token
 from app.schemas.auth import SendOTPResponse, VerifyOTPResponse, UserInfo
-from app.services.email_service import SMTPEmailService
+from app.services.email_service import ResendEmailService
 from app.services.invite_service import InviteService
 
 
 class AuthService:
     def __init__(self, db: Session):
         self.db = db
-        self.email_service = SMTPEmailService()
+        self.email_service = ResendEmailService()
     
     def send_otp(self, email: str) -> SendOTPResponse:
         """

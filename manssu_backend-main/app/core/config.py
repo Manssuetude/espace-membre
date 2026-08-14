@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from pydantic import field_validator
 from typing import List, Union
+from urllib.parse import quote_plus
 import secrets
 
 
@@ -29,10 +30,14 @@ class Settings(BaseSettings):
         """
         if self.ENVIRONMENT.lower() == "development":
             # Use local database
-            return f"postgresql://{self.LOCAL_DB_USER}:{self.LOCAL_DB_PASSWORD}@{self.LOCAL_DB_HOST}:{self.LOCAL_DB_PORT}/{self.LOCAL_DB_NAME}"
+            user = quote_plus(self.LOCAL_DB_USER)
+            password = quote_plus(self.LOCAL_DB_PASSWORD)
+            return f"postgresql://{user}:{password}@{self.LOCAL_DB_HOST}:{self.LOCAL_DB_PORT}/{self.LOCAL_DB_NAME}"
         else:
             # Use Supabase database
-            return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.SUPABASE_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+            user = quote_plus(self.DB_USER)
+            password = quote_plus(self.DB_PASSWORD)
+            return f"postgresql://{user}:{password}@{self.SUPABASE_HOST}:{self.DB_PORT}/{self.DB_NAME}"
     
     # JWT
     SECRET_KEY: str = ""
@@ -48,13 +53,10 @@ class Settings(BaseSettings):
     MAILERSEND_FROM_EMAIL: str = "contact@pumpyfamilylife.com"
     MAILERSEND_FROM_NAME: str = "Manssuétude"
     
-    # SMTP Email Configuration (Informaniak)
-    SMTP_HOST: str = "mail.infomaniak.com"
-    SMTP_PORT: int = 587
-    SMTP_USER: str = ""
-    SMTP_PASSWORD: str = ""
-    SMTP_FROM_EMAIL: str = "contact@manssuetude.com"
-    SMTP_FROM_NAME: str = "Manssuétude"
+    # Resend Email Configuration
+    RESEND_API_KEY: str = ""
+    RESEND_FROM_EMAIL: str = "noreply@manssuetude.com"
+    RESEND_FROM_NAME: str = "Manssuétude"
     
     # CORS - can be comma-separated string or list
     # Supports localhost and local network IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x)

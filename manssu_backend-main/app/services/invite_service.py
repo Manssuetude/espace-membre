@@ -9,14 +9,14 @@ from app.models.invitation_request import InvitationRequest
 from app.models.session import Session
 from app.models.user import User
 from app.core.config import settings
-from app.services.email_service import SMTPEmailService
+from app.services.email_service import ResendEmailService
 from app.schemas.invite import InviteResponse, ValidateInviteResponse, InvitationRequestResponse
 
 
 class InviteService:
     def __init__(self, db: Session):
         self.db = db
-        self.email_service = SMTPEmailService()
+        self.email_service = ResendEmailService()
     
     def _generate_invite_code(self) -> str:
         """Generate a secure random invite code"""

@@ -3,6 +3,7 @@ from sqlalchemy import or_
 from typing import Optional, List, Tuple
 from datetime import datetime
 from uuid import UUID
+from app.services.email_service import ResendEmailService
 
 from app.models.commission import Commission, CommissionMember, CommissionApplication
 from app.models.user import User
@@ -693,9 +694,8 @@ class CommissionService:
     
     def _notify_application_created(self, commission: Commission, applicant: User):
         """Send email notification when a new application is created"""
-        from app.services.email_service import SMTPEmailService
         
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         applicant_name = f"{applicant.first_name} {applicant.last_name}".strip() or applicant.email
         commission_id = str(commission.id)
         
@@ -732,9 +732,8 @@ class CommissionService:
     
     def _notify_application_approved(self, applicant: User, commission: Commission):
         """Send email notification when an application is approved"""
-        from app.services.email_service import SMTPEmailService
         
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         applicant_name = f"{applicant.first_name} {applicant.last_name}".strip() or applicant.email
         
         email_service.send_commission_application_approved_email(
@@ -746,9 +745,8 @@ class CommissionService:
     
     def _notify_application_rejected(self, applicant: User, commission: Commission, rejection_reason: Optional[str] = None):
         """Send email notification when an application is rejected"""
-        from app.services.email_service import SMTPEmailService
         
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         applicant_name = f"{applicant.first_name} {applicant.last_name}".strip() or applicant.email
         
         email_service.send_commission_application_rejected_email(

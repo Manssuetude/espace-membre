@@ -12,6 +12,7 @@ from app.models.poll import Poll, PollVote, PollOption
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
 from app.schemas.common import PaginatedResponse
 from app.core.cache import list_cache, dashboard_cache
+from app.services.email_service import ResendEmailService, EmailService
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,6 @@ class UserService:
         Uses a dedicated template when available, otherwise falls back to welcome email.
         """
         try:
-            from app.services.email_service import EmailService
             email_service = EmailService()
             to_name = f"{user.first_name} {user.last_name}"
 
@@ -253,8 +253,7 @@ class UserService:
         self._invalidate_cache()
         
         # Send welcome email
-        from app.services.email_service import SMTPEmailService
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         email_service.send_welcome_email(
             to_email=user.email,
             to_name=f"{user.first_name} {user.last_name}",
@@ -326,8 +325,7 @@ class UserService:
         
         # Send email notification if email was changed
         if email_changed:
-            from app.services.email_service import SMTPEmailService
-            email_service = SMTPEmailService()
+            email_service = ResendEmailService()
             email_service.send_email_changed_notification(
                 to_email=user.email,
                 to_name=f"{user.first_name} {user.last_name}",
@@ -371,7 +369,6 @@ class UserService:
         
         # Send email notification to the suspended user
         try:
-            from app.services.email_service import EmailService
             email_service = EmailService()
             email_service.send_account_suspended_email(
                 to_email=user.email,
@@ -419,7 +416,6 @@ class UserService:
         
         # Send email notification to the unsuspended user
         try:
-            from app.services.email_service import EmailService
             email_service = EmailService()
             email_service.send_account_unsuspended_email(
                 to_email=user.email,

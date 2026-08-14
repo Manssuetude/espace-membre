@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlsplit, urlunsplit
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -9,15 +10,12 @@ logger = logging.getLogger(__name__)
 # Log which database is being used
 db_url = settings.DATABASE_URL
 # Mask password in logs for security
-if '@' in db_url:
-    parts = db_url.split('@')
-    auth_part = parts[0]
-    if ':' in auth_part:
-        user_pass = auth_part.split(':')
-        masked_auth = f"{user_pass[0]}:***"
-        masked_url = f"{masked_auth}@{'@'.join(parts[1:])}"
-    else:
-        masked_url = db_url
+parsed = urlsplit(db_url)
+if parsed.password:
+    netloc = f"{parsed.username}:***@{parsed.hostname}"
+    if parsed.port:
+        netloc += f":{parsed.port}"
+    masked_url = urlunsplit((parsed.scheme, netloc, parsed.path, parsed.query, parsed.fragment))
 else:
     masked_url = db_url
 

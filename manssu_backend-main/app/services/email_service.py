@@ -1,12 +1,8 @@
 """
-Email service for sending transactional emails via SMTP (Informaniak) or MailerSend API.
+Email service for sending transactional emails via Resend or MailerSend API.
 """
 import logging
 import requests
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.utils import formataddr
 from typing import Optional, List
 from html import unescape
 import re
@@ -772,27 +768,25 @@ class MailerSendEmailService:
 
 
 
-class SMTPEmailService:
+class ResendEmailService:
     """
-    Service for sending transactional emails via SMTP (Informaniak).
+    Service for sending transactional emails via Resend.
     """
-    
+
+    API_URL = "https://api.resend.com/emails"
+
     def __init__(self):
-        self.smtp_host = getattr(settings, 'SMTP_HOST', 'mail.infomaniak.com')
-        self.smtp_port = getattr(settings, 'SMTP_PORT', 587)
-        self.smtp_user = getattr(settings, 'SMTP_USER', '')
-        self.smtp_password = getattr(settings, 'SMTP_PASSWORD', '')
-        self.from_email = getattr(settings, 'SMTP_FROM_EMAIL', 'contact@manssuetude.com')
-        self.from_name = getattr(settings, 'SMTP_FROM_NAME', 'Manssuétude')
-        
-        logger.info(f"📧 SMTPEmailService initialized")
+        self.api_key = getattr(settings, 'RESEND_API_KEY', '')
+        self.from_email = getattr(settings, 'RESEND_FROM_EMAIL', 'contact@manssuetude.com')
+        self.from_name = getattr(settings, 'RESEND_FROM_NAME', 'Manssuétude')
+
+        logger.info(f"📧 ResendEmailService initialized")
         logger.info(f"   From: {self.from_name} <{self.from_email}>")
-        logger.info(f"   SMTP Server: {self.smtp_host}:{self.smtp_port}")
-        logger.info(f"   SMTP User: {'✅ Configured' if self.smtp_user else '❌ Not configured'}")
-        
-        if not self.smtp_user or not self.smtp_password:
-            logger.warning("⚠️ SMTP_USER or SMTP_PASSWORD not configured - emails will not be sent")
-    
+        logger.info(f"   API Key: {'✅ Configured' if self.api_key else '❌ Not configured'}")
+
+        if not self.api_key:
+            logger.warning("⚠️ RESEND_API_KEY not configured - emails will not be sent")
+
     def _send_email(
         self,
         to_email: str,
@@ -804,8 +798,8 @@ class SMTPEmailService:
         tags: Optional[List[str]] = None,
     ) -> bool:
         """
-        Send an email via SMTP.
-        
+        Send an email via the Resend API.
+
         Args:
             to_email: Recipient email address
             to_name: Recipient name (optional)
@@ -813,81 +807,71 @@ class SMTPEmailService:
             html_content: HTML email body
             text_content: Plain text email body (optional, auto-generated from HTML if not provided)
             reply_to: Reply-to email address (optional)
-            tags: List of tags for tracking (optional, not used in SMTP)
-            
+            tags: List of tags for tracking (optional, not used by Resend the same way)
+
         Returns:
             bool: True if email sent successfully, False otherwise
         """
         logger.info("=" * 80)
-        logger.info(f"📧 Sending email via SMTP")
+        logger.info(f"📧 Sending email via Resend")
         logger.info(f"   To: {to_name or '(no name)'} <{to_email}>")
         logger.info(f"   Subject: {subject}")
         logger.info(f"   From: {self.from_name} <{self.from_email}>")
-        
-        if not self.smtp_user or not self.smtp_password:
-            logger.error("❌ Cannot send email: SMTP credentials not configured")
+
+        if not self.api_key:
+            logger.error("❌ Cannot send email: RESEND_API_KEY not configured")
             return False
-        
+
         if not to_email:
             logger.error("❌ Cannot send email: recipient email is required")
             return False
-        
+
         # Generate text content from HTML if not provided
         if not text_content:
             text_content = strip_tags(html_content)
             logger.debug(f"   Generated text content from HTML ({len(text_content)} chars)")
         else:
             logger.debug(f"   Using provided text content ({len(text_content)} chars)")
-        
+
         logger.debug(f"   HTML content length: {len(html_content)} chars")
-        
+
+        payload = {
+            "from": f"{self.from_name} <{self.from_email}>",
+            "to": [f"{to_name} <{to_email}>" if to_name else to_email],
+            "subject": subject,
+            "html": html_content,
+            "text": text_content,
+        }
+        if reply_to:
+            payload["reply_to"] = [reply_to]
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+
         try:
-            # Create message
-            msg = MIMEMultipart('alternative')
-            msg['Subject'] = subject
-            # Use formataddr for proper email address formatting
-            # Note: Informaniak may validate the From header, so we use the SMTP user email
-            # but format it properly with the display name
-            msg['From'] = formataddr((self.from_name, self.smtp_user))
-            msg['To'] = formataddr((to_name, to_email)) if to_name else to_email
-            
-            if reply_to:
-                msg['Reply-To'] = reply_to
-            
-            # Add text and HTML parts
-            text_part = MIMEText(text_content, 'plain', 'utf-8')
-            html_part = MIMEText(html_content, 'html', 'utf-8')
-            
-            msg.attach(text_part)
-            msg.attach(html_part)
-            
-            # Connect to SMTP server and send
-            logger.info(f"   Connecting to SMTP server: {self.smtp_host}:{self.smtp_port}")
-            with smtplib.SMTP(self.smtp_host, self.smtp_port) as server:
-                server.starttls()  # Enable TLS
-                logger.debug(f"   TLS enabled")
-                logger.debug(f"   Authenticating as: {self.smtp_user}")
-                server.login(self.smtp_user, self.smtp_password)
-                logger.debug(f"   Authentication successful")
-                
-                logger.info(f"   Sending email...")
-                # Use sendmail with explicit envelope sender (must match authenticated user)
-                # The From header can have a display name, but envelope sender must match
-                server.sendmail(
-                    from_addr=self.smtp_user,  # Envelope sender (must match authenticated user)
-                    to_addrs=[to_email],  # Recipient
-                    msg=msg.as_string()  # Full message with headers
-                )
-                logger.info(f"✅ Email sent successfully via SMTP")
+            logger.info(f"   Sending request to Resend API...")
+            response = requests.post(self.API_URL, json=payload, headers=headers, timeout=30)
+            logger.info(f"   Response Status: {response.status_code}")
+
+            if response.status_code in (200, 201):
+                logger.info(f"✅ Email sent successfully via Resend to {to_email}")
                 logger.info("=" * 80)
                 return True
-                
-        except smtplib.SMTPAuthenticationError as e:
-            logger.error(f"❌ SMTP Authentication failed: {e}")
+            else:
+                logger.error(f"❌ Failed to send email to {to_email}")
+                logger.error(f"   Status Code: {response.status_code}")
+                logger.error(f"   Response: {response.text}")
+                logger.error("=" * 80)
+                return False
+
+        except requests.exceptions.Timeout as e:
+            logger.error(f"❌ Timeout sending email to {to_email}: {str(e)}")
             logger.error("=" * 80)
             return False
-        except smtplib.SMTPException as e:
-            logger.error(f"❌ SMTP error: {e}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"❌ Request error sending email to {to_email}: {str(e)}")
             logger.error("=" * 80)
             return False
         except Exception as e:
@@ -1578,4 +1562,4 @@ class SMTPEmailService:
 
 
 # Default email service - can be switched between SMTP and MailerSend
-EmailService = SMTPEmailService  # Use SMTP by default
+EmailService = ResendEmailService  # Use Resend by default

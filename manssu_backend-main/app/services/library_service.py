@@ -3,6 +3,7 @@ from sqlalchemy import or_, and_, func
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 import logging
+from app.services.email_service import EmailService
 
 from app.models.library import (
     Book,
@@ -191,7 +192,6 @@ class LibraryService:
             if not user or not user.email:
                 return
 
-            from app.services.email_service import EmailService
 
             email_service = EmailService()
             method = getattr(email_service, email_method, None)

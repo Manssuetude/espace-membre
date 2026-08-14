@@ -18,6 +18,7 @@ from app.schemas.session import (
 )
 from app.schemas.common import PaginatedResponse
 from app.core.cache import list_cache, dashboard_cache
+from app.services.email_service import ResendEmailService
 
 
 class SessionService:
@@ -386,7 +387,6 @@ class SessionService:
         - Only sessions with status 'completed' are considered.
         - Only users who attended and have not yet rated are notified.
         """
-        from app.services.email_service import SMTPEmailService
         from app.models.user import User
 
         session = self.db.query(Session).filter(Session.id == session_id).first()
@@ -420,7 +420,7 @@ class SessionService:
                 "attendeesWithoutRating": 0,
             }
 
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         emails_sent = 0
         emails_failed = 0
 

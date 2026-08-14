@@ -3,6 +3,7 @@ from sqlalchemy import and_, or_, func
 from sqlalchemy.exc import IntegrityError
 from typing import Optional, List
 from datetime import datetime, date, timezone
+from app.services.email_service import ResendEmailService
 
 from app.models.poll import Poll, PollQuestion, PollOption, PollVote
 from app.models.user import User
@@ -346,9 +347,8 @@ class PollService:
         self._invalidate_cache()
         
         # Send email notifications to all active members
-        from app.services.email_service import SMTPEmailService
         from app.models.user import User
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         active_users = self.db.query(User).filter(
             User.status == "active",
             User.role != "guest"
@@ -787,8 +787,7 @@ class PollService:
                 ).all()
         
         # Send reminder emails
-        from app.services.email_service import SMTPEmailService
-        email_service = SMTPEmailService()
+        email_service = ResendEmailService()
         
         end_date_str = None
         if poll.end_date:
