@@ -4,7 +4,7 @@ Guidance pour Claude Code dans **`manssu_frontend-main/`**. Vue d'ensemble du mo
 
 ## Overview
 
-SPA **React 18 + TypeScript + Vite** de l'espace membre/admin Manssuétude. Tailwind CSS, React Router 6, TanStack Query 5, axios, sonner. Consomme l'API FastAPI (`../manssu_backend-main/`). Déployée sur **Vercel** (`https://membres.manssuetude.com`).
+SPA **React 18 + TypeScript + Vite** de l'espace membre/admin Manssuétude. Tailwind CSS, React Router 6, TanStack Query 5, axios, sonner. Consomme l'API FastAPI (`../manssu_backend-main/`). Déployée sur **Vercel** (`https://membre.manssuetude.com`).
 
 ## Commands
 

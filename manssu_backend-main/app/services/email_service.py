@@ -371,7 +371,7 @@ class MailerSendEmailService:
                 "Question": poll_question
             },
             action_text="Participer au sondage",
-            action_url="https://membres.manssuetude.com/sondages"
+            action_url="https://membre.manssuetude.com/sondages"
         )
         return self._send_email(
             to_email=to_email,
@@ -401,7 +401,7 @@ class MailerSendEmailService:
                 "Question": poll_question
             },
             action_text="Participer au sondage",
-            action_url="https://membres.manssuetude.com/sondages"
+            action_url="https://membre.manssuetude.com/sondages"
         )
         return self._send_email(
             to_email=to_email,
@@ -431,7 +431,7 @@ class MailerSendEmailService:
                 "Question": poll_question
             },
             action_text="Voter maintenant",
-            action_url="https://membres.manssuetude.com/sondages"
+            action_url="https://membre.manssuetude.com/sondages"
         )
         return self._send_email(
             to_email=to_email,
@@ -456,7 +456,7 @@ class MailerSendEmailService:
             title="Livre disponible pour vous",
             message=f"Bonne nouvelle ! Vous êtes prioritaire pour emprunter « {book_title} ». Merci de confirmer{expires_text}.",
             action_text="Voir la bibliothèque",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -481,7 +481,7 @@ class MailerSendEmailService:
             title="Livre trouvé dans la bibliothèque",
             message=f"Le livre « {book_title} »{author_text} vient d'être ajouté et correspond à votre wishlist.",
             action_text="Voir le livre",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -506,7 +506,7 @@ class MailerSendEmailService:
             title="Rappel de retour",
             message=f"Le prêt de « {book_title} » arrive bientôt à échéance{due_text}.",
             action_text="Voir mes prêts",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -545,7 +545,7 @@ class MailerSendEmailService:
             title=title,
             message=message,
             action_text="Voir la bibliothèque",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -573,7 +573,7 @@ class MailerSendEmailService:
                 "Vous pouvez maintenant créer le prêt."
             ),
             action_text="Créer le prêt",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -609,7 +609,7 @@ class MailerSendEmailService:
             message=f"Votre compte a été créé avec succès. Nous sommes ravis de vous accueillir dans notre communauté !",
             details=None,
             action_text="Accéder à la plateforme",
-            action_url="https://membres.manssuetude.com",
+            action_url="https://membre.manssuetude.com",
             custom_content=password_section
         )
         return self._send_email(
@@ -635,7 +635,7 @@ class MailerSendEmailService:
                 "Nouveau statut": "Membre"
             },
             action_text="Accéder à la plateforme",
-            action_url="https://membres.manssuetude.com"
+            action_url="https://membre.manssuetude.com"
         )
         return self._send_email(
             to_email=to_email,
@@ -919,7 +919,7 @@ class ResendEmailService:
                 "Date": session_date or "—"
             },
             action_text="Noter la session",
-            action_url=f"https://membres.manssuetude.com/sessions/{session_id}"
+            action_url=f"https://membre.manssuetude.com/sessions/{session_id}"
         )
         return self._send_email(
             to_email=to_email,
@@ -953,7 +953,7 @@ class ResendEmailService:
             message="Un nouveau feedback a été soumis par un membre.",
             details=details,
             action_text="Voir les feedbacks",
-            action_url="https://membres.manssuetude.com/feedbacks"
+            action_url="https://membre.manssuetude.com/feedbacks"
         )
         return self._send_email(
             to_email=to_email,
@@ -980,7 +980,7 @@ class ResendEmailService:
                 "Titre": questionnaire_title
             },
             action_text="Répondre au questionnaire",
-            action_url="https://membres.manssuetude.com/questionnaires"
+            action_url="https://membre.manssuetude.com/questionnaires"
         )
         return self._send_email(
             to_email=to_email,
@@ -1002,7 +1002,7 @@ class ResendEmailService:
             title="Fenêtre de propositions ouverte",
             message=f"La fenêtre de propositions de thèmes est maintenant ouverte jusqu'au {end_date}. Partagez vos idées !",
             action_text="Proposer un thème",
-            action_url="https://membres.manssuetude.com/themes"
+            action_url="https://membre.manssuetude.com/themes"
         )
         return self._send_email(
             to_email=to_email,
@@ -1023,7 +1023,7 @@ class ResendEmailService:
             title="Fenêtre de propositions fermée",
             message="La fenêtre de propositions de thèmes est maintenant fermée. Merci pour vos contributions !",
             action_text="Voir les thèmes",
-            action_url="https://membres.manssuetude.com/proposer-theme"
+            action_url="https://membre.manssuetude.com/proposer-theme"
         )
         return self._send_email(
             to_email=to_email,
@@ -1050,7 +1050,7 @@ class ResendEmailService:
                 "Question": poll_question
             },
             action_text="Voter maintenant",
-            action_url="https://membres.manssuetude.com/sondages"
+            action_url="https://membre.manssuetude.com/sondages"
         )
         return self._send_email(
             to_email=to_email,
@@ -1079,7 +1079,7 @@ class ResendEmailService:
                 "Question": poll_question
             },
             action_text="Voter maintenant",
-            action_url="https://membres.manssuetude.com/sondages"
+            action_url="https://membre.manssuetude.com/sondages"
         )
         return self._send_email(
             to_email=to_email,
@@ -1105,7 +1105,7 @@ class ResendEmailService:
             message=f"Vous n'avez pas encore voté pour le sondage '{poll_title}'{end_date_text}.",
             details={"Question": poll_question},
             action_text="Voter maintenant",
-            action_url="https://membres.manssuetude.com/sondages"
+            action_url="https://membre.manssuetude.com/sondages"
         )
         return self._send_email(
             to_email=to_email,
@@ -1129,7 +1129,7 @@ class ResendEmailService:
             title="Livre disponible pour vous",
             message=f"Bonne nouvelle ! Vous êtes prioritaire pour emprunter « {book_title} ». Merci de confirmer{expires_text}.",
             action_text="Voir la bibliothèque",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -1153,7 +1153,7 @@ class ResendEmailService:
             title="Livre trouvé dans la bibliothèque",
             message=f"Le livre « {book_title} »{author_text} vient d'être ajouté et correspond à votre wishlist.",
             action_text="Voir le livre",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -1177,7 +1177,7 @@ class ResendEmailService:
             title="Rappel de retour",
             message=f"Le prêt de « {book_title} » arrive bientôt à échéance{due_text}.",
             action_text="Voir mes prêts",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -1215,7 +1215,7 @@ class ResendEmailService:
             title=title,
             message=message,
             action_text="Voir la bibliothèque",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -1242,7 +1242,7 @@ class ResendEmailService:
                 "Vous pouvez maintenant créer le prêt."
             ),
             action_text="Créer le prêt",
-            action_url="https://membres.manssuetude.com/association/bibliotheque",
+            action_url="https://membre.manssuetude.com/association/bibliotheque",
         )
         return self._send_email(
             to_email=to_email,
@@ -1277,7 +1277,7 @@ class ResendEmailService:
             message=f"Votre compte a été créé avec succès. Nous sommes ravis de vous accueillir dans notre communauté !",
             details=None,
             action_text="Accéder à la plateforme",
-            action_url="https://membres.manssuetude.com",
+            action_url="https://membre.manssuetude.com",
             custom_content=password_section
         )
         return self._send_email(
@@ -1302,7 +1302,7 @@ class ResendEmailService:
                 "Nouveau statut": "Membre"
             },
             action_text="Accéder à la plateforme",
-            action_url="https://membres.manssuetude.com"
+            action_url="https://membre.manssuetude.com"
         )
         return self._send_email(
             to_email=to_email,
@@ -1336,7 +1336,7 @@ class ResendEmailService:
             message=f"Votre adresse email a été modifiée par un administrateur. Vous recevrez désormais tous les emails à votre nouvelle adresse.",
             details=None,
             action_text="Accéder à la plateforme",
-            action_url="https://membres.manssuetude.com",
+            action_url="https://membre.manssuetude.com",
             custom_content=email_info
         )
         return self._send_email(
@@ -1415,7 +1415,7 @@ class ResendEmailService:
     ) -> bool:
         """Send email to leader/admins when a new commission application is submitted"""
         subject = f"Nouvelle candidature pour la commission {commission_name} - {self.from_name}"
-        frontend_url = getattr(settings, 'FRONTEND_BASE_URL', 'https://membres.manssuetude.com')
+        frontend_url = getattr(settings, 'FRONTEND_BASE_URL', 'https://membre.manssuetude.com')
         html_content = self._render_notification_template(
             name=to_name,
             title="Nouvelle candidature",
@@ -1443,7 +1443,7 @@ class ResendEmailService:
     ) -> bool:
         """Send email to applicant when their application is approved"""
         subject = f"Candidature approuvée - Commission {commission_name} - {self.from_name}"
-        frontend_url = getattr(settings, 'FRONTEND_BASE_URL', 'https://membres.manssuetude.com')
+        frontend_url = getattr(settings, 'FRONTEND_BASE_URL', 'https://membre.manssuetude.com')
         html_content = self._render_notification_template(
             name=to_name,
             title="Candidature approuvée !",

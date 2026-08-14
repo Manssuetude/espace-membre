@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Espace Membre Manssuétude** est la plateforme membre/administrateur de l'association Manssuétude (association intellectuelle française). C'est un mono-repo à deux applications indépendantes :
 
 - **`manssu_backend-main/`** — API REST **FastAPI** (Python), SQLAlchemy + Alembic, PostgreSQL (local en dev, Supabase en prod). Authentification par **OTP e-mail + JWT**. Stockage fichiers sur **Cloudflare R2**. Servie en prod sur `https://apis.manssuetude.com`.
-- **`manssu_frontend-main/`** — SPA **React 18 + TypeScript + Vite**, Tailwind CSS, React Router, TanStack Query, axios. Déployée sur **Vercel** (`https://membres.manssuetude.com`).
+- **`manssu_frontend-main/`** — SPA **React 18 + TypeScript + Vite**, Tailwind CSS, React Router, TanStack Query, axios. Déployée sur **Vercel** (`https://membre.manssuetude.com`).
 
 Le frontend consomme exclusivement l'API backend via axios. Aucune logique métier ni accès DB côté front.
 

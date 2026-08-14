@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     
     # CORS - can be comma-separated string or list
     # Supports localhost and local network IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
-    CORS_ORIGINS: Union[str, List[str]] = "http://localhost:5173,http://localhost:3000,https://membres.manssuetude.com"
+    CORS_ORIGINS: Union[str, List[str]] = "http://localhost:5173,http://localhost:3000,https://membre.manssuetude.com"
     CORS_ALLOW_LOCAL_NETWORK: bool = True  # Allow local network IPs (192.168.x.x, etc.)
     
     @field_validator("CORS_ORIGINS", mode="before")
