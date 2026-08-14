@@ -25,7 +25,7 @@ espace_membre/
 └── .github/workflows/        CI GitHub Actions
 ```
 
-Le frontend consomme **exclusivement** l'API backend via axios — aucune logique métier ni accès base de données côté client. Les deux apps ont chacune leur propre `CLAUDE.md` détaillant leurs conventions internes.
+Le frontend consomme **exclusivement** l'API backend via axios — aucune logique métier ni accès base de données côté client.
 
 ---
 
@@ -98,7 +98,7 @@ Routes protégées par rôle (`ProtectedRoute`, `BlockGuestRoute`), layouts déd
 cd manssu_backend-main
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # renseigner les variables, voir CLAUDE.md du backend
+cp .env.example .env   # renseigner les variables (voir la section ci-dessous)
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
@@ -120,7 +120,7 @@ SPA sur `http://localhost:5173`.
 
 ## Variables d'environnement
 
-Détail complet dans les `.env.example` de chaque app et dans leur `CLAUDE.md` respectif :
+Détail complet dans les `.env.example` de chaque app :
 
 - **Backend** — DB (locale ou Supabase), `SECRET_KEY`, Resend (`RESEND_API_KEY`/`FROM_EMAIL`/`FROM_NAME`), CORS, R2 (`R2_*`), `FRONTEND_BASE_URL`, Google Places
 - **Frontend** — `VITE_BACKEND_URL`, `VITE_REACT_GOOGLE_PLACES_API_KEY`
@@ -166,13 +166,6 @@ Modèle de branches : `main` (protégée, production) / `front` (travail fronten
 
 | Document                                                                       | Description                              |
 | ---------------------------------------------------------------------------------- | -------------------------------------------- |
-| [CLAUDE.md](CLAUDE.md)                                                             | Vue d'ensemble du mono-repo (pour Claude Code) |
-| [manssu_backend-main/CLAUDE.md](manssu_backend-main/CLAUDE.md)                     | Architecture et conventions backend        |
-| [manssu_frontend-main/CLAUDE.md](manssu_frontend-main/CLAUDE.md)                   | Architecture et conventions frontend       |
 | [docs/WORKFLOWS.md](docs/WORKFLOWS.md)                                             | Branches, commits, PR, CI, hooks Husky     |
 | [manssu_backend-main/docs/](manssu_backend-main/docs/)                             | Guides API détaillés par domaine (auth, sessions, thèmes, ressources, sondages, questionnaires, commissions, bibliothèque, locations, invitations, templates d'activité, restrictions invités) |
 | [manssu_frontend-main/PROJECT_OVERVIEW.md](manssu_frontend-main/PROJECT_OVERVIEW.md) | Vue d'ensemble frontend                    |
-
----
-
-**Par où commencer ?** → [CLAUDE.md](CLAUDE.md), puis le `CLAUDE.md` de l'app sur laquelle tu travailles.
