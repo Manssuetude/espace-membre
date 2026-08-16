@@ -48,7 +48,7 @@ Le frontend consomme **exclusivement** l'API backend via axios — aucune logiqu
 | App      | Domaine                                          |
 | --------- | --------------------------------------------------- |
 | Backend   | `https://apis.manssuetude.com`                      |
-| Frontend  | `https://membre.manssuetude.com`                    |
+| Frontend  | `https://membre.manssuetude.com` (+ `https://membres.manssuetude.com`) |
 
 ---
 
