@@ -882,6 +882,11 @@ class ResendEmailService:
     
     def send_otp_email(self, to_email: str, to_name: str, otp_code: str) -> bool:
         """Send OTP code email"""
+        if not self.api_key:
+            logger.warning("=" * 80)
+            logger.warning(f"🔑 DEV MODE (no RESEND_API_KEY) — OTP for {to_email}: {otp_code}")
+            logger.warning("=" * 80)
+            return True
         subject = f"Code de vérification - {self.from_name}"
         html_content = self._render_notification_template(
             name=to_name,
