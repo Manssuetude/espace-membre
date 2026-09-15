@@ -53,12 +53,12 @@ const AwardsCuration = () => {
         </p>
       </div>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-wrap justify-end gap-3">
         {openCount > 0 ? (
           <button
             onClick={() => closeAllNominations.mutate()}
             disabled={closeAllNominations.isPending}
-            className="px-4 py-2 rounded-xl bg-warning text-white text-sm font-medium disabled:opacity-40 hover:bg-warning/90 transition-colors"
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-warning text-white text-sm font-medium disabled:opacity-40 hover:bg-warning/90 transition-colors"
           >
             <i className="fa-solid fa-lock mr-2"></i>
             Clôturer toutes les nominations ({openCount})
@@ -67,7 +67,7 @@ const AwardsCuration = () => {
           <button
             onClick={() => reopenAllNominations.mutate()}
             disabled={reopenableCount === 0 || reopenAllNominations.isPending}
-            className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium disabled:opacity-40 hover:bg-gray-200 transition-colors"
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium disabled:opacity-40 hover:bg-gray-200 transition-colors"
           >
             <i className="fa-solid fa-rotate-left mr-2"></i>
             Rouvrir toutes les nominations {reopenableCount > 0 ? `(${reopenableCount})` : ""}
