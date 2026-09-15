@@ -38,18 +38,18 @@ export const CurationPanel = ({ category }: { category: AwardCategory }) => {
         return (
           <label
             key={key}
-            className="flex items-center justify-between px-3 py-2 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300"
+            className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 px-3 py-2 rounded-xl border border-gray-200 cursor-pointer hover:border-gray-300"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <input
                 type="checkbox"
                 checked={selected.has(key)}
                 onChange={() => toggle(item)}
-                className="accent-primary"
+                className="accent-primary shrink-0"
               />
-              <span className="text-sm font-medium text-gray-900">{item.name}</span>
+              <span className="text-sm font-medium text-gray-900 break-words">{item.name}</span>
             </div>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 break-words">
               {item.count} proposition{item.count > 1 ? "s" : ""}
               {item.proposedBy.length > 0 && ` (${item.proposedBy.join(", ")})`}
             </span>
