@@ -90,7 +90,7 @@ class InviteService:
     
     def _send_invite_email(self, email: str, session_title: str, invite_url: str):
         """Send invite email with link"""
-        subject = f"Invitation à une session - {settings.SMTP_FROM_NAME}"
+        subject = f"Invitation à une session - {settings.RESEND_FROM_NAME}"
         html_content = self.email_service._render_notification_template(
             name="",
             title="Invitation à une session",
@@ -424,7 +424,7 @@ class InviteService:
         
         # Send email to each admin
         for admin in admins:
-            subject = f"Nouvelle demande d'invitation - {settings.SMTP_FROM_NAME}"
+            subject = f"Nouvelle demande d'invitation - {settings.RESEND_FROM_NAME}"
             html_content = self.email_service._render_notification_template(
                 name=f"{admin.first_name} {admin.last_name}",
                 title="Nouvelle demande d'invitation",
@@ -457,7 +457,7 @@ class InviteService:
         session = self.db.query(Session).filter(Session.id == request.session_id).first()
         session_title = session.title if session else "Session inconnue"
         
-        subject = f"Confirmation de votre demande d'invitation - {settings.SMTP_FROM_NAME}"
+        subject = f"Confirmation de votre demande d'invitation - {settings.RESEND_FROM_NAME}"
         html_content = self.email_service._render_notification_template(
             name=f"{requester.first_name} {requester.last_name}",
             title="Demande d'invitation créée",
@@ -495,7 +495,7 @@ class InviteService:
             if reviewer:
                 reviewer_name = f"{reviewer.first_name} {reviewer.last_name}"
         
-        subject = f"Votre demande d'invitation a été approuvée - {settings.SMTP_FROM_NAME}"
+        subject = f"Votre demande d'invitation a été approuvée - {settings.RESEND_FROM_NAME}"
         html_content = self.email_service._render_notification_template(
             name=f"{requester.first_name} {requester.last_name}",
             title="Demande d'invitation approuvée",
@@ -533,7 +533,7 @@ class InviteService:
             if reviewer:
                 reviewer_name = f"{reviewer.first_name} {reviewer.last_name}"
         
-        subject = f"Votre demande d'invitation a été rejetée - {settings.SMTP_FROM_NAME}"
+        subject = f"Votre demande d'invitation a été rejetée - {settings.RESEND_FROM_NAME}"
         html_content = self.email_service._render_notification_template(
             name=f"{requester.first_name} {requester.last_name}",
             title="Demande d'invitation rejetée",
