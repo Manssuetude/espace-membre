@@ -27,6 +27,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     title: "Gestion des Questionnaires",
     subtitle: "Créez et gérez les questionnaires à remplir par les membres",
   },
+  "/admin/awards": { title: "Gestion des Awards", subtitle: "Nominations, curation et vote des Awards" },
 };
 
 // Helper to get page info for nested routes

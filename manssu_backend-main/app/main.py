@@ -45,7 +45,7 @@ if not os.environ.get("VERCEL"):
 logger = logging.getLogger(__name__)
 
 # Import routers
-from app.api.v1 import auth, users, sessions, themes, resources, polls, feedbacks, locations, dashboard, invites, activity_templates, questionnaires, commissions, library
+from app.api.v1 import auth, users, sessions, themes, resources, polls, feedbacks, locations, dashboard, invites, activity_templates, questionnaires, commissions, library, awards, user_awards
 
 app = FastAPI(
     title="MANSSU API",
@@ -349,6 +349,8 @@ app.include_router(activity_templates.router, prefix="/api/v1/activity-templates
 app.include_router(questionnaires.router, prefix="/api/v1/questionnaires", tags=["Questionnaires"])
 app.include_router(commissions.router, prefix="/api/v1/commissions", tags=["Commissions"])
 app.include_router(library.router, prefix="/api/v1/library", tags=["Library"])
+app.include_router(awards.router, prefix="/api/v1/awards", tags=["Awards"])  # TEMPORARY - remove after the awards event
+app.include_router(user_awards.router, prefix="/api/v1/award-wins", tags=["Award Wins"])  # PERMANENT - keep even after the awards event
 
 
 # Root endpoint

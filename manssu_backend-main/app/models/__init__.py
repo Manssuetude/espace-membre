@@ -21,6 +21,14 @@ from app.models.library import (
     BookWishlistItem,
     BookNotification,
 )
+from app.models.award import (
+    AwardCategory,
+    AwardNomination,
+    AwardCandidate,
+    AwardVote,
+    AwardSettings,
+)
+from app.models.user_award import UserAwardWin
 
 __all__ = [
     "Base",
@@ -51,4 +59,10 @@ __all__ = [
     "BookLoan",
     "BookWishlistItem",
     "BookNotification",
+    "AwardCategory",
+    "AwardNomination",
+    "AwardCandidate",
+    "AwardVote",
+    "AwardSettings",
+    "UserAwardWin",
 ]

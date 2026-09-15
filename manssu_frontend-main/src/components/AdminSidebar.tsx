@@ -187,6 +187,22 @@ const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
               </NavLink>
             </CollapsibleSection>
 
+            {/* Awards - standalone (TEMPORARY, remove after the event) */}
+            <NavLink
+              to="/admin/awards"
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
+                  isActive
+                    ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                }`
+              }
+            >
+              <i className="fa-solid fa-trophy w-5 mr-3"></i>
+              Awards
+            </NavLink>
+
             {/* Feedbacks - standalone */}
             <NavLink
               to="/admin/feedbacks"

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCommission, useApplyToCommission, useWithdrawApplication } from "../../services/hooks/useCommissions";
+import { useCommissionAwardWins } from "../../services/hooks/useUserAwards";
 import { CommissionDetailWithSnakeCaseFallback, FlexibleMemberEntry } from "../../types/commission";
 
 const CommissionDetail = () => {
@@ -11,6 +12,7 @@ const CommissionDetail = () => {
   const isGuest = user?.role === "guest";
 
   const { data: commission, isLoading } = useCommission(id || "");
+  const { data: awardWins } = useCommissionAwardWins(id || "");
 
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applyReason, setApplyReason] = useState("");
@@ -157,6 +159,27 @@ const CommissionDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Award wins (permanent) */}
+      {awardWins && awardWins.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <i className="fa-solid fa-trophy text-primary"></i>
+            Awards remportés
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {awardWins.map((win) => (
+              <div key={win.id} className="flex items-center gap-2 bg-primary/5 rounded-xl px-3 py-2">
+                <span className="text-2xl">{win.awardIcon || "🏆"}</span>
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{win.awardName}</p>
+                  <p className="text-xs text-gray-500">{win.year}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Info cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

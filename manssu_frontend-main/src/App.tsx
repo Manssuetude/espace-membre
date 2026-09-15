@@ -47,6 +47,9 @@ import BibliothequeBookDetail from "./pages/member/BibliothequeBookDetail";
 import BibliothequeLoanDetail from "./pages/member/BibliothequeLoanDetail";
 import AdminCommissions from "./pages/admin/Commissions";
 import AdminCommissionDetail from "./pages/admin/CommissionDetail";
+import Awards from "./pages/member/Awards"; // TEMPORARY - remove after the awards event
+import AwardsCuration from "./pages/member/AwardsCuration"; // TEMPORARY - remove after the awards event
+import AdminAwards from "./pages/admin/Awards"; // TEMPORARY - remove after the awards event
 
 function App() {
   return (
@@ -163,6 +166,23 @@ function App() {
               </BlockGuestRoute>
             }
           />
+          {/* TEMPORARY - Awards 2026, remove after the event */}
+          <Route
+            path="awards"
+            element={
+              <BlockGuestRoute>
+                <Awards />
+              </BlockGuestRoute>
+            }
+          />
+          <Route
+            path="awards/curation"
+            element={
+              <BlockGuestRoute>
+                <AwardsCuration />
+              </BlockGuestRoute>
+            }
+          />
         </Route>
 
         {/* Admin Routes */}
@@ -194,6 +214,8 @@ function App() {
           <Route path="questionnaires/:id/responses" element={<QuestionnaireResponses />} />
           <Route path="commissions" element={<AdminCommissions />} />
           <Route path="commissions/:id" element={<AdminCommissionDetail />} />
+          {/* TEMPORARY - Awards 2026, remove after the event */}
+          <Route path="awards" element={<AdminAwards />} />
         </Route>
 
         {/* 404 Route */}
