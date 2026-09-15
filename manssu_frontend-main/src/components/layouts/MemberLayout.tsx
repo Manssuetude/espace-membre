@@ -16,6 +16,8 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/association/reglement": { title: "Règlement", subtitle: "Règlement intérieur de l'association" },
   "/association/membres": { title: "Membres", subtitle: "Annuaire des membres de l'association" },
   "/association/bibliotheque": { title: "Bibliothèque", subtitle: "Partage et emprunt de livres entre membres" },
+  "/awards": { title: "Awards", subtitle: "Proposez vos candidats et votez" },
+  "/awards/curation": { title: "Curation des Awards", subtitle: "Clôturez les nominations et validez la liste finale" },
 };
 
 // Helper to get page info for nested routes

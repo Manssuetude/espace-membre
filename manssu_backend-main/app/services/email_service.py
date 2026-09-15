@@ -1114,6 +1114,49 @@ class ResendEmailService:
             html_content=html_content
         )
 
+    def send_award_vote_reminder_email(
+        self,
+        to_email: str,
+        to_name: str,
+        vote_end_date: str,
+    ) -> bool:
+        """Send J-1 reminder email that award voting closes soon."""
+        subject = f"Dernier jour pour voter aux Awards - {self.from_name}"
+        html_content = self._render_notification_template(
+            name=to_name,
+            title="Le vote se termine bientôt",
+            message=f"Le vote pour les Awards se termine le {vote_end_date}. N'oubliez pas de voter dans toutes les catégories avant la clôture !",
+            action_text="Voter maintenant",
+            action_url="https://membre.manssuetude.com/awards",
+        )
+        return self._send_email(
+            to_email=to_email,
+            to_name=to_name,
+            subject=subject,
+            html_content=html_content,
+        )
+
+    def send_award_results_published_email(
+        self,
+        to_email: str,
+        to_name: str,
+    ) -> bool:
+        """Send email announcing that award results are available on the platform."""
+        subject = f"Les résultats des Awards sont disponibles - {self.from_name}"
+        html_content = self._render_notification_template(
+            name=to_name,
+            title="Les résultats sont tombés !",
+            message="Les résultats des Awards sont désormais disponibles sur l'espace membre.",
+            action_text="Voir les résultats",
+            action_url="https://membre.manssuetude.com/awards",
+        )
+        return self._send_email(
+            to_email=to_email,
+            to_name=to_name,
+            subject=subject,
+            html_content=html_content,
+        )
+
     def send_library_queue_offer_email(
         self,
         to_email: str,

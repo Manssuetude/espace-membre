@@ -79,4 +79,15 @@ export const queryKeys = {
   libraryLoan: (id: string) => ["library", "loans", id] as const,
   libraryWishlist: ["library", "wishlist", "me"] as const,
   libraryNotifications: ["library", "notifications"] as const,
+
+  // Awards (temporary feature)
+  awardCategories: ["awards", "categories"] as const,
+  awardCategory: (id: string) => ["awards", "categories", id] as const,
+  awardNominationStats: (categoryId: string) => ["awards", "categories", categoryId, "nomination-stats"] as const,
+  awardSettings: ["awards", "settings"] as const,
+
+  // Award wins (permanent, survives the temporary Awards feature)
+  myAwardWins: ["award-wins", "me"] as const,
+  userAwardWins: (userId: string) => ["award-wins", "user", userId] as const,
+  commissionAwardWins: (commissionId: string) => ["award-wins", "commission", commissionId] as const,
 };
