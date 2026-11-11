@@ -1,6 +1,150 @@
 import { useState } from "react";
-import { AwardCategory, AwardNominationInfo } from "../../types/award";
-import { useAwardNominationStats, useBuildShortlist } from "../../services/hooks/useAwards";
+import { AwardCategory, AwardNominationInfo, AwardTargetType } from "../../types/award";
+import {
+  useAwardNominationStats,
+  useBuildShortlist,
+  useCreateAwardCategory,
+  useUpdateAwardCategory,
+  useDeleteAwardCategory,
+} from "../../services/hooks/useAwards";
+
+export const CategoryEditForm = ({ category, onDone }: { category: AwardCategory; onDone: () => void }) => {
+  const [name, setName] = useState(category.name);
+  const [description, setDescription] = useState(category.description || "");
+  const [icon, setIcon] = useState(category.icon || "");
+  const updateCategory = useUpdateAwardCategory();
+
+  const handleSave = () => {
+    updateCategory.mutate({ id: category.id, data: { name, description, icon } }, { onSuccess: onDone });
+  };
+
+  return (
+    <div className="mt-3 space-y-2 border-t border-gray-100 pt-3">
+      <input
+        value={icon}
+        onChange={(e) => setIcon(e.target.value)}
+        placeholder="Emoji"
+        className="w-20 px-3 py-2 border border-gray-300 rounded-xl text-sm text-center"
+      />
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Nom de la catégorie"
+        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm"
+      />
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Description"
+        rows={2}
+        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm resize-none"
+      />
+      <div className="flex gap-2">
+        <button
+          onClick={handleSave}
+          disabled={updateCategory.isPending}
+          className="flex-1 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          Enregistrer
+        </button>
+        <button
+          onClick={onDone}
+          className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors"
+        >
+          Annuler
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export const CategoryCreateForm = ({ onDone }: { onDone: () => void }) => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [icon, setIcon] = useState("");
+  const [targetType, setTargetType] = useState<AwardTargetType>("member");
+  const createCategory = useCreateAwardCategory();
+
+  const handleCreate = () => {
+    if (!name.trim()) return;
+    createCategory.mutate({ name, description, icon, targetType }, { onSuccess: onDone });
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-primary/30 p-5 space-y-2">
+      <h3 className="font-bold text-gray-900 mb-1">Nouvelle catégorie</h3>
+      <div className="flex gap-2">
+        <input
+          value={icon}
+          onChange={(e) => setIcon(e.target.value)}
+          placeholder="Emoji"
+          className="w-20 px-3 py-2 border border-gray-300 rounded-xl text-sm text-center"
+        />
+        <select
+          value={targetType}
+          onChange={(e) => setTargetType(e.target.value as AwardTargetType)}
+          className="px-3 py-2 border border-gray-300 rounded-xl text-sm"
+        >
+          <option value="member">Membre</option>
+          <option value="commission">Commission</option>
+        </select>
+      </div>
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Nom de la catégorie (ex: Monsieur/Madame Discours)"
+        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm"
+      />
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Description"
+        rows={2}
+        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm resize-none"
+      />
+      <div className="flex gap-2">
+        <button
+          onClick={handleCreate}
+          disabled={!name.trim() || createCategory.isPending}
+          className="flex-1 py-2 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40 hover:bg-primary/90 transition-colors"
+        >
+          Créer
+        </button>
+        <button
+          onClick={onDone}
+          className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors"
+        >
+          Annuler
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export const DeleteCategoryButton = ({ category }: { category: AwardCategory }) => {
+  const deleteCategory = useDeleteAwardCategory();
+
+  const handleDelete = () => {
+    if (
+      window.confirm(
+        `Supprimer la catégorie "${category.name}" ? Toutes ses propositions, candidats et votes seront définitivement supprimés. Cette action est irréversible.`,
+      )
+    ) {
+      deleteCategory.mutate(category.id);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleDelete}
+      disabled={deleteCategory.isPending}
+      className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100 transition-colors"
+    >
+      <i className="fa-solid fa-trash mr-1"></i>
+      Supprimer
+    </button>
+  );
+};
 
 export const CurationPanel = ({ category }: { category: AwardCategory }) => {
   const { data: stats, isLoading } = useAwardNominationStats(category.id);

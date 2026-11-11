@@ -6,66 +6,19 @@ import {
   useReopenAllNominations,
   usePublishResults,
   usePublishAllResults,
-  useUpdateAwardCategory,
   useAwardSettingsUpdate,
   useResetAllAwards,
 } from "../../services/hooks/useAwards";
-import { AwardCategory } from "../../types/award";
-import { CurationPanel } from "../../components/awards/AwardShared";
+import {
+  CurationPanel,
+  CategoryEditForm,
+  CategoryCreateForm,
+  DeleteCategoryButton,
+} from "../../components/awards/AwardShared";
 import { AWARD_STATUS_BADGES } from "../../utils/awardStatus";
 
 // Converts a "yyyy-MM-ddTHH:mm" datetime-local value to/from an ISO string for the API
 const toInputValue = (iso: string | null | undefined) => (iso ? iso.slice(0, 16) : "");
-
-const CategoryEditForm = ({ category, onDone }: { category: AwardCategory; onDone: () => void }) => {
-  const [name, setName] = useState(category.name);
-  const [description, setDescription] = useState(category.description || "");
-  const [icon, setIcon] = useState(category.icon || "");
-  const updateCategory = useUpdateAwardCategory();
-
-  const handleSave = () => {
-    updateCategory.mutate({ id: category.id, data: { name, description, icon } }, { onSuccess: onDone });
-  };
-
-  return (
-    <div className="mt-3 space-y-2 border-t border-gray-100 pt-3">
-      <input
-        value={icon}
-        onChange={(e) => setIcon(e.target.value)}
-        placeholder="Emoji"
-        className="w-20 px-3 py-2 border border-gray-300 rounded-xl text-sm text-center"
-      />
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Nom de la catégorie"
-        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm"
-      />
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description"
-        rows={2}
-        className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm resize-none"
-      />
-      <div className="flex gap-2">
-        <button
-          onClick={handleSave}
-          disabled={updateCategory.isPending}
-          className="flex-1 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
-          Enregistrer
-        </button>
-        <button
-          onClick={onDone}
-          className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors"
-        >
-          Annuler
-        </button>
-      </div>
-    </div>
-  );
-};
 
 const AdminAwards = () => {
   const { data: categories, isLoading } = useAwardCategories();
@@ -79,6 +32,7 @@ const AdminAwards = () => {
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
   const [nominationStart, setNominationStart] = useState("");
   const [nominationEnd, setNominationEnd] = useState("");
   const [voteStart, setVoteStart] = useState("");
@@ -234,6 +188,18 @@ const AdminAwards = () => {
         </button>
       </div>
 
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsCreating(true)}
+          className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+        >
+          <i className="fa-solid fa-plus mr-2"></i>
+          Nouvelle catégorie
+        </button>
+      </div>
+
+      {isCreating && <CategoryCreateForm onDone={() => setIsCreating(false)} />}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {categories?.map((category) => {
           const badge = AWARD_STATUS_BADGES[category.status];
@@ -266,6 +232,7 @@ const AdminAwards = () => {
                     <i className="fa-solid fa-pen mr-1"></i>
                     Modifier
                   </button>
+                  <DeleteCategoryButton category={category} />
 
                   {category.status === "curation" && (
                     <button
