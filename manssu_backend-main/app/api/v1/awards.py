@@ -36,6 +36,13 @@ def get_award_curator(current_user=Depends(get_current_user)):
     raise ForbiddenException("Accès réservé à l'équipe de curation des Awards")
 
 
+def get_award_manager(current_user=Depends(get_current_user)):
+    """Allows any admin/super_admin, plus the hardcoded 'vie asso' curators, to manage categories (create/edit/delete)."""
+    if current_user.role in ["admin", "super_admin"] or (current_user.email or "").lower() in AWARD_CURATOR_EMAILS:
+        return current_user
+    raise ForbiddenException("Accès réservé aux administrateurs et à l'équipe de curation des Awards")
+
+
 @router.get("/categories", response_model=APIResponse)
 async def get_categories(
     db: Session = Depends(get_db),
@@ -69,9 +76,9 @@ async def get_category(
 async def create_category(
     data: CreateCategoryRequest,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_admin),
+    current_user=Depends(get_award_manager),
 ):
-    """Create a new award category (Admin only)."""
+    """Create a new award category (admins + vie asso curators)."""
     service = AwardService(db)
     category = service.create_category(data)
     return APIResponse(success=True, data=category.model_dump(), message="Catégorie créée avec succès")
@@ -82,12 +89,24 @@ async def update_category(
     category_id: str,
     data: UpdateCategoryRequest,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_admin),
+    current_user=Depends(get_award_manager),
 ):
-    """Update a category's name/description/icon/target type (Admin only)."""
+    """Update a category's name/description/icon/target type (admins + vie asso curators)."""
     service = AwardService(db)
     category = service.update_category(category_id, data)
     return APIResponse(success=True, data=category.model_dump(), message="Catégorie mise à jour")
+
+
+@router.delete("/categories/{category_id}", response_model=APIResponse)
+async def delete_category(
+    category_id: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_award_manager),
+):
+    """Delete an award category entirely, cascading its nominations/candidates/votes (admins + vie asso curators)."""
+    service = AwardService(db)
+    service.delete_category(category_id)
+    return APIResponse(success=True, message="Catégorie supprimée")
 
 
 @router.post("/categories/{category_id}/nominations", response_model=APIResponse)

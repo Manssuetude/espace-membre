@@ -60,6 +60,13 @@ export interface VoteRequest {
   candidateId: string;
 }
 
+export interface CreateCategoryRequest {
+  name: string;
+  description?: string;
+  icon?: string;
+  targetType: AwardTargetType;
+}
+
 export interface UpdateCategoryRequest {
   name?: string;
   description?: string;

@@ -7,6 +7,7 @@ import {
   NominateRequest,
   BuildShortlistRequest,
   VoteRequest,
+  CreateCategoryRequest,
   UpdateCategoryRequest,
   UpdateAwardSettingsRequest,
 } from "../../types/award";
@@ -22,8 +23,18 @@ export const awardsApi = {
     return response.data;
   },
 
+  createCategory: async (data: CreateCategoryRequest): Promise<ApiResponse<AwardCategory>> => {
+    const response = await apiClient.post<ApiResponse<AwardCategory>>("/api/v1/awards/categories", data);
+    return response.data;
+  },
+
   updateCategory: async (id: string, data: UpdateCategoryRequest): Promise<ApiResponse<AwardCategory>> => {
     const response = await apiClient.patch<ApiResponse<AwardCategory>>(`/api/v1/awards/categories/${id}`, data);
+    return response.data;
+  },
+
+  deleteCategory: async (id: string): Promise<ApiResponse<null>> => {
+    const response = await apiClient.delete<ApiResponse<null>>(`/api/v1/awards/categories/${id}`);
     return response.data;
   },
 

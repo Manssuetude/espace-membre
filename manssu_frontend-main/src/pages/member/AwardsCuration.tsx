@@ -6,7 +6,12 @@ import {
   useCloseAllNominations,
   useReopenAllNominations,
 } from "../../services/hooks/useAwards";
-import { CurationPanel } from "../../components/awards/AwardShared";
+import {
+  CurationPanel,
+  CategoryEditForm,
+  CategoryCreateForm,
+  DeleteCategoryButton,
+} from "../../components/awards/AwardShared";
 import { AWARD_STATUS_BADGES } from "../../utils/awardStatus";
 
 const AwardsCuration = () => {
@@ -15,6 +20,8 @@ const AwardsCuration = () => {
   const closeAllNominations = useCloseAllNominations();
   const reopenAllNominations = useReopenAllNominations();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   if (isLoadingCurator || isLoading) {
     return (
@@ -75,6 +82,18 @@ const AwardsCuration = () => {
         )}
       </div>
 
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsCreating(true)}
+          className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+        >
+          <i className="fa-solid fa-plus mr-2"></i>
+          Nouvelle catégorie
+        </button>
+      </div>
+
+      {isCreating && <CategoryCreateForm onDone={() => setIsCreating(false)} />}
+
       {relevantCategories.length === 0 && (
         <p className="text-sm text-gray-500">Toutes les catégories ont déjà leur liste finale validée.</p>
       )}
@@ -83,6 +102,7 @@ const AwardsCuration = () => {
         {relevantCategories.map((category) => {
           const badge = AWARD_STATUS_BADGES[category.status];
           const isExpanded = expandedId === category.id;
+          const isEditing = editingId === category.id;
 
           return (
             <div key={category.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -99,16 +119,29 @@ const AwardsCuration = () => {
                 </span>
               </div>
 
-              <div className="flex flex-wrap gap-2 mt-3">
-                {category.status === "curation" && (
+              {isEditing ? (
+                <CategoryEditForm category={category} onDone={() => setEditingId(null)} />
+              ) : (
+                <div className="flex flex-wrap gap-2 mt-3">
                   <button
-                    onClick={() => setExpandedId(isExpanded ? null : category.id)}
-                    className="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-xs font-medium hover:bg-accent/20 transition-colors"
+                    onClick={() => setEditingId(category.id)}
+                    className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-xs font-medium hover:bg-gray-200 transition-colors"
                   >
-                    {isExpanded ? "Masquer les propositions" : "Voir les propositions"}
+                    <i className="fa-solid fa-pen mr-1"></i>
+                    Modifier
                   </button>
-                )}
-              </div>
+                  <DeleteCategoryButton category={category} />
+
+                  {category.status === "curation" && (
+                    <button
+                      onClick={() => setExpandedId(isExpanded ? null : category.id)}
+                      className="px-3 py-1.5 rounded-lg bg-accent/10 text-accent text-xs font-medium hover:bg-accent/20 transition-colors"
+                    >
+                      {isExpanded ? "Masquer les propositions" : "Voir les propositions"}
+                    </button>
+                  )}
+                </div>
+              )}
 
               {category.status === "curation" && isExpanded && <CurationPanel category={category} />}
             </div>

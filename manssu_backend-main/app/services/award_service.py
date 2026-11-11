@@ -231,6 +231,13 @@ class AwardService:
         self.db.refresh(category)
         return self._category_to_response(category, is_admin=True)
 
+    def delete_category(self, category_id: str) -> None:
+        """Deletes a category and cascades its nominations/candidates/votes. Does not touch any
+        UserAwardWin already recorded - those are permanent and decoupled from the category row."""
+        category = self._get_category_or_404(category_id)
+        self.db.delete(category)
+        self.db.commit()
+
     # ------------------------------------------------------------------
     # Nomination phase
     # ------------------------------------------------------------------

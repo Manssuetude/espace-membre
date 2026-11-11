@@ -5,6 +5,7 @@ import {
   NominateRequest,
   BuildShortlistRequest,
   VoteRequest,
+  CreateCategoryRequest,
   UpdateCategoryRequest,
   UpdateAwardSettingsRequest,
 } from "../../types/award";
@@ -59,6 +60,17 @@ const invalidateCategory = (queryClient: ReturnType<typeof useQueryClient>, cate
   queryClient.invalidateQueries({ queryKey: queryKeys.awardNominationStats(categoryId) });
 };
 
+export const useCreateAwardCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateCategoryRequest) => awardsApi.createCategory(data),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.awardCategories });
+      toast.success(response.message || "Catégorie créée");
+    },
+  });
+};
+
 export const useUpdateAwardCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -66,6 +78,17 @@ export const useUpdateAwardCategory = () => {
     onSuccess: (response, variables) => {
       invalidateCategory(queryClient, variables.id);
       toast.success(response.message || "Catégorie mise à jour");
+    },
+  });
+};
+
+export const useDeleteAwardCategory = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => awardsApi.deleteCategory(id),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.awardCategories });
+      toast.success(response.message || "Catégorie supprimée");
     },
   });
 };
