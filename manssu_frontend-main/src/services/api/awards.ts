@@ -139,15 +139,14 @@ export const awardsApi = {
   resetAll: async (): Promise<
     ApiResponse<{ votesDeleted: number; winnersDeleted: number; candidatesDeleted: number; nominationsDeleted: number }>
   > => {
-    const response =
-      await apiClient.post<
-        ApiResponse<{
-          votesDeleted: number;
-          winnersDeleted: number;
-          candidatesDeleted: number;
-          nominationsDeleted: number;
-        }>
-      >("/api/v1/awards/reset-all");
+    const response = await apiClient.post<
+      ApiResponse<{
+        votesDeleted: number;
+        winnersDeleted: number;
+        candidatesDeleted: number;
+        nominationsDeleted: number;
+      }>
+    >("/api/v1/awards/reset-all");
     return response.data;
   },
 
