@@ -8,6 +8,7 @@ import {
   useVoteAward,
   useIsAwardManager,
 } from "../../services/hooks/useAwards";
+import { useAuth } from "../../contexts/AuthContext";
 import { useMembers } from "../../services/hooks/useMembers";
 import { useCommissions } from "../../services/hooks/useCommissions";
 import { AwardCategory } from "../../types/award";
@@ -56,7 +57,9 @@ const Awards = () => {
   const [replayIndex, setReplayIndex] = useState(0);
   const [hasOfferedReplay, setHasOfferedReplay] = useState(true);
 
-  const members = membersData?.data || [];
+  const { user } = useAuth();
+  // A member can't propose themselves (also enforced by the API).
+  const members = (membersData?.data || []).filter((m) => m.id !== user?.id);
   const commissions = commissionsData?.data || [];
 
   const hasPublished = categories?.some((c) => c.status === "results_published") ?? false;
@@ -333,6 +336,7 @@ const Awards = () => {
                 open={sheetCategoryId === category.id}
                 onClose={() => setSheetCategoryId(null)}
                 categoryName={category.name || ""}
+                categoryDescription={category.description}
                 targetLabel={
                   category.targetType === "member" ? "Rechercher un membre..." : "Rechercher une commission..."
                 }

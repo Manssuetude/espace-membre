@@ -414,7 +414,9 @@ class AwardService:
         if category.target_type == "member":
             if not data.nominatedUserId or data.nominatedCommissionId:
                 raise BadRequestException("Cette catégorie nomine un membre")
-            target = self.db.query(User).filter(User.id == data.nominatedUserId, User.status == "active").first()
+            if str(data.nominatedUserId) == str(user_id):
+                raise BadRequestException("Vous ne pouvez pas vous proposer vous-même")
+            target =self.db.query(User).filter(User.id == data.nominatedUserId, User.status == "active").first()
             if not target:
                 raise BadRequestException("Membre introuvable ou inactif")
         else:
