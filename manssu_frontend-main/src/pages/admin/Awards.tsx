@@ -105,22 +105,60 @@ const AdminAwards = () => {
     );
   }
 
+  const totalNominations = categories?.reduce((sum, c) => sum + (c.nominationCount ?? 0), 0) ?? 0;
+  const totalVotes =
+    categories?.reduce((sum, c) => sum + (c.candidates?.reduce((s, cd) => s + (cd.votes ?? 0), 0) ?? 0), 0) ?? 0;
+  const publishedCount = categories?.filter((c) => c.status === "results_published").length ?? 0;
+
+  const kpi = (() => {
+    switch (phase) {
+      case "teasing":
+        return { label: "Prix dévoilés", value: `${revealedCount}/${totalCategories}` };
+      case "nomination":
+        return { label: "Propositions reçues", value: String(totalNominations) };
+      case "selection":
+        return { label: "Listes finales prêtes", value: `${totalCategories - reopenableCount}/${totalCategories}` };
+      case "vote":
+        return { label: "Votes exprimés", value: String(totalVotes) };
+      case "ceremony_pending":
+        return { label: "Prix en attente de cérémonie", value: String(awaitingCeremonyCount) };
+      case "published":
+        return { label: "Prix publiés", value: `${publishedCount}/${totalCategories}` };
+      default:
+        return null;
+    }
+  })();
+
   const nextAction = (() => {
     switch (phase) {
       case "teasing":
-        return `${revealedCount} prix révélés sur ${totalCategories}.`;
+        return {
+          text: `${revealedCount} prix révélés sur ${totalCategories}.`,
+          cta: revealedCount < totalCategories ? "Répartir les révélations" : null,
+          onClick: () => distributeReveals.mutate(),
+        };
       case "nomination":
-        return "Rien à faire avant la clôture des nominations.";
+        return { text: "Rien à faire avant la clôture des nominations.", cta: null, onClick: undefined };
       case "selection":
-        return reopenableCount > 0
-          ? `${reopenableCount} prix n'ont pas encore de liste finale.`
-          : "Toutes les listes finales sont prêtes.";
+        return {
+          text:
+            reopenableCount > 0
+              ? `${reopenableCount} prix n'ont pas encore de liste finale.`
+              : "Toutes les listes finales sont prêtes.",
+          cta: null,
+          onClick: undefined,
+        };
       case "vote":
-        return "Le vote se termine avant la séance de la cérémonie.";
+        return { text: "Le vote se termine avant la séance de la cérémonie.", cta: null, onClick: undefined };
       case "ceremony_pending":
-        return awaitingCeremonyCount > 0
-          ? `Préparez la cérémonie : ${awaitingCeremonyCount} prix en attente.`
-          : "Lancez le mode cérémonie pendant la séance, puis publiez.";
+        return {
+          text:
+            awaitingCeremonyCount > 0
+              ? `Préparez la cérémonie : ${awaitingCeremonyCount} prix en attente.`
+              : "Lancez le mode cérémonie pendant la séance, puis publiez.",
+          cta: awaitingCeremonyCount > 0 ? "Préparer la cérémonie" : null,
+          onClick: () => navigate("/admin/awards/ceremonie/preparation"),
+        };
       default:
         return null;
     }
@@ -131,8 +169,31 @@ const AdminAwards = () => {
       <div className="bg-award-cream-light border border-award-gold/40 rounded-2xl p-4">
         <p className="text-xs text-award-gold-text uppercase tracking-wide">Édition {settings?.editionYear}</p>
         <h2 className="font-fraunces font-bold text-gray-900">{AWARD_EDITION_PHASE_LABELS[phase]}</h2>
-        {nextAction && <p className="text-sm text-gray-600 mt-1">{nextAction}</p>}
       </div>
+
+      {nextAction && (
+        <div className="bg-warning/10 border border-warning/40 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="text-xs text-warning font-bold uppercase tracking-wide">Prochaine action</p>
+            <p className="text-sm text-gray-700 mt-0.5">{nextAction.text}</p>
+          </div>
+          {nextAction.cta && (
+            <button
+              onClick={nextAction.onClick}
+              className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium whitespace-nowrap"
+            >
+              {nextAction.cta}
+            </button>
+          )}
+        </div>
+      )}
+
+      {kpi && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 inline-block">
+          <p className="text-xs text-gray-500">{kpi.label}</p>
+          <p className="font-fraunces text-2xl font-bold text-gray-900">{kpi.value}</p>
+        </div>
+      )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
         <div>
@@ -374,33 +435,35 @@ const AdminAwards = () => {
         <h2 className="font-fraunces font-bold text-gray-900">
           Cérémonie des Awards {settings?.ceremonySession ? `· ${settings.ceremonySession.title}` : ""}
         </h2>
-        {awaitingCeremonyCount === 0 ? (
+        {awaitingCeremonyCount === 0 && (
           <p className="text-sm text-gray-600">Disponible une fois le vote clos pour au moins un prix.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <button
-              onClick={() => navigate("/admin/awards/ceremonie/preparation")}
-              className="p-4 rounded-xl bg-white border border-award-gold/40 text-left"
-            >
-              <p className="font-medium text-gray-900 text-sm">1. Préparer la cérémonie</p>
-              <p className="text-xs text-gray-500">Égalités et ordre de passage</p>
-            </button>
-            <button
-              onClick={() => navigate("/admin/awards/ceremonie")}
-              className="p-4 rounded-xl bg-award-ink text-award-gold-light text-left"
-            >
-              <p className="font-medium text-sm">2. Lancer le mode cérémonie</p>
-              <p className="text-xs opacity-70">Plein écran, pendant la séance</p>
-            </button>
-            <button
-              onClick={() => setShowPublishModal(true)}
-              className="p-4 rounded-xl bg-primary text-white text-left"
-            >
-              <p className="font-medium text-sm">3. Publier les résultats</p>
-              <p className="text-xs opacity-80">Après la cérémonie</p>
-            </button>
-          </div>
         )}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            onClick={() => navigate("/admin/awards/ceremonie/preparation")}
+            disabled={awaitingCeremonyCount === 0}
+            className="p-4 rounded-xl bg-white border border-award-gold/40 text-left disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <p className="font-medium text-gray-900 text-sm">1. Préparer la cérémonie</p>
+            <p className="text-xs text-gray-500">Égalités et ordre de passage</p>
+          </button>
+          <button
+            onClick={() => navigate("/admin/awards/ceremonie")}
+            disabled={awaitingCeremonyCount === 0}
+            className="p-4 rounded-xl bg-award-ink text-award-gold-light text-left disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <p className="font-medium text-sm">2. Lancer le mode cérémonie</p>
+            <p className="text-xs opacity-70">Plein écran, pendant la séance</p>
+          </button>
+          <button
+            onClick={() => setShowPublishModal(true)}
+            disabled={awaitingCeremonyCount === 0}
+            className="p-4 rounded-xl bg-primary text-white text-left disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <p className="font-medium text-sm">3. Publier les résultats</p>
+            <p className="text-xs opacity-80">Après la cérémonie</p>
+          </button>
+        </div>
       </div>
 
       <PublishResultsModal

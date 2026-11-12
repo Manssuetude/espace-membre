@@ -144,43 +144,56 @@ const Awards = () => {
         </Link>
       )}
 
-      {/* Common ceremony-flavored header */}
-      <div className="bg-award-ink rounded-2xl p-6 text-white shadow-lg space-y-3">
-        <div>
-          <p className="text-xs text-award-gold-light uppercase tracking-wide">
-            Édition {year} {showStepper && `· Étape ${stepIndex} sur 5`}
-          </p>
-          <h1 className="font-fraunces text-2xl font-bold mt-1">{AWARD_EDITION_PHASE_LABELS[phase]}</h1>
-        </div>
-        {showStepper && (
-          <div className="hidden md:flex items-center gap-2 pt-2 border-t border-white/10">
-            {STEPS.map((step, i) => (
-              <div
-                key={step}
-                className={`flex-1 text-center text-xs py-2 border-t-2 ${
-                  i + 1 === stepIndex
-                    ? "border-award-gold text-award-gold-light font-medium"
-                    : "border-white/10 text-white/40"
-                }`}
-              >
-                {step}
-              </div>
-            ))}
+      {/* ---------------- Teasing hero (merged header + countdown) ---------------- */}
+      {phase === "teasing" && (
+        <div className="bg-award-ink rounded-2xl p-6 sm:p-8 text-white shadow-lg space-y-4">
+          <div>
+            <p className="text-xs text-award-gold-light uppercase tracking-wide">
+              Édition {year} · {AWARD_EDITION_PHASE_LABELS[phase]}
+            </p>
+            <h1 className="font-fraunces text-3xl sm:text-4xl font-bold mt-2">Les Awards arrivent</h1>
+            <p className="text-white/70 text-sm mt-2 max-w-md">
+              {categories?.length ?? 0} prix pour célébrer celles et ceux qui ont marqué l'année. Un nouveau prix est
+              dévoilé ici régulièrement. Les nominations ouvriront ensuite.
+            </p>
           </div>
-        )}
-        <CeremonyLine settings={settings} />
-      </div>
+          <AwardCountdown target={parseApiDate(settings?.nominationStartAt)} label="Ouverture des nominations dans" />
+          <CeremonyLine settings={settings} />
+        </div>
+      )}
+
+      {/* Common ceremony-flavored header */}
+      {phase !== "teasing" && (
+        <div className="bg-award-ink rounded-2xl p-6 text-white shadow-lg space-y-3">
+          <div>
+            <p className="text-xs text-award-gold-light uppercase tracking-wide">
+              Édition {year} {showStepper && `· Étape ${stepIndex} sur 5`}
+            </p>
+            <h1 className="font-fraunces text-2xl font-bold mt-1">{AWARD_EDITION_PHASE_LABELS[phase]}</h1>
+          </div>
+          {showStepper && (
+            <div className="hidden md:flex items-center gap-2 pt-2 border-t border-white/10">
+              {STEPS.map((step, i) => (
+                <div
+                  key={step}
+                  className={`flex-1 text-center text-xs py-2 border-t-2 ${
+                    i + 1 === stepIndex
+                      ? "border-award-gold text-award-gold-light font-medium"
+                      : "border-white/10 text-white/40"
+                  }`}
+                >
+                  {step}
+                </div>
+              ))}
+            </div>
+          )}
+          <CeremonyLine settings={settings} />
+        </div>
+      )}
 
       {/* ---------------- Teasing ---------------- */}
       {phase === "teasing" && (
         <>
-          <div className="bg-award-ink rounded-2xl p-6 text-white shadow-lg">
-            <h2 className="font-fraunces text-xl font-bold mb-1">Les Awards arrivent</h2>
-            <p className="text-white/70 text-sm mb-4">
-              {categories?.length ?? 0} prix pour célébrer celles et ceux qui ont marqué l'année.
-            </p>
-            <AwardCountdown target={parseApiDate(settings?.nominationStartAt)} label="Ouverture des nominations dans" />
-          </div>
           <p className="text-sm text-gray-500">
             {categories?.filter((c) => c.revealed).length ?? 0} prix dévoilés sur {categories?.length ?? 0}
           </p>
