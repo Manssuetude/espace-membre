@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 interface WinnerCardCategory {
   id: string;
   name: string;
+  description: string | null;
   icon: string | null;
   winners: { id: string; name: string }[];
   finalists: { id: string; name: string }[];
@@ -109,6 +110,7 @@ const AwardWinnerCard = ({ category, revealed, animate = false }: AwardWinnerCar
           </h3>
         </div>
       </div>
+      {category.description && <p className="text-sm text-gray-600 mb-2">{category.description}</p>}
       {category.finalists.length > 0 && (
         <p className="text-xs text-gray-500 mt-2">Finalistes : {category.finalists.map((f) => f.name).join(", ")}</p>
       )}
