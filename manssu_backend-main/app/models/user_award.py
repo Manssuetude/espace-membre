@@ -1,5 +1,6 @@
-# PERMANENT MODEL — do not delete when the temporary Awards feature (app/models/award.py,
-# app/services/award_service.py, app/api/v1/awards.py) is removed after the event.
+# PERMANENT MODEL — unlike the per-edition tables in app/models/award.py (categories,
+# nominations, candidates, votes, winners), which get wiped and rebuilt each year via
+# reset_all, these rows are never deleted when an edition resets.
 # Award wins are a permanent achievement record shown on a member's profile, or on a
 # commission's page for a collective prize. Exactly one of user_id/commission_id is set.
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, CheckConstraint

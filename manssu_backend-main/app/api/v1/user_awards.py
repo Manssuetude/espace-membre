@@ -1,4 +1,4 @@
-# PERMANENT ROUTER — see app/models/user_award.py. Not part of the temporary Awards feature.
+# PERMANENT ROUTER — see app/models/user_award.py. Survives a per-edition reset_all.
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 

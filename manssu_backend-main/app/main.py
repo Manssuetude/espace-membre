@@ -349,8 +349,8 @@ app.include_router(activity_templates.router, prefix="/api/v1/activity-templates
 app.include_router(questionnaires.router, prefix="/api/v1/questionnaires", tags=["Questionnaires"])
 app.include_router(commissions.router, prefix="/api/v1/commissions", tags=["Commissions"])
 app.include_router(library.router, prefix="/api/v1/library", tags=["Library"])
-app.include_router(awards.router, prefix="/api/v1/awards", tags=["Awards"])  # TEMPORARY - remove after the awards event
-app.include_router(user_awards.router, prefix="/api/v1/award-wins", tags=["Award Wins"])  # PERMANENT - keep even after the awards event
+app.include_router(awards.router, prefix="/api/v1/awards", tags=["Awards"])
+app.include_router(user_awards.router, prefix="/api/v1/award-wins", tags=["Award Wins"])
 
 
 # Root endpoint

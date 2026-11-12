@@ -80,7 +80,7 @@ export const queryKeys = {
   libraryWishlist: ["library", "wishlist", "me"] as const,
   libraryNotifications: ["library", "notifications"] as const,
 
-  // Awards (temporary feature)
+  // Awards (per-edition data: reset each year via reset-all)
   awardCategories: ["awards", "categories"] as const,
   awardCategory: (id: string) => ["awards", "categories", id] as const,
   awardNominationStats: (categoryId: string) => ["awards", "categories", categoryId, "nomination-stats"] as const,
@@ -89,7 +89,7 @@ export const queryKeys = {
   awardCeremonyPreparation: ["awards", "ceremony", "preparation"] as const,
   awardCeremony: ["awards", "ceremony"] as const,
 
-  // Award wins (permanent, survives the temporary Awards feature)
+  // Award wins (permanent, never cleared by a per-edition reset)
   myAwardWins: ["award-wins", "me"] as const,
   userAwardWins: (userId: string) => ["award-wins", "user", userId] as const,
   commissionAwardWins: (commissionId: string) => ["award-wins", "commission", commissionId] as const,
