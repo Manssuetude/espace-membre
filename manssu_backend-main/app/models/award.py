@@ -17,12 +17,15 @@ class AwardCategory(Base):
     nominations_open = Column(Boolean, nullable=False, default=True)
     results_published_at = Column(DateTime, nullable=True)
     order_index = Column(Integer, default=0)
+    reveal_at = Column(DateTime, nullable=True)  # when this category is revealed during the teasing phase
+    ceremony_order = Column(Integer, nullable=True)  # running order during the ceremony; falls back to order_index
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
     nominations = relationship("AwardNomination", back_populates="category", cascade="all, delete-orphan")
     candidates = relationship("AwardCandidate", back_populates="category", cascade="all, delete-orphan")
+    winners = relationship("AwardWinner", back_populates="category", cascade="all, delete-orphan")
 
 
 class AwardNomination(Base):
@@ -82,6 +85,25 @@ class AwardCandidate(Base):
     )
 
 
+class AwardWinner(Base):
+    """A winner (or co-winner) recorded for a category, during ceremony preparation.
+    Published results and permanent UserAwardWin badges are built from these rows."""
+    __tablename__ = "award_winners"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    category_id = Column(UUID(as_uuid=True), ForeignKey("award_categories.id", ondelete="CASCADE"), nullable=False, index=True)
+    candidate_id = Column(UUID(as_uuid=True), ForeignKey("award_candidates.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationships
+    category = relationship("AwardCategory", back_populates="winners")
+    candidate = relationship("AwardCandidate")
+
+    __table_args__ = (
+        Index('idx_award_winners_unique', 'category_id', 'candidate_id', unique=True),
+    )
+
+
 class AwardVote(Base):
     __tablename__ = "award_votes"
 
@@ -107,10 +129,19 @@ class AwardSettings(Base):
     __tablename__ = "award_settings"
 
     id = Column(Integer, primary_key=True)
+    edition_year = Column(Integer, nullable=False, default=lambda: datetime.utcnow().year)
+    teasing_start_at = Column(DateTime, nullable=True)
     nomination_start_at = Column(DateTime, nullable=True)
     nomination_end_at = Column(DateTime, nullable=True)
     vote_start_at = Column(DateTime, nullable=True)
     vote_end_at = Column(DateTime, nullable=True)
+    ceremony_session_id = Column(UUID(as_uuid=True), ForeignKey("sessions.id", ondelete="SET NULL"), nullable=True)
+    email_mode = Column(String(10), nullable=False, default="off")  # off, test, on
     reminder_sent_at = Column(DateTime, nullable=True)  # guards against duplicate J-1 reminder emails
+    teasing_email_sent_at = Column(DateTime, nullable=True)
+    nominations_open_email_sent_at = Column(DateTime, nullable=True)
+    vote_open_email_sent_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    ceremony_session = relationship("Session", foreign_keys=[ceremony_session_id])

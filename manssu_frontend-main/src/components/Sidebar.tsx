@@ -240,7 +240,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               </NavLink>
             </CollapsibleSection>
 
-            {/* Awards - standalone (TEMPORARY, remove after the event) */}
+            {/* Awards - standalone */}
             {!isGuest && (
               <NavLink
                 to="/awards"

@@ -1114,20 +1114,96 @@ class ResendEmailService:
             html_content=html_content
         )
 
+    def _award_subject(self, subject: str, test_mode: bool) -> str:
+        return f"[TEST] {subject}" if test_mode else subject
+
+    def _award_test_banner(self, test_mode: bool, test_note: str) -> str:
+        if not test_mode or not test_note:
+            return ""
+        return (
+            '<div style="background-color:#FEF3C7;border:1px solid #F59E0B;padding:12px;'
+            'margin-bottom:16px;border-radius:8px;font-size:14px;color:#92400E;">'
+            f"{test_note}</div>"
+        )
+
+    def send_award_teasing_started_email(
+        self,
+        to_email: str,
+        to_name: str,
+        test_mode: bool = False,
+        test_note: str = "",
+    ) -> bool:
+        """Send email announcing that the Awards teasing phase has started."""
+        subject = self._award_subject(f"Les Awards arrivent - {self.from_name}", test_mode)
+        html_content = self._render_notification_template(
+            name=to_name,
+            title="Les Awards arrivent !",
+            message="Les prix de cette édition se dévoilent un par un dans l'onglet Awards. Un nouveau prix est révélé tous les deux jours.",
+            action_text="Découvrir les Awards",
+            action_url="https://membre.manssuetude.com/awards",
+            custom_content=self._award_test_banner(test_mode, test_note),
+        )
+        return self._send_email(to_email=to_email, to_name=to_name, subject=subject, html_content=html_content)
+
+    def send_award_nominations_open_email(
+        self,
+        to_email: str,
+        to_name: str,
+        nomination_end_date: Optional[str] = None,
+        test_mode: bool = False,
+        test_note: str = "",
+    ) -> bool:
+        """Send email announcing that Awards nominations have opened."""
+        end_text = f" jusqu'au {nomination_end_date}" if nomination_end_date else ""
+        subject = self._award_subject(f"Les nominations sont ouvertes - {self.from_name}", test_mode)
+        html_content = self._render_notification_template(
+            name=to_name,
+            title="Les nominations sont ouvertes",
+            message=f"Proposez les membres qui ont marqué l'année{end_text}. Vos propositions restent privées.",
+            action_text="Proposer un candidat",
+            action_url="https://membre.manssuetude.com/awards",
+            custom_content=self._award_test_banner(test_mode, test_note),
+        )
+        return self._send_email(to_email=to_email, to_name=to_name, subject=subject, html_content=html_content)
+
+    def send_award_vote_open_email(
+        self,
+        to_email: str,
+        to_name: str,
+        vote_end_date: Optional[str] = None,
+        test_mode: bool = False,
+        test_note: str = "",
+    ) -> bool:
+        """Send email announcing that Awards voting has opened."""
+        end_text = f" avant le {vote_end_date}" if vote_end_date else ""
+        subject = self._award_subject(f"Le vote des Awards est ouvert - {self.from_name}", test_mode)
+        html_content = self._render_notification_template(
+            name=to_name,
+            title="Le vote est ouvert",
+            message=f"Choisissez vos finalistes préférés{end_text}. Un vote par prix, définitif.",
+            action_text="Voter maintenant",
+            action_url="https://membre.manssuetude.com/awards",
+            custom_content=self._award_test_banner(test_mode, test_note),
+        )
+        return self._send_email(to_email=to_email, to_name=to_name, subject=subject, html_content=html_content)
+
     def send_award_vote_reminder_email(
         self,
         to_email: str,
         to_name: str,
         vote_end_date: str,
+        test_mode: bool = False,
+        test_note: str = "",
     ) -> bool:
         """Send J-1 reminder email that award voting closes soon."""
-        subject = f"Dernier jour pour voter aux Awards - {self.from_name}"
+        subject = self._award_subject(f"Dernier jour pour voter aux Awards - {self.from_name}", test_mode)
         html_content = self._render_notification_template(
             name=to_name,
             title="Le vote se termine bientôt",
             message=f"Le vote pour les Awards se termine le {vote_end_date}. N'oubliez pas de voter dans toutes les catégories avant la clôture !",
             action_text="Voter maintenant",
             action_url="https://membre.manssuetude.com/awards",
+            custom_content=self._award_test_banner(test_mode, test_note),
         )
         return self._send_email(
             to_email=to_email,
@@ -1140,15 +1216,18 @@ class ResendEmailService:
         self,
         to_email: str,
         to_name: str,
+        test_mode: bool = False,
+        test_note: str = "",
     ) -> bool:
         """Send email announcing that award results are available on the platform."""
-        subject = f"Les résultats des Awards sont disponibles - {self.from_name}"
+        subject = self._award_subject(f"Les résultats des Awards sont disponibles - {self.from_name}", test_mode)
         html_content = self._render_notification_template(
             name=to_name,
             title="Les résultats sont tombés !",
             message="Les résultats des Awards sont désormais disponibles sur l'espace membre.",
             action_text="Voir les résultats",
             action_url="https://membre.manssuetude.com/awards",
+            custom_content=self._award_test_banner(test_mode, test_note),
         )
         return self._send_email(
             to_email=to_email,

@@ -10,6 +10,9 @@ import {
   CreateCategoryRequest,
   UpdateCategoryRequest,
   UpdateAwardSettingsRequest,
+  PreparationCategoryItem,
+  SaveCeremonyPreparationRequest,
+  CeremonyCategoryItem,
 } from "../../types/award";
 
 export const awardsApi = {
@@ -38,6 +41,13 @@ export const awardsApi = {
     return response.data;
   },
 
+  distributeReveals: async (): Promise<ApiResponse<{ updatedCount: number }>> => {
+    const response = await apiClient.post<ApiResponse<{ updatedCount: number }>>(
+      "/api/v1/awards/categories/distribute-reveals",
+    );
+    return response.data;
+  },
+
   nominate: async (categoryId: string, data: NominateRequest): Promise<ApiResponse<AwardCategory>> => {
     const response = await apiClient.post<ApiResponse<AwardCategory>>(
       `/api/v1/awards/categories/${categoryId}/nominations`,
@@ -53,8 +63,8 @@ export const awardsApi = {
     return response.data;
   },
 
-  amICurator: async (): Promise<ApiResponse<{ isCurator: boolean }>> => {
-    const response = await apiClient.get<ApiResponse<{ isCurator: boolean }>>("/api/v1/awards/am-i-curator");
+  amIAwardManager: async (): Promise<ApiResponse<{ isManager: boolean }>> => {
+    const response = await apiClient.get<ApiResponse<{ isManager: boolean }>>("/api/v1/awards/am-i-award-manager");
     return response.data;
   },
 
@@ -102,27 +112,41 @@ export const awardsApi = {
     return response.data;
   },
 
-  publishResults: async (categoryId: string): Promise<ApiResponse<AwardCategory>> => {
-    const response = await apiClient.post<ApiResponse<AwardCategory>>(
-      `/api/v1/awards/categories/${categoryId}/publish-results`,
-    );
+  getCeremonyPreparation: async (): Promise<ApiResponse<PreparationCategoryItem[]>> => {
+    const response = await apiClient.get<ApiResponse<PreparationCategoryItem[]>>("/api/v1/awards/ceremony/preparation");
     return response.data;
   },
 
-  publishAllResults: async (): Promise<ApiResponse<{ publishedCount: number; publishedCategoryIds: string[] }>> => {
-    const response = await apiClient.post<ApiResponse<{ publishedCount: number; publishedCategoryIds: string[] }>>(
-      "/api/v1/awards/publish-all-results",
-    );
+  saveCeremonyPreparation: async (data: SaveCeremonyPreparationRequest): Promise<ApiResponse<{ saved: boolean }>> => {
+    const response = await apiClient.put<ApiResponse<{ saved: boolean }>>("/api/v1/awards/ceremony/preparation", data);
+    return response.data;
+  },
+
+  getCeremony: async (): Promise<ApiResponse<CeremonyCategoryItem[]>> => {
+    const response = await apiClient.get<ApiResponse<CeremonyCategoryItem[]>>("/api/v1/awards/ceremony");
+    return response.data;
+  },
+
+  publishAllResults: async (): Promise<
+    ApiResponse<{ publishedCount: number; badgesAwarded: number; publishedCategoryIds: string[] }>
+  > => {
+    const response = await apiClient.post<
+      ApiResponse<{ publishedCount: number; badgesAwarded: number; publishedCategoryIds: string[] }>
+    >("/api/v1/awards/publish-all-results");
     return response.data;
   },
 
   resetAll: async (): Promise<
-    ApiResponse<{ votesDeleted: number; candidatesDeleted: number; nominationsDeleted: number }>
+    ApiResponse<{ votesDeleted: number; winnersDeleted: number; candidatesDeleted: number; nominationsDeleted: number }>
   > => {
-    const response =
-      await apiClient.post<
-        ApiResponse<{ votesDeleted: number; candidatesDeleted: number; nominationsDeleted: number }>
-      >("/api/v1/awards/reset-all");
+    const response = await apiClient.post<
+      ApiResponse<{
+        votesDeleted: number;
+        winnersDeleted: number;
+        candidatesDeleted: number;
+        nominationsDeleted: number;
+      }>
+    >("/api/v1/awards/reset-all");
     return response.data;
   },
 

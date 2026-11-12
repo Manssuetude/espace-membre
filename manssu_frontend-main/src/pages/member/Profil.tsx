@@ -86,6 +86,7 @@ const Profil = () => {
             }
             sessionsCount={0}
             status={profile.status === "active" ? "Membre actif" : "Inactif"}
+            hasAwardWins={!!awardWins && awardWins.length > 0}
           />
         )}
 
@@ -97,16 +98,24 @@ const Profil = () => {
             {awardWins && awardWins.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                 <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                  <i className="fa-solid fa-trophy text-primary"></i>
+                  <i className="fa-solid fa-trophy text-award-gold-text"></i>
                   Awards remportés
                 </h3>
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {awardWins.map((win) => (
-                    <div key={win.id} className="flex items-center gap-3 bg-primary/5 rounded-xl px-3 py-2">
-                      <span className="text-2xl">{win.awardIcon || "🏆"}</span>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{win.awardName}</p>
-                        <p className="text-xs text-gray-500">{win.year}</p>
+                    <div
+                      key={win.id}
+                      className="flex items-center gap-3 bg-award-cream-light border border-award-gold/30 rounded-xl px-3 py-3"
+                    >
+                      <span className="w-10 h-10 rounded-full bg-award-gold flex items-center justify-center text-xl flex-shrink-0 shadow-sm">
+                        {win.awardIcon || "🏆"}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{win.awardName}</p>
+                        <p className="text-xs text-award-gold-text font-medium">
+                          Awards {win.year}
+                          {win.isCoWinner && " · Co-lauréat·e"}
+                        </p>
                       </div>
                     </div>
                   ))}

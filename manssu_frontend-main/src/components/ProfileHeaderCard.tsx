@@ -1,14 +1,22 @@
 import { getUserAvatarUrl, getUserInitials } from "../utils/userUtils";
 import { User } from "../types/auth";
+import AwardBadgeDot from "./awards/AwardBadgeDot";
 
 interface ProfileHeaderCardProps {
   user: User | null;
   memberSince: string;
   sessionsCount: number;
   status: string;
+  hasAwardWins?: boolean;
 }
 
-const ProfileHeaderCard = ({ user, memberSince, sessionsCount, status }: ProfileHeaderCardProps) => {
+const ProfileHeaderCard = ({
+  user,
+  memberSince,
+  sessionsCount,
+  status,
+  hasAwardWins = false,
+}: ProfileHeaderCardProps) => {
   const avatarUrl = getUserAvatarUrl(user);
   const initials = getUserInitials(user);
   const displayName =
@@ -18,7 +26,7 @@ const ProfileHeaderCard = ({ user, memberSince, sessionsCount, status }: Profile
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 lg:p-8 mb-8">
       <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-6 sm:space-y-0 sm:space-x-8">
-        <div>
+        <div className="relative">
           {avatarUrl ? (
             <img
               src={avatarUrl}
@@ -30,6 +38,7 @@ const ProfileHeaderCard = ({ user, memberSince, sessionsCount, status }: Profile
               {initials}
             </div>
           )}
+          <AwardBadgeDot show={hasAwardWins} />
         </div>
         <div className="flex-1 text-center sm:text-left">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">{displayName}</h2>

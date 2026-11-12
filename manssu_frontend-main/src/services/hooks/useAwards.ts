@@ -8,6 +8,7 @@ import {
   CreateCategoryRequest,
   UpdateCategoryRequest,
   UpdateAwardSettingsRequest,
+  SaveCeremonyPreparationRequest,
 } from "../../types/award";
 import { toast } from "sonner";
 
@@ -29,11 +30,12 @@ export const useAwardCategory = (id: string) => {
   });
 };
 
-export const useIsAwardCurator = () => {
+export const useIsAwardManager = (options?: { enabled?: boolean }) => {
   return useQuery({
-    queryKey: [...queryKeys.awardSettings, "am-i-curator"],
-    queryFn: () => awardsApi.amICurator(),
-    select: (response) => response.data.isCurator,
+    queryKey: queryKeys.awardIsManager,
+    queryFn: () => awardsApi.amIAwardManager(),
+    select: (response) => response.data.isManager,
+    enabled: options?.enabled,
   });
 };
 
@@ -93,6 +95,17 @@ export const useDeleteAwardCategory = () => {
   });
 };
 
+export const useDistributeReveals = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => awardsApi.distributeReveals(),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.awardCategories });
+      toast.success(response.message || "Révélations réparties");
+    },
+  });
+};
+
 export const useNominate = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -123,17 +136,6 @@ export const useCloseAllNominations = () => {
     mutationFn: () => awardsApi.closeAllNominations(),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.awardCategories });
-      toast.success(response.message || "Nominations clôturées");
-    },
-  });
-};
-
-export const useCloseNominations = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (categoryId: string) => awardsApi.closeNominations(categoryId),
-    onSuccess: (response, categoryId) => {
-      invalidateCategory(queryClient, categoryId);
       toast.success(response.message || "Nominations clôturées");
     },
   });
@@ -173,14 +175,35 @@ export const useVoteAward = () => {
   });
 };
 
-export const usePublishResults = () => {
+export const useCeremonyPreparation = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: queryKeys.awardCeremonyPreparation,
+    queryFn: () => awardsApi.getCeremonyPreparation(),
+    select: (response) => response.data,
+    enabled,
+  });
+};
+
+export const useSaveCeremonyPreparation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (categoryId: string) => awardsApi.publishResults(categoryId),
-    onSuccess: (response, categoryId) => {
-      invalidateCategory(queryClient, categoryId);
-      toast.success(response.message || "Résultats publiés");
+    mutationFn: (data: SaveCeremonyPreparationRequest) => awardsApi.saveCeremonyPreparation(data),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.awardCeremonyPreparation });
+      toast.success(response.message || "Préparation enregistrée");
     },
+  });
+};
+
+export const useCeremony = (enabled: boolean = true) => {
+  return useQuery({
+    queryKey: queryKeys.awardCeremony,
+    queryFn: () => awardsApi.getCeremony(),
+    select: (response) => response.data,
+    enabled,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    retry: false,
   });
 };
 
@@ -202,7 +225,7 @@ export const useResetAllAwards = () => {
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.awardCategories });
       queryClient.invalidateQueries({ queryKey: queryKeys.awardSettings });
-      toast.success(response.message || "Processus réinitialisé");
+      toast.success(response.message || "Édition réinitialisée");
     },
   });
 };
@@ -214,7 +237,7 @@ export const useAwardSettingsUpdate = () => {
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.awardSettings });
       queryClient.invalidateQueries({ queryKey: queryKeys.awardCategories });
-      toast.success(response.message || "Fenêtre de vote mise à jour");
+      toast.success(response.message || "Calendrier mis à jour");
     },
   });
 };

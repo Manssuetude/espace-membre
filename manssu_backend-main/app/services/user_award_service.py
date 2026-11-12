@@ -16,6 +16,7 @@ class UserAwardService:
             awardName=w.award_name,
             awardIcon=w.award_icon,
             year=w.year,
+            isCoWinner=w.is_co_winner,
             awardedAt=w.awarded_at.isoformat() if w.awarded_at else None,
         )
 
@@ -38,6 +39,7 @@ class UserAwardService:
         year: int,
         user_id: Optional[str] = None,
         commission_id: Optional[str] = None,
+        is_co_winner: bool = False,
     ) -> None:
         """Idempotent: won't duplicate if a win with the same name/year is already recorded for this target.
         Exactly one of user_id/commission_id must be provided."""
@@ -58,4 +60,5 @@ class UserAwardService:
             award_name=award_name,
             award_icon=award_icon,
             year=year,
+            is_co_winner=is_co_winner,
         ))
