@@ -5,6 +5,7 @@ interface AwardProposeSheetProps {
   open: boolean;
   onClose: () => void;
   categoryName: string;
+  categoryDescription?: string | null;
   targetLabel: string; // "Rechercher un membre..." / "Rechercher une commission..."
   options: { value: string; label: string }[];
   myNominations: { id: string; name: string }[];
@@ -18,6 +19,7 @@ const AwardProposeSheet = ({
   open,
   onClose,
   categoryName,
+  categoryDescription,
   targetLabel,
   options,
   myNominations,
@@ -53,7 +55,9 @@ const AwardProposeSheet = ({
         <div className="flex justify-center mb-3">
           <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
         </div>
-        <h3 className="font-fraunces text-lg font-bold text-gray-900 mb-3">{categoryName}</h3>
+        <h3 className="font-fraunces text-lg font-bold text-gray-900">{categoryName}</h3>
+        {categoryDescription && <p className="text-sm text-gray-500 mt-1">{categoryDescription}</p>}
+        <div className="mb-3" />
 
         {myNominations.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">

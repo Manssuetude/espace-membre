@@ -125,6 +125,37 @@ def test_teasing_does_not_strip_fields_for_award_manager(client, db):
 
 
 # ----------------------------------------------------------------------
+# Nominations
+# ----------------------------------------------------------------------
+
+
+def test_member_cannot_nominate_themselves(client, db):
+    now = datetime.utcnow()
+    settings = get_settings(db)
+    settings.nomination_start_at = now - timedelta(days=1)
+    settings.nomination_end_at = now + timedelta(days=1)
+    db.commit()
+
+    category = make_category(db)
+    member = make_user(db, role="member")
+    other = make_user(db, role="member")
+
+    resp = client.post(
+        f"/api/v1/awards/categories/{category.id}/nominations",
+        json={"nominatedUserId": str(member.id)},
+        headers=auth_headers(member),
+    )
+    assert resp.status_code == 400
+
+    resp = client.post(
+        f"/api/v1/awards/categories/{category.id}/nominations",
+        json={"nominatedUserId": str(other.id)},
+        headers=auth_headers(member),
+    )
+    assert resp.status_code == 200, resp.text
+
+
+# ----------------------------------------------------------------------
 # Calendar validation
 # ----------------------------------------------------------------------
 
