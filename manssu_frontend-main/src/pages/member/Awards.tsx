@@ -254,6 +254,7 @@ const Awards = () => {
                     <span className="text-2xl">{category.icon}</span>
                     <div>
                       <h3 className="font-fraunces font-bold text-gray-900">{category.name}</h3>
+                      {category.description && <p className="text-sm text-gray-500 mt-1">{category.description}</p>}
                       {category.myNominations.length > 0 && (
                         <span className="text-xs text-success font-medium">
                           {category.myNominations.length} proposition(s)
@@ -373,7 +374,10 @@ const Awards = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{category.icon}</span>
-                    <h3 className="font-fraunces font-bold text-gray-900">{category.name}</h3>
+                    <div>
+                      <h3 className="font-fraunces font-bold text-gray-900">{category.name}</h3>
+                      {category.description && <p className="text-sm text-gray-500 mt-1">{category.description}</p>}
+                    </div>
                   </div>
                   {category.myVote && (
                     <span className="text-success text-xs font-medium flex items-center gap-1">
@@ -455,7 +459,10 @@ const Awards = () => {
                 <div key={category.id} className="bg-award-ink rounded-2xl p-5 text-white border border-white/10">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xl">{category.icon}</span>
-                    <h3 className="font-fraunces font-medium">{category.name}</h3>
+                    <div>
+                      <h3 className="font-fraunces font-medium">{category.name}</h3>
+                      {category.description && <p className="text-xs text-white/60 mt-1">{category.description}</p>}
+                    </div>
                   </div>
                   <p className="text-xs text-white/60">{category.finalists?.map((f) => f.name).join(" · ")}</p>
                 </div>
@@ -497,6 +504,7 @@ const Awards = () => {
                   category={{
                     id: category.id,
                     name: category.name || "",
+                    description: category.description,
                     icon: category.icon,
                     isCoWinner: category.isCoWinner,
                     winners: (category.winners || []).map((w) => ({ id: w.id, name: w.name })),
