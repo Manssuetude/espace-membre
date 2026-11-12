@@ -9,7 +9,7 @@ import {
 } from "../../services/hooks/useAwards";
 
 export const CategoryEditForm = ({ category, onDone }: { category: AwardCategory; onDone: () => void }) => {
-  const [name, setName] = useState(category.name);
+  const [name, setName] = useState(category.name || "");
   const [description, setDescription] = useState(category.description || "");
   const [icon, setIcon] = useState(category.icon || "");
   const updateCategory = useUpdateAwardCategory();
@@ -127,7 +127,7 @@ export const DeleteCategoryButton = ({ category }: { category: AwardCategory }) 
   const handleDelete = () => {
     if (
       window.confirm(
-        `Supprimer la catégorie "${category.name}" ? Toutes ses propositions, candidats et votes seront définitivement supprimés. Cette action est irréversible.`,
+        `Supprimer la catégorie "${category.name || "sans nom"}" ? Toutes ses propositions, candidats et votes seront définitivement supprimés. Cette action est irréversible.`,
       )
     ) {
       deleteCategory.mutate(category.id);

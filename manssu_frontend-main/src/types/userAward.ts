@@ -4,5 +4,6 @@ export interface UserAwardWin {
   awardName: string;
   awardIcon: string | null;
   year: number;
+  isCoWinner: boolean;
   awardedAt: string;
 }

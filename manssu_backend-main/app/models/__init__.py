@@ -26,6 +26,7 @@ from app.models.award import (
     AwardNomination,
     AwardCandidate,
     AwardVote,
+    AwardWinner,
     AwardSettings,
 )
 from app.models.user_award import UserAwardWin
@@ -63,6 +64,7 @@ __all__ = [
     "AwardNomination",
     "AwardCandidate",
     "AwardVote",
+    "AwardWinner",
     "AwardSettings",
     "UserAwardWin",
 ]

@@ -2,7 +2,7 @@
 # app/services/award_service.py, app/api/v1/awards.py) is removed after the event.
 # Award wins are a permanent achievement record shown on a member's profile, or on a
 # commission's page for a collective prize. Exactly one of user_id/commission_id is set.
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, CheckConstraint
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -19,6 +19,7 @@ class UserAwardWin(Base):
     award_name = Column(String(255), nullable=False)
     award_icon = Column(String(10), nullable=True)
     year = Column(Integer, nullable=False)
+    is_co_winner = Column(Boolean, nullable=False, default=False)
     awarded_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", backref="award_wins")
