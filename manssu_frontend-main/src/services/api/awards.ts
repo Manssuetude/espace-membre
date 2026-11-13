@@ -3,6 +3,7 @@ import { ApiResponse } from "../../types/api";
 import {
   AwardCategory,
   AwardSettings,
+  AwardParticipation,
   AwardNominationInfo,
   NominateRequest,
   BuildShortlistRequest,
@@ -147,6 +148,11 @@ export const awardsApi = {
         nominationsDeleted: number;
       }>
     >("/api/v1/awards/reset-all");
+    return response.data;
+  },
+
+  getParticipation: async (): Promise<ApiResponse<AwardParticipation>> => {
+    const response = await apiClient.get<ApiResponse<AwardParticipation>>("/api/v1/awards/participation");
     return response.data;
   },
 

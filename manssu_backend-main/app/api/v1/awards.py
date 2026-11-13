@@ -95,6 +95,16 @@ async def delete_category(
     return APIResponse(success=True, message="Catégorie supprimée")
 
 
+@router.get("/participation", response_model=APIResponse)
+async def get_participation(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_award_manager),
+):
+    """Distinct members who nominated / voted, per category and overall (admins + commission Vie asso)."""
+    service = AwardService(db)
+    return APIResponse(success=True, data=service.get_participation())
+
+
 @router.post("/categories/distribute-reveals", response_model=APIResponse)
 async def distribute_reveals(
     db: Session = Depends(get_db),

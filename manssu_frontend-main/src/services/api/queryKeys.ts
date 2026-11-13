@@ -85,6 +85,7 @@ export const queryKeys = {
   awardCategory: (id: string) => ["awards", "categories", id] as const,
   awardNominationStats: (categoryId: string) => ["awards", "categories", categoryId, "nomination-stats"] as const,
   awardSettings: ["awards", "settings"] as const,
+  awardParticipation: ["awards", "participation"] as const,
   awardIsManager: ["awards", "am-i-manager"] as const,
   awardCeremonyPreparation: ["awards", "ceremony", "preparation"] as const,
   awardCeremony: ["awards", "ceremony"] as const,

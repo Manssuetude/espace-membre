@@ -170,3 +170,11 @@ export interface AwardDashboardSummary {
   ceremonySession?: AwardCeremonySession | null;
   publishedAt?: string | null;
 }
+
+// Organizer view: distinct members who acted, per category and overall
+export interface AwardParticipation {
+  totalNominators: number;
+  totalVoters: number;
+  activeMembers: number;
+  perCategory: Record<string, { nominators: number; voters: number }>;
+}

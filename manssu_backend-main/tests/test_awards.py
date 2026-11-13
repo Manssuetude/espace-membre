@@ -174,6 +174,34 @@ def test_guest_cannot_be_nominated(client, db):
     assert resp.status_code == 400
 
 
+def test_participation_counts_distinct_people(client, db):
+    from app.models.award import AwardNomination
+
+    cat_a = make_category(db, name="A")
+    cat_b = make_category(db, name="B", nominations_open=False)
+    manager = make_award_manager_commission_member(db)
+    alice, bob, nominee = make_user(db), make_user(db), make_user(db)
+
+    # alice nominates in A and B, bob only in A -> A: 2, B: 1, total distinct: 2
+    for proposer, cat in [(alice, cat_a), (alice, cat_b), (bob, cat_a)]:
+        db.add(AwardNomination(id=uuid.uuid4(), category_id=cat.id, nominated_user_id=nominee.id,
+                               proposed_by_user_id=proposer.id))
+    candidate = make_candidate(db, cat_b, nominee, votes=1)
+    db.add(AwardVote(id=uuid.uuid4(), category_id=cat_b.id, candidate_id=candidate.id, voter_user_id=bob.id))
+    db.commit()
+
+    resp = client.get("/api/v1/awards/participation", headers=auth_headers(manager))
+    assert resp.status_code == 200, resp.text
+    data = resp.json()["data"]
+    assert data["totalNominators"] == 2
+    assert data["totalVoters"] == 1
+    assert data["perCategory"][str(cat_a.id)] == {"nominators": 2, "voters": 0}
+    assert data["perCategory"][str(cat_b.id)] == {"nominators": 1, "voters": 1}
+
+    member = make_user(db, role="member")
+    assert client.get("/api/v1/awards/participation", headers=auth_headers(member)).status_code == 403
+
+
 # ----------------------------------------------------------------------
 # Calendar validation
 # ----------------------------------------------------------------------
