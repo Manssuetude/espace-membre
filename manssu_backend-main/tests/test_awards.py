@@ -155,6 +155,25 @@ def test_member_cannot_nominate_themselves(client, db):
     assert resp.status_code == 200, resp.text
 
 
+def test_guest_cannot_be_nominated(client, db):
+    now = datetime.utcnow()
+    settings = get_settings(db)
+    settings.nomination_start_at = now - timedelta(days=1)
+    settings.nomination_end_at = now + timedelta(days=1)
+    db.commit()
+
+    category = make_category(db)
+    member = make_user(db, role="member")
+    guest = make_user(db, role="guest")
+
+    resp = client.post(
+        f"/api/v1/awards/categories/{category.id}/nominations",
+        json={"nominatedUserId": str(guest.id)},
+        headers=auth_headers(member),
+    )
+    assert resp.status_code == 400
+
+
 # ----------------------------------------------------------------------
 # Calendar validation
 # ----------------------------------------------------------------------
