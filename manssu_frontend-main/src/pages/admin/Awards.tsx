@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import {
   useAwardCategories,
   useAwardSettings,
+  useAwardParticipation,
   useCloseAllNominations,
   useReopenAllNominations,
   useDistributeReveals,
@@ -37,6 +38,7 @@ const AdminAwards = () => {
   const { user } = useAuth();
   const { data: categories, isLoading } = useAwardCategories();
   const { data: settings } = useAwardSettings();
+  const { data: participation } = useAwardParticipation();
   const closeAllNominations = useCloseAllNominations();
   const reopenAllNominations = useReopenAllNominations();
   const distributeReveals = useDistributeReveals();
@@ -188,12 +190,32 @@ const AdminAwards = () => {
         </div>
       )}
 
-      {kpi && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 inline-block">
-          <p className="text-xs text-gray-500">{kpi.label}</p>
-          <p className="font-fraunces text-2xl font-bold text-gray-900">{kpi.value}</p>
-        </div>
-      )}
+      <div className="flex flex-wrap gap-3">
+        {kpi && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+            <p className="text-xs text-gray-500">{kpi.label}</p>
+            <p className="font-fraunces text-2xl font-bold text-gray-900">{kpi.value}</p>
+          </div>
+        )}
+        {participation && (
+          <>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+              <p className="text-xs text-gray-500">Membres ayant proposé</p>
+              <p className="font-fraunces text-2xl font-bold text-gray-900">
+                {participation.totalNominators}
+                <span className="text-sm font-normal text-gray-400"> / {participation.activeMembers}</span>
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+              <p className="text-xs text-gray-500">Membres ayant voté</p>
+              <p className="font-fraunces text-2xl font-bold text-gray-900">
+                {participation.totalVoters}
+                <span className="text-sm font-normal text-gray-400"> / {participation.activeMembers}</span>
+              </p>
+            </div>
+          </>
+        )}
+      </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
         <div>
@@ -360,7 +382,9 @@ const AdminAwards = () => {
               <th className="p-3">Révélation</th>
               <th className="p-3">Type</th>
               <th className="p-3">Propositions</th>
+              <th className="p-3">Proposants</th>
               <th className="p-3">Finalistes</th>
+              <th className="p-3">Votants</th>
               <th className="p-3">État</th>
               <th className="p-3">Actions</th>
             </tr>
@@ -384,7 +408,11 @@ const AdminAwards = () => {
                       {category.targetType === "member" ? "Membre" : "Commission"}
                     </td>
                     <td className="p-3 whitespace-nowrap">{category.nominationCount}</td>
+                    <td className="p-3 whitespace-nowrap">
+                      {participation?.perCategory[category.id]?.nominators ?? 0}
+                    </td>
                     <td className="p-3 whitespace-nowrap">{category.candidates?.length ?? 0}</td>
+                    <td className="p-3 whitespace-nowrap">{participation?.perCategory[category.id]?.voters ?? 0}</td>
                     <td className="p-3 whitespace-nowrap">
                       <span className={`text-xs font-medium px-2 py-1 rounded-full ${badge.className}`}>
                         {badge.label}
@@ -412,14 +440,14 @@ const AdminAwards = () => {
                   </tr>
                   {isEditing && (
                     <tr>
-                      <td colSpan={7} className="p-3 bg-gray-50">
+                      <td colSpan={9} className="p-3 bg-gray-50">
                         <CategoryEditForm category={category} onDone={() => setEditingId(null)} />
                       </td>
                     </tr>
                   )}
                   {isExpanded && category.status === "curation" && (
                     <tr>
-                      <td colSpan={7} className="p-3 bg-gray-50">
+                      <td colSpan={9} className="p-3 bg-gray-50">
                         <CurationPanel category={category} />
                       </td>
                     </tr>

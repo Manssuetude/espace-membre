@@ -48,6 +48,15 @@ export const useAwardNominationStats = (categoryId: string) => {
   });
 };
 
+export const useAwardParticipation = () => {
+  return useQuery({
+    queryKey: queryKeys.awardParticipation,
+    queryFn: () => awardsApi.getParticipation(),
+    select: (response) => response.data,
+    refetchInterval: 60000,
+  });
+};
+
 export const useAwardSettings = () => {
   return useQuery({
     queryKey: queryKeys.awardSettings,

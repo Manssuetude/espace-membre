@@ -383,6 +383,29 @@ class AwardService:
     # Teasing
     # ------------------------------------------------------------------
 
+    def get_participation(self) -> dict:
+        """Distinct people who nominated / voted, per category and overall (a total is not a sum:
+        one member usually acts in several categories)."""
+        nominators = dict(
+            self.db.query(AwardNomination.category_id, func.count(func.distinct(AwardNomination.proposed_by_user_id)))
+            .group_by(AwardNomination.category_id)
+            .all()
+        )
+        voters = dict(
+            self.db.query(AwardVote.category_id, func.count(func.distinct(AwardVote.voter_user_id)))
+            .group_by(AwardVote.category_id)
+            .all()
+        )
+        category_ids = [c.id for c in self.db.query(AwardCategory.id).all()]
+        return {
+            "totalNominators": self.db.query(func.count(func.distinct(AwardNomination.proposed_by_user_id))).scalar() or 0,
+            "totalVoters": self.db.query(func.count(func.distinct(AwardVote.voter_user_id))).scalar() or 0,
+            "activeMembers": self.db.query(User).filter(User.status == "active", User.role != "guest").count(),
+            "perCategory": {
+                str(cid): {"nominators": nominators.get(cid, 0), "voters": voters.get(cid, 0)} for cid in category_ids
+            },
+        }
+
     def distribute_reveals(self) -> dict:
         settings = self._get_settings()
         if not settings.teasing_start_at or not settings.nomination_start_at:
