@@ -58,9 +58,14 @@ const Awards = () => {
   const [hasOfferedReplay, setHasOfferedReplay] = useState(true);
 
   const { user } = useAuth();
-  // A member can't propose themselves (also enforced by the API).
-  const members = (membersData?.data || []).filter((m) => m.id !== user?.id);
-  const commissions = commissionsData?.data || [];
+  // Nominable: active members only, never guests, never yourself (also enforced by the API).
+  const byLabel = (a: { label: string }, b: { label: string }) =>
+    a.label.localeCompare(b.label, "fr", { sensitivity: "base" });
+  const memberOptions = (membersData?.data || [])
+    .filter((m) => m.id !== user?.id && m.role !== "guest")
+    .map((m) => ({ value: m.id, label: m.name }))
+    .sort(byLabel);
+  const commissionOptions = (commissionsData?.data || []).map((c) => ({ value: c.id, label: c.name })).sort(byLabel);
 
   const hasPublished = categories?.some((c) => c.status === "results_published") ?? false;
   const phase = useMemo(() => computeEditionPhase(settings, hasPublished), [settings, hasPublished]);
@@ -247,10 +252,7 @@ const Awards = () => {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {categories?.map((category) => {
-              const options =
-                category.targetType === "member"
-                  ? members.map((m) => ({ value: m.id, label: m.name }))
-                  : commissions.map((c) => ({ value: c.id, label: c.name }));
+              const options = category.targetType === "member" ? memberOptions : commissionOptions;
               return (
                 <div key={category.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                   <div className="flex items-center gap-3 mb-2">
@@ -326,10 +328,7 @@ const Awards = () => {
           </div>
 
           {categories?.map((category) => {
-            const options =
-              category.targetType === "member"
-                ? members.map((m) => ({ value: m.id, label: m.name }))
-                : commissions.map((c) => ({ value: c.id, label: c.name }));
+            const options = category.targetType === "member" ? memberOptions : commissionOptions;
             return (
               <AwardProposeSheet
                 key={category.id}
