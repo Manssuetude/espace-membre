@@ -203,6 +203,31 @@ def test_expired_nomination_window_allows_shortlist_without_manual_closure(db):
     assert len(response.candidates or []) == 1
 
 
+def test_members_only_see_finalists_when_voting_is_open(client, db):
+    now = datetime.utcnow()
+    settings = get_settings(db)
+    settings.nomination_end_at = now - timedelta(days=1)
+    settings.vote_start_at = now + timedelta(days=1)
+    settings.vote_end_at = now + timedelta(days=2)
+    db.commit()
+
+    category = make_category(db, nominations_open=False)
+    nominee = make_user(db, role="member")
+    make_candidate(db, category, nominee)
+    member = make_user(db, role="member")
+
+    before_vote = client.get("/api/v1/awards/categories", headers=auth_headers(member))
+    before_category = next(item for item in before_vote.json()["data"] if item["id"] == str(category.id))
+    assert before_category["finalists"] is None
+
+    settings.vote_start_at = now - timedelta(hours=1)
+    db.commit()
+
+    during_vote = client.get("/api/v1/awards/categories", headers=auth_headers(member))
+    during_category = next(item for item in during_vote.json()["data"] if item["id"] == str(category.id))
+    assert len(during_category["finalists"]) == 1
+
+
 def test_participation_counts_distinct_people(client, db):
     from app.models.award import AwardNomination
 

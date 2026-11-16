@@ -427,7 +427,7 @@ const AdminAwards = () => {
                           Modifier
                         </button>
                         <DeleteCategoryButton category={category} />
-                        {category.status === "curation" && (
+                        {(category.status === "curation" || (category.candidates?.length ?? 0) > 0) && (
                           <button
                             onClick={() => setExpandedId(isExpanded ? null : category.id)}
                             className="px-2 py-1 rounded-lg bg-accent/10 text-accent text-xs font-medium"
@@ -445,7 +445,7 @@ const AdminAwards = () => {
                       </td>
                     </tr>
                   )}
-                  {isExpanded && category.status === "curation" && (
+                  {isExpanded && (category.status === "curation" || (category.candidates?.length ?? 0) > 0) && (
                     <tr>
                       <td colSpan={9} className="p-3 bg-gray-50">
                         <CurationPanel category={category} />
