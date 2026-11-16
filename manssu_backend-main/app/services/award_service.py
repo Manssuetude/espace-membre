@@ -259,7 +259,7 @@ class AwardService:
                 ))
             if is_manager:
                 candidates_out = full_list
-            else:
+            elif status_ == "vote_open":
                 finalists_out = stripped_list
 
         winners_out = None
