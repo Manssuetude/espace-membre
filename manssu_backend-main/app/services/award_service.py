@@ -296,7 +296,7 @@ class AwardService:
             icon=icon_out,
             targetType=category.target_type,
             status=status_,
-            nominationsOpen=category.nominations_open,
+            nominationsOpen=self._is_nomination_window_open(category, settings, now),
             orderIndex=category.order_index,
             myNominations=my_nominations,
             myVote=my_vote,
@@ -573,7 +573,8 @@ class AwardService:
 
     def build_shortlist(self, category_id: str, data: BuildShortlistRequest) -> CategoryResponse:
         category = self._get_category_or_404(category_id)
-        if category.nominations_open:
+        settings = self._get_settings()
+        if self._is_nomination_window_open(category, settings, datetime.utcnow()):
             raise BadRequestException("Fermez d'abord les nominations avant de valider la liste finale")
 
         existing_votes = self.db.query(AwardVote).filter(AwardVote.category_id == category_id).count()

@@ -43,6 +43,10 @@ permet aux badges de survivre d'une édition à l'autre.
 | après `vote_end_at` | Cérémonie (préparation puis mode plein écran) |
 | après publication | Palmarès |
 
+À partir de `nomination_end_at`, les nominations sont considérées comme
+clôturées automatiquement pour la sélection des finalistes. L'organisateur
+peut également les clôturer manuellement avant cette date.
+
 La phase globale (`AwardEditionPhase` : `not_started / teasing / nomination /
 selection / vote / ceremony_pending / published`) est calculée par
 `AwardService._compute_edition_phase()` et pilote l'en-tête membre, la frise

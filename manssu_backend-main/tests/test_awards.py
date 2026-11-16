@@ -7,8 +7,10 @@ from datetime import datetime, timedelta
 
 from tests.conftest import make_user, make_award_manager_commission_member, auth_headers
 
-from app.models.award import AwardCategory, AwardCandidate, AwardVote, AwardWinner, AwardSettings
+from app.models.award import AwardCategory, AwardCandidate, AwardNomination, AwardVote, AwardWinner, AwardSettings
 from app.models.user_award import UserAwardWin
+from app.schemas.award import BuildShortlistRequest, NominateRequest
+from app.services.award_service import AwardService
 
 
 def make_category(db, **kwargs):
@@ -172,6 +174,33 @@ def test_guest_cannot_be_nominated(client, db):
         headers=auth_headers(member),
     )
     assert resp.status_code == 400
+
+
+def test_expired_nomination_window_allows_shortlist_without_manual_closure(db):
+    now = datetime.utcnow()
+    settings = get_settings(db)
+    settings.nomination_start_at = now - timedelta(days=2)
+    settings.nomination_end_at = now - timedelta(days=1)
+    db.commit()
+
+    category = make_category(db)
+    manager = make_award_manager_commission_member(db)
+    nominee = make_user(db, role="member")
+    db.add(AwardNomination(
+        id=uuid.uuid4(),
+        category_id=category.id,
+        nominated_user_id=nominee.id,
+        proposed_by_user_id=manager.id,
+    ))
+    db.commit()
+
+    response = AwardService(db).build_shortlist(
+        str(category.id),
+        BuildShortlistRequest(candidates=[NominateRequest(nominatedUserId=str(nominee.id))]),
+    )
+
+    assert response.nominationsOpen is False
+    assert len(response.candidates or []) == 1
 
 
 def test_participation_counts_distinct_people(client, db):
