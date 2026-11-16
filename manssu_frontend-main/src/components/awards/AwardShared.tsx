@@ -177,6 +177,18 @@ export const CurationPanel = ({ category }: { category: AwardCategory }) => {
 
   return (
     <div className="mt-3 space-y-2 border-t border-gray-100 pt-3">
+      {category.candidates && category.candidates.length > 0 && (
+        <div className="rounded-xl border border-success/30 bg-success/5 p-3">
+          <p className="text-xs font-bold uppercase tracking-wide text-success">Liste finale validée</p>
+          <ul className="mt-2 space-y-1">
+            {category.candidates.map((candidate) => (
+              <li key={candidate.id} className="text-sm font-medium text-gray-900">
+                {candidate.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {stats.map((item) => {
         const key = item.nominatedUserId || item.nominatedCommissionId || "";
         return (
