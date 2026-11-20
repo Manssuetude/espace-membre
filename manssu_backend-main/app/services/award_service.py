@@ -157,6 +157,42 @@ class AwardService:
         has_published = self.db.query(AwardCategory.id).filter(AwardCategory.results_published_at.isnot(None)).first() is not None
         return "published" if has_published else "ceremony_pending"
 
+    def _sync_commission_candidates(self) -> None:
+        """Commission categories have no member proposals: every active commission is nominated
+        automatically. Keeps their shortlist equal to the active commissions until the first vote
+        (or published results) freezes it, so commissions created/archived mid-cycle are followed."""
+        categories = self.db.query(AwardCategory).filter(
+            AwardCategory.target_type == "commission",
+            AwardCategory.results_published_at.is_(None),
+        ).all()
+        if not categories:
+            return
+        active_ids = {row[0] for row in self.db.query(Commission.id).filter(Commission.status == "active").all()}
+        changed = False
+        for category in categories:
+            if self.db.query(AwardVote.id).filter(AwardVote.category_id == category.id).first():
+                continue
+            candidates = self.db.query(AwardCandidate).filter(AwardCandidate.category_id == category.id).all()
+            existing_ids = set()
+            for c in candidates:
+                if c.nominated_commission_id in active_ids:
+                    existing_ids.add(c.nominated_commission_id)
+                else:
+                    self.db.delete(c)
+                    changed = True
+            for commission_id in active_ids - existing_ids:
+                self.db.add(AwardCandidate(category_id=category.id, nominated_commission_id=commission_id))
+                changed = True
+        if changed:
+            self.db.commit()
+
+    def _has_locked_shortlist(self, category: AwardCategory) -> bool:
+        """Whether nominations can no longer be reopened: a validated shortlist for member categories,
+        a started vote for commission categories (whose shortlist is automatic)."""
+        if category.target_type == "commission":
+            return self.db.query(AwardVote.id).filter(AwardVote.category_id == category.id).first() is not None
+        return self.db.query(AwardCandidate.id).filter(AwardCandidate.category_id == category.id).first() is not None
+
     def _nominee_display(self, user: Optional[User], commission: Optional[Commission]):
         if user:
             return f"{user.first_name} {user.last_name}", user.avatar_url
@@ -318,6 +354,7 @@ class AwardService:
     # ------------------------------------------------------------------
 
     def get_categories(self, user_id: Optional[str] = None, is_manager: bool = False, include_hidden: bool = False) -> List[CategoryResponse]:
+        self._sync_commission_candidates()
         settings = self._get_settings()
         now = datetime.utcnow()
         edition_phase = self._compute_edition_phase(settings, now)
@@ -330,6 +367,7 @@ class AwardService:
         ]
 
     def get_category(self, category_id: str, user_id: Optional[str] = None, is_manager: bool = False, include_hidden: bool = False) -> Optional[CategoryResponse]:
+        self._sync_commission_candidates()
         category = self.db.query(AwardCategory).filter(AwardCategory.id == category_id).first()
         if not category:
             return None
@@ -349,6 +387,7 @@ class AwardService:
         )
         self.db.add(category)
         self.db.commit()
+        self._sync_commission_candidates()
         self.db.refresh(category)
         return self._category_to_response(category, is_manager=True)
 
@@ -366,9 +405,15 @@ class AwardService:
             has_nominations = self.db.query(AwardNomination).filter(AwardNomination.category_id == category_id).count() > 0
             if has_nominations:
                 raise ConflictException("Impossible de changer le type de candidat : des nominations existent déjà pour cette catégorie")
+            has_votes = self.db.query(AwardVote.id).filter(AwardVote.category_id == category_id).first() is not None
+            if has_votes:
+                raise ConflictException("Impossible de changer le type de candidat : le vote a déjà commencé pour cette catégorie")
+            # The automatic commission shortlist (or a member shortlist) no longer matches the new type.
+            self.db.query(AwardCandidate).filter(AwardCandidate.category_id == category_id).delete()
             category.target_type = data.targetType
         category.updated_at = datetime.utcnow()
         self.db.commit()
+        self._sync_commission_candidates()
         self.db.refresh(category)
         return self._category_to_response(category, is_manager=True)
 
@@ -430,26 +475,21 @@ class AwardService:
 
     def nominate(self, category_id: str, data: NominateRequest, user_id: str) -> CategoryResponse:
         category = self._get_category_or_404(category_id)
+        if category.target_type == "commission":
+            raise BadRequestException("Toutes les commissions actives sont nominées d'office dans cette catégorie")
         settings = self._get_settings()
         if not self._is_nomination_actionable(category, settings, datetime.utcnow()):
             raise BadRequestException("Les nominations ne sont pas ouvertes pour cette catégorie")
 
-        if category.target_type == "member":
-            if not data.nominatedUserId or data.nominatedCommissionId:
-                raise BadRequestException("Cette catégorie nomine un membre")
-            if str(data.nominatedUserId) == str(user_id):
-                raise BadRequestException("Vous ne pouvez pas vous proposer vous-même")
-            target = self.db.query(User).filter(User.id == data.nominatedUserId, User.status == "active").first()
-            if not target:
-                raise BadRequestException("Membre introuvable ou inactif")
-            if target.role == "guest":
-                raise BadRequestException("Un invité ne peut pas être nominé")
-        else:
-            if not data.nominatedCommissionId or data.nominatedUserId:
-                raise BadRequestException("Cette catégorie nomine une commission")
-            target = self.db.query(Commission).filter(Commission.id == data.nominatedCommissionId).first()
-            if not target:
-                raise BadRequestException("Commission introuvable")
+        if not data.nominatedUserId or data.nominatedCommissionId:
+            raise BadRequestException("Cette catégorie nomine un membre")
+        if str(data.nominatedUserId) == str(user_id):
+            raise BadRequestException("Vous ne pouvez pas vous proposer vous-même")
+        target = self.db.query(User).filter(User.id == data.nominatedUserId, User.status == "active").first()
+        if not target:
+            raise BadRequestException("Membre introuvable ou inactif")
+        if target.role == "guest":
+            raise BadRequestException("Un invité ne peut pas être nominé")
 
         existing_query = self.db.query(AwardNomination).filter(
             AwardNomination.category_id == category_id,
@@ -547,8 +587,7 @@ class AwardService:
         categories = self.db.query(AwardCategory).filter(AwardCategory.nominations_open.is_(False)).all()
         reopened = []
         for category in categories:
-            has_candidates = self.db.query(AwardCandidate).filter(AwardCandidate.category_id == category.id).count() > 0
-            if not has_candidates:
+            if not self._has_locked_shortlist(category):
                 category.nominations_open = True
                 reopened.append(category)
         self.db.commit()
@@ -559,8 +598,7 @@ class AwardService:
 
     def reopen_nominations(self, category_id: str) -> CategoryResponse:
         category = self._get_category_or_404(category_id)
-        has_candidates = self.db.query(AwardCandidate).filter(AwardCandidate.category_id == category_id).count() > 0
-        if has_candidates:
+        if self._has_locked_shortlist(category):
             raise ConflictException("Impossible de rouvrir les nominations : la liste finale a déjà été validée pour cette catégorie")
         category.nominations_open = True
         self.db.commit()
@@ -573,6 +611,8 @@ class AwardService:
 
     def build_shortlist(self, category_id: str, data: BuildShortlistRequest) -> CategoryResponse:
         category = self._get_category_or_404(category_id)
+        if category.target_type == "commission":
+            raise BadRequestException("La liste finale de cette catégorie est automatique : toutes les commissions actives sont nominées")
         settings = self._get_settings()
         if self._is_nomination_window_open(category, settings, datetime.utcnow()):
             raise BadRequestException("Fermez d'abord les nominations avant de valider la liste finale")
@@ -643,6 +683,7 @@ class AwardService:
         return [c for c in categories if self._compute_status(c, settings, now) == "awaiting_ceremony"]
 
     def get_ceremony_preparation(self) -> List[PreparationCategoryItem]:
+        self._sync_commission_candidates()
         settings = self._get_settings()
         now = datetime.utcnow()
         categories = self._categories_awaiting_ceremony(settings, now)

@@ -248,11 +248,37 @@ const Awards = () => {
         <>
           <p className="text-sm text-gray-500">
             Vous avez proposé dans {categories?.filter((c) => c.myNominations.length > 0).length ?? 0} prix sur{" "}
-            {categories?.length ?? 0}. Vos propositions restent privées.
+            {categories?.filter((c) => c.targetType === "member").length ?? 0}. Vos propositions restent privées.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {categories?.map((category) => {
-              const options = category.targetType === "member" ? memberOptions : commissionOptions;
+              if (category.targetType === "commission") {
+                return (
+                  <div key={category.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-2xl">{category.icon}</span>
+                      <div>
+                        <h3 className="font-fraunces font-bold text-gray-900">{category.name}</h3>
+                        {category.description && <p className="text-sm text-gray-500 mt-1">{category.description}</p>}
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Toutes les commissions actives sont nominées d'office. Rendez-vous au vote !
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {commissionOptions.map((o) => (
+                        <span
+                          key={o.value}
+                          className="bg-gray-100 text-gray-700 text-xs font-medium px-2.5 py-1 rounded-full"
+                        >
+                          {o.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+              const options = memberOptions;
               return (
                 <div key={category.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                   <div className="flex items-center gap-3 mb-2">
@@ -327,29 +353,31 @@ const Awards = () => {
             })}
           </div>
 
-          {categories?.map((category) => {
-            const options = category.targetType === "member" ? memberOptions : commissionOptions;
-            return (
-              <AwardProposeSheet
-                key={category.id}
-                open={sheetCategoryId === category.id}
-                onClose={() => setSheetCategoryId(null)}
-                categoryName={category.name || ""}
-                categoryDescription={category.description}
-                targetLabel={
-                  category.targetType === "member" ? "Rechercher un membre..." : "Rechercher une commission..."
-                }
-                options={options}
-                myNominations={category.myNominations.map((n) => ({
-                  id: n.nominatedUserId || n.nominatedCommissionId || "",
-                  name: n.name,
-                }))}
-                onPropose={(id) => handleNominate(category, id)}
-                onRemove={(id) => removeNomination.mutate({ categoryId: category.id, nomineeId: id })}
-                isPending={nominate.isPending}
-              />
-            );
-          })}
+          {categories
+            ?.filter((category) => category.targetType === "member")
+            .map((category) => {
+              const options = memberOptions;
+              return (
+                <AwardProposeSheet
+                  key={category.id}
+                  open={sheetCategoryId === category.id}
+                  onClose={() => setSheetCategoryId(null)}
+                  categoryName={category.name || ""}
+                  categoryDescription={category.description}
+                  targetLabel={
+                    category.targetType === "member" ? "Rechercher un membre..." : "Rechercher une commission..."
+                  }
+                  options={options}
+                  myNominations={category.myNominations.map((n) => ({
+                    id: n.nominatedUserId || n.nominatedCommissionId || "",
+                    name: n.name,
+                  }))}
+                  onPropose={(id) => handleNominate(category, id)}
+                  onRemove={(id) => removeNomination.mutate({ categoryId: category.id, nomineeId: id })}
+                  isPending={nominate.isPending}
+                />
+              );
+            })}
         </>
       )}
 
