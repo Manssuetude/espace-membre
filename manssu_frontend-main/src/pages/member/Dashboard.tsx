@@ -8,6 +8,7 @@ import QuickActionButton from "../../components/QuickActionButton";
 import ResourceCard from "../../components/ResourceCard";
 import { translateResourceType } from "../../utils/resourceUtils";
 import CreateInvitationRequestModal from "../../components/member/CreateInvitationRequestModal";
+import AwardDashboardCard from "../../components/member/AwardDashboardCard";
 
 const Dashboard = () => {
   const { data: dashboardData, isLoading } = useMemberDashboard();
@@ -249,6 +250,8 @@ const Dashboard = () => {
 
         {/* Right Column */}
         <div className="space-y-8">
+          <AwardDashboardCard awards={dashboardData?.awards} />
+
           {/* Actions Rapides */}
           <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h3>

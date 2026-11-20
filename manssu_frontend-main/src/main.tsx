@@ -8,6 +8,7 @@ import { UpcomingSessionsProvider } from "./contexts/UpcomingSessionsContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Analytics } from "@vercel/analytics/react";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -29,6 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <UpcomingSessionsProvider>
               <App />
               <Toaster position="top-right" richColors />
+              <Analytics />
             </UpcomingSessionsProvider>
           </PageTitleProvider>
         </AuthProvider>

@@ -47,6 +47,10 @@ import BibliothequeBookDetail from "./pages/member/BibliothequeBookDetail";
 import BibliothequeLoanDetail from "./pages/member/BibliothequeLoanDetail";
 import AdminCommissions from "./pages/admin/Commissions";
 import AdminCommissionDetail from "./pages/admin/CommissionDetail";
+import Awards from "./pages/member/Awards";
+import AdminAwards from "./pages/admin/Awards";
+import AwardCeremonyPreparation from "./pages/admin/AwardCeremonyPreparation";
+import AwardCeremonyMode from "./pages/admin/AwardCeremonyMode";
 
 function App() {
   return (
@@ -163,6 +167,16 @@ function App() {
               </BlockGuestRoute>
             }
           />
+          <Route
+            path="awards"
+            element={
+              <BlockGuestRoute>
+                <Awards />
+              </BlockGuestRoute>
+            }
+          />
+          {/* Old temporary route from the original Awards rollout - curation now lives in /admin/awards */}
+          <Route path="awards/curation" element={<Navigate to="/admin/awards" replace />} />
         </Route>
 
         {/* Admin Routes */}
@@ -195,6 +209,30 @@ function App() {
           <Route path="commissions" element={<AdminCommissions />} />
           <Route path="commissions/:id" element={<AdminCommissionDetail />} />
         </Route>
+
+        {/* Awards organization routes: admins AND non-admin members of the "Vie asso" commission
+            can reach these (and only these) admin-space pages - see ProtectedRoute's allowAwardManager. */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="admin" allowAwardManager>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="awards" element={<AdminAwards />} />
+          <Route path="awards/ceremonie/preparation" element={<AwardCeremonyPreparation />} />
+        </Route>
+
+        {/* Fullscreen ceremony mode - outside AdminLayout, projected during the session */}
+        <Route
+          path="/admin/awards/ceremonie"
+          element={
+            <ProtectedRoute requiredRole="admin" allowAwardManager>
+              <AwardCeremonyMode />
+            </ProtectedRoute>
+          }
+        />
 
         {/* 404 Route */}
         <Route path="*" element={<NotFound />} />

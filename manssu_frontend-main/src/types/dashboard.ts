@@ -17,6 +17,7 @@ export interface MemberDashboardData {
   activePolls: Poll[];
   recentResources: Resource[];
   themeWindow: ThemeWindow;
+  awards?: AwardDashboardSummary | null;
 }
 
 export interface AdminDashboardData {
@@ -58,3 +59,4 @@ import { Session } from "./session";
 import { Poll } from "./sondage";
 import { Resource } from "./resource";
 import { Feedback } from "./feedback";
+import { AwardDashboardSummary } from "./award";

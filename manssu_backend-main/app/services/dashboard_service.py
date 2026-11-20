@@ -11,6 +11,7 @@ from app.models.session import Session, SessionRegistration
 from app.models.poll import Poll, PollVote, PollOption, PollQuestion
 from app.models.location import Location
 from app.core.cache import dashboard_cache
+from app.services.award_service import AwardService
 
 
 class DashboardService:
@@ -268,7 +269,8 @@ class DashboardService:
             "upcomingSessions": upcoming_sessions_list,
             "activePolls": active_polls_list,
             "recentResources": recent_resources_list,
-            "themeWindow": theme_window
+            "themeWindow": theme_window,
+            "awards": AwardService(self.db).get_dashboard_summary(user_id)
         }
         
         # Cache the result

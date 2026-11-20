@@ -89,6 +89,9 @@ class Settings(BaseSettings):
     
     # Frontend URL for invite links
     FRONTEND_BASE_URL: str = "http://localhost:8080"
+
+    # Secret used to authenticate Vercel Cron requests (awards vote reminder)
+    CRON_SECRET: str = ""
     
     class Config:
         env_file = ".env"

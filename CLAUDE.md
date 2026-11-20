@@ -117,7 +117,7 @@ PostgreSQL. Modèles dans `app/models/`, migrations versionnées dans `alembic/v
 
 ## Documentation
 
-- **Backend** — guides détaillés par domaine dans `manssu_backend-main/docs/` : `BACKEND_GUIDE.md`, `AUTH_AND_USER_API_GUIDE.md`, `INVITATION_FLOW.md`, `SESSIONS_API_GUIDE.md`, `THEMES_API_GUIDE.md`, `RESOURCES_AND_FEEDBACK_API_GUIDE.md`, `POLLS_API_GUIDE.md`, `QUESTIONNAIRES_API.md`, `COMMISSIONS_API.md`, `LIBRARY_API_GUIDE.md`, `LOCATIONS_API_GUIDE.md`, `ACTIVITY_TEMPLATES_API.md`, `GUEST_USER_RESTRICTIONS.md`.
+- **Backend** — guides détaillés par domaine dans `manssu_backend-main/docs/` : `BACKEND_GUIDE.md`, `AUTH_AND_USER_API_GUIDE.md`, `INVITATION_FLOW.md`, `SESSIONS_API_GUIDE.md`, `THEMES_API_GUIDE.md`, `RESOURCES_AND_FEEDBACK_API_GUIDE.md`, `POLLS_API_GUIDE.md`, `QUESTIONNAIRES_API.md`, `COMMISSIONS_API.md`, `LIBRARY_API_GUIDE.md`, `LOCATIONS_API_GUIDE.md`, `ACTIVITY_TEMPLATES_API.md`, `GUEST_USER_RESTRICTIONS.md`, `AWARDS_API_GUIDE.md`.
 - **Frontend** — `manssu_frontend-main/PROJECT_OVERVIEW.md`, `api_docs/`, `README.md`.
 
 ## Git Commits
