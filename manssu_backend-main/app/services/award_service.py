@@ -295,7 +295,8 @@ class AwardService:
                 ))
             if is_manager:
                 candidates_out = full_list
-            elif status_ == "vote_open":
+            # Organizers vote too: everyone gets the (score-free) finalists once the vote is open.
+            if status_ == "vote_open":
                 finalists_out = stripped_list
 
         winners_out = None
