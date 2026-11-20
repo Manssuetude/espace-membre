@@ -340,7 +340,15 @@ def test_votes_and_percentage_hidden_before_publication_even_for_managers(client
     assert candidates[0]["percentage"] is None
 
 
+def open_vote(db):
+    settings = get_settings(db)
+    settings.vote_start_at = datetime.utcnow() - timedelta(hours=1)
+    settings.vote_end_at = datetime.utcnow() + timedelta(days=1)
+    db.commit()
+
+
 def test_members_get_finalists_not_candidates(client, db):
+    open_vote(db)
     category = make_category(db, nominations_open=False)
     nominee = make_user(db)
     make_candidate(db, category, nominee, votes=5)
@@ -350,6 +358,17 @@ def test_members_get_finalists_not_candidates(client, db):
     by_id = {c["id"]: c for c in resp.json()["data"]}
     assert by_id[str(category.id)]["candidates"] is None
     assert by_id[str(category.id)]["finalists"][0]["votes"] is None
+
+
+def test_organizers_get_finalists_to_vote(client, db):
+    open_vote(db)
+    category = make_category(db, nominations_open=False)
+    make_candidate(db, category, make_user(db), votes=5)
+    for organizer in (make_user(db, role="admin"), make_award_manager_commission_member(db)):
+        resp = client.get("/api/v1/awards/categories", headers=auth_headers(organizer))
+        by_id = {c["id"]: c for c in resp.json()["data"]}
+        assert by_id[str(category.id)]["candidates"] is not None
+        assert by_id[str(category.id)]["finalists"][0]["votes"] is None
 
 
 # ----------------------------------------------------------------------
