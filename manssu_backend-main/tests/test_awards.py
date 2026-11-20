@@ -9,6 +9,7 @@ from tests.conftest import make_user, make_award_manager_commission_member, auth
 
 from app.models.award import AwardCategory, AwardCandidate, AwardNomination, AwardVote, AwardWinner, AwardSettings
 from app.models.user_award import UserAwardWin
+from app.models.commission import Commission
 from app.schemas.award import BuildShortlistRequest, NominateRequest
 from app.services.award_service import AwardService
 
@@ -494,3 +495,56 @@ def test_cron_tick_sends_each_phase_email_only_once(db, mocker):
     # Second tick: teasing_email_sent_at is now set, must not send again
     AwardService(db).run_cron_tick()
     assert mocked.call_count == 1
+
+
+# ----------------------------------------------------------------------
+# Commission categories: every active commission is nominated automatically
+# ----------------------------------------------------------------------
+
+
+def make_commission(db, name, status="active"):
+    commission = Commission(
+        id=uuid.uuid4(), name=name, status=status, created_at=datetime.utcnow(), updated_at=datetime.utcnow()
+    )
+    db.add(commission)
+    db.commit()
+    return commission
+
+
+def test_commission_category_nominates_every_active_commission(db):
+    a = make_commission(db, "Commission A")
+    b = make_commission(db, "Commission B")
+    archived = make_commission(db, "Commission archivée", status="archived")
+    category = make_category(db, target_type="commission")
+
+    AwardService(db).get_categories(is_manager=True, include_hidden=True)
+    ids = {c.nominated_commission_id for c in db.query(AwardCandidate).filter(AwardCandidate.category_id == category.id)}
+    assert {a.id, b.id} <= ids
+    assert archived.id not in ids
+
+    # A commission created later joins the list, an archived one leaves it (as long as no one voted)
+    c = make_commission(db, "Commission C")
+    a.status = "archived"
+    db.commit()
+    AwardService(db).get_categories(is_manager=True, include_hidden=True)
+    ids = {c_.nominated_commission_id for c_ in db.query(AwardCandidate).filter(AwardCandidate.category_id == category.id)}
+    assert c.id in ids and a.id not in ids
+
+
+def test_commission_category_rejects_manual_nomination_and_shortlist(db):
+    commission = make_commission(db, "Commission A")
+    category = make_category(db, target_type="commission", nominations_open=False)
+    member = make_user(db, role="member")
+    service = AwardService(db)
+
+    try:
+        service.nominate(str(category.id), NominateRequest(nominatedCommissionId=str(commission.id)), str(member.id))
+        assert False, "nomination should be rejected"
+    except Exception as exc:
+        assert "d'office" in str(exc.detail)
+
+    try:
+        service.build_shortlist(str(category.id), BuildShortlistRequest(candidates=[]))
+        assert False, "shortlist should be rejected"
+    except Exception as exc:
+        assert "automatique" in str(exc.detail)

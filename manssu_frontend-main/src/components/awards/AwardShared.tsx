@@ -147,6 +147,27 @@ export const DeleteCategoryButton = ({ category }: { category: AwardCategory }) 
 };
 
 export const CurationPanel = ({ category }: { category: AwardCategory }) => {
+  if (category.targetType === "commission") return <AutomaticCommissionList category={category} />;
+  return <MemberCurationPanel category={category} />;
+};
+
+const AutomaticCommissionList = ({ category }: { category: AwardCategory }) => (
+  <div className="mt-3 space-y-2 border-t border-gray-100 pt-3">
+    <p className="text-sm text-gray-600">
+      Liste finale automatique : toutes les commissions actives sont nominées d'office (mise à jour jusqu'au premier
+      vote).
+    </p>
+    <ul className="space-y-1">
+      {(category.candidates || []).map((candidate) => (
+        <li key={candidate.id} className="text-sm font-medium text-gray-900">
+          {candidate.name}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const MemberCurationPanel = ({ category }: { category: AwardCategory }) => {
   const { data: stats, isLoading } = useAwardNominationStats(category.id);
   const buildShortlist = useBuildShortlist();
   const [selected, setSelected] = useState<Set<string>>(new Set());
