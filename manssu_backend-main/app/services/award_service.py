@@ -36,6 +36,9 @@ from app.services.user_award_service import UserAwardService
 # sans tenir compte de la casse : « Vie asso », « Vie associative »…
 AWARD_MANAGER_COMMISSION_PREFIX = "vie asso"
 
+# How long before the vote closes the "last chance to vote" reminder may go out (see send_vote_reminder_if_due).
+REMINDER_HOURS_BEFORE_VOTE_END = 30
+
 
 def can_manage_awards(db: Session, user: User) -> bool:
     """admin, super_admin, or member/leader of the active « Vie asso » commission."""
@@ -1156,7 +1159,9 @@ class AwardService:
             return {"sent": False, "reason": "no vote_end_at configured"}
 
         now = datetime.utcnow()
-        reminder_window_start = settings.vote_end_at - timedelta(hours=24)
+        # The Vercel cron only runs once a day (08:00 UTC): a strict 24h window would usually be hit only a few
+        # hours before the end. 30h makes the reminder go out the day before, ~24-30h ahead of the closing.
+        reminder_window_start = settings.vote_end_at - timedelta(hours=REMINDER_HOURS_BEFORE_VOTE_END)
 
         if now < reminder_window_start or now >= settings.vote_end_at:
             return {"sent": False, "reason": "not in J-1 reminder window"}
