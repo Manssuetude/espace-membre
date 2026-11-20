@@ -36,6 +36,9 @@ from app.services.user_award_service import UserAwardService
 # sans tenir compte de la casse : « Vie asso », « Vie associative »…
 AWARD_MANAGER_COMMISSION_PREFIX = "vie asso"
 
+# How long before the vote closes the "last chance to vote" reminder may go out (see send_vote_reminder_if_due).
+REMINDER_HOURS_BEFORE_VOTE_END = 30
+
 
 def can_manage_awards(db: Session, user: User) -> bool:
     """admin, super_admin, or member/leader of the active « Vie asso » commission."""
@@ -1119,16 +1122,30 @@ class AwardService:
         if settings.email_mode == "off":
             return {"skipped": "email_mode off"}
 
+        # Each announcement is sent once, and only while its phase is still current: a phase that already
+        # ended (e.g. the cron was down) is marked as handled without emailing an outdated announcement.
+        def still_current(phase_end: Optional[datetime]) -> bool:
+            return phase_end is None or now < phase_end
+
         if settings.teasing_start_at and now >= settings.teasing_start_at and not settings.teasing_email_sent_at:
-            results["teasing"] = self._send_award_phase_email("teasing", settings)
+            if still_current(settings.nomination_start_at):
+                results["teasing"] = self._send_award_phase_email("teasing", settings)
+            else:
+                results["teasing"] = {"skipped": "phase already over"}
             settings.teasing_email_sent_at = now
 
         if settings.nomination_start_at and now >= settings.nomination_start_at and not settings.nominations_open_email_sent_at:
-            results["nominationsOpen"] = self._send_award_phase_email("nominations_open", settings)
+            if still_current(settings.nomination_end_at):
+                results["nominationsOpen"] = self._send_award_phase_email("nominations_open", settings)
+            else:
+                results["nominationsOpen"] = {"skipped": "phase already over"}
             settings.nominations_open_email_sent_at = now
 
         if settings.vote_start_at and now >= settings.vote_start_at and not settings.vote_open_email_sent_at:
-            results["voteOpen"] = self._send_award_phase_email("vote_open", settings)
+            if still_current(settings.vote_end_at):
+                results["voteOpen"] = self._send_award_phase_email("vote_open", settings)
+            else:
+                results["voteOpen"] = {"skipped": "phase already over"}
             settings.vote_open_email_sent_at = now
 
         self.db.commit()
@@ -1142,7 +1159,9 @@ class AwardService:
             return {"sent": False, "reason": "no vote_end_at configured"}
 
         now = datetime.utcnow()
-        reminder_window_start = settings.vote_end_at - timedelta(hours=24)
+        # The Vercel cron only runs once a day (08:00 UTC): a strict 24h window would usually be hit only a few
+        # hours before the end. 30h makes the reminder go out the day before, ~24-30h ahead of the closing.
+        reminder_window_start = settings.vote_end_at - timedelta(hours=REMINDER_HOURS_BEFORE_VOTE_END)
 
         if now < reminder_window_start or now >= settings.vote_end_at:
             return {"sent": False, "reason": "not in J-1 reminder window"}

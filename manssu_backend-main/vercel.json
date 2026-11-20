@@ -8,7 +8,7 @@
   },
   "crons": [
     {
-      "path": "/api/v1/awards/cron/reminder",
+      "path": "/api/v1/awards/cron/tick",
       "schedule": "0 8 * * *"
     }
   ]

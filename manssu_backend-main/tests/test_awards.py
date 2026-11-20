@@ -567,3 +567,58 @@ def test_commission_category_rejects_manual_nomination_and_shortlist(db):
         assert False, "shortlist should be rejected"
     except Exception as exc:
         assert "automatique" in str(exc.detail)
+
+
+def test_cron_tick_skips_outdated_announcements_and_sends_current_one(db, mocker):
+    from app.services.email_service import ResendEmailService
+
+    teasing = mocker.patch.object(ResendEmailService, "send_award_teasing_started_email", return_value=True)
+    nominations = mocker.patch.object(ResendEmailService, "send_award_nominations_open_email", return_value=True)
+    vote = mocker.patch.object(ResendEmailService, "send_award_vote_open_email", return_value=True)
+    now = datetime.utcnow()
+    settings = get_settings(db)
+    settings.email_mode = "on"
+    settings.teasing_start_at = now - timedelta(days=8)
+    settings.nomination_start_at = now - timedelta(days=7)
+    settings.nomination_end_at = now - timedelta(days=3)
+    settings.vote_start_at = now - timedelta(hours=1)
+    settings.vote_end_at = now + timedelta(days=9)
+    db.commit()
+    make_user(db, role="member")
+
+    AwardService(db).run_cron_tick()
+    assert teasing.call_count == 0
+    assert nominations.call_count == 0
+    assert vote.call_count == 1
+    db.refresh(settings)
+    assert settings.teasing_email_sent_at and settings.nominations_open_email_sent_at and settings.vote_open_email_sent_at
+
+
+def test_cron_route_accepts_vercel_get(client, db, mocker):
+    from app.core.config import settings as app_settings
+
+    mocker.patch.object(app_settings, "CRON_SECRET", "test-secret")
+    assert client.get("/api/v1/awards/cron/tick").status_code == 401
+    resp = client.get("/api/v1/awards/cron/tick", headers={"Authorization": "Bearer test-secret"})
+    assert resp.status_code == 200, resp.text
+
+
+def test_vote_reminder_goes_out_the_day_before_with_a_daily_cron(db, mocker):
+    from app.services.email_service import ResendEmailService
+
+    reminder = mocker.patch.object(ResendEmailService, "send_award_vote_reminder_email", return_value=True)
+    now = datetime.utcnow()
+    settings = get_settings(db)
+    settings.email_mode = "on"
+    settings.vote_start_at = now - timedelta(days=5)
+    settings.vote_end_at = now + timedelta(hours=29)  # daily 08:00 UTC cron, vote closing the next day at 13:00
+    db.commit()
+    category = make_category(db, nominations_open=False)
+    make_candidate(db, category, make_user(db))
+    make_user(db, role="member")
+
+    AwardService(db).send_vote_reminder_if_due()
+    assert reminder.call_count >= 1
+    calls = reminder.call_count
+    AwardService(db).send_vote_reminder_if_due()  # same window: not sent twice
+    assert reminder.call_count == calls

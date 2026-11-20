@@ -333,7 +333,8 @@ async def update_settings(
     return APIResponse(success=True, data=result.model_dump(), message="Calendrier mis à jour")
 
 
-@router.post("/cron/tick", response_model=APIResponse)
+# Vercel Cron calls with GET; POST kept for manual triggers.
+@router.api_route("/cron/tick", methods=["GET", "POST"], response_model=APIResponse)
 async def cron_tick(
     db: Session = Depends(get_db),
     authorization: Optional[str] = Header(None),
@@ -349,7 +350,7 @@ async def cron_tick(
     return APIResponse(success=True, data=result)
 
 
-@router.post("/cron/reminder", response_model=APIResponse)
+@router.api_route("/cron/reminder", methods=["GET", "POST"], response_model=APIResponse)
 async def cron_reminder_alias(
     db: Session = Depends(get_db),
     authorization: Optional[str] = Header(None),
