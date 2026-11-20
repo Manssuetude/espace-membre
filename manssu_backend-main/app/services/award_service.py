@@ -1119,16 +1119,30 @@ class AwardService:
         if settings.email_mode == "off":
             return {"skipped": "email_mode off"}
 
+        # Each announcement is sent once, and only while its phase is still current: a phase that already
+        # ended (e.g. the cron was down) is marked as handled without emailing an outdated announcement.
+        def still_current(phase_end: Optional[datetime]) -> bool:
+            return phase_end is None or now < phase_end
+
         if settings.teasing_start_at and now >= settings.teasing_start_at and not settings.teasing_email_sent_at:
-            results["teasing"] = self._send_award_phase_email("teasing", settings)
+            if still_current(settings.nomination_start_at):
+                results["teasing"] = self._send_award_phase_email("teasing", settings)
+            else:
+                results["teasing"] = {"skipped": "phase already over"}
             settings.teasing_email_sent_at = now
 
         if settings.nomination_start_at and now >= settings.nomination_start_at and not settings.nominations_open_email_sent_at:
-            results["nominationsOpen"] = self._send_award_phase_email("nominations_open", settings)
+            if still_current(settings.nomination_end_at):
+                results["nominationsOpen"] = self._send_award_phase_email("nominations_open", settings)
+            else:
+                results["nominationsOpen"] = {"skipped": "phase already over"}
             settings.nominations_open_email_sent_at = now
 
         if settings.vote_start_at and now >= settings.vote_start_at and not settings.vote_open_email_sent_at:
-            results["voteOpen"] = self._send_award_phase_email("vote_open", settings)
+            if still_current(settings.vote_end_at):
+                results["voteOpen"] = self._send_award_phase_email("vote_open", settings)
+            else:
+                results["voteOpen"] = {"skipped": "phase already over"}
             settings.vote_open_email_sent_at = now
 
         self.db.commit()
