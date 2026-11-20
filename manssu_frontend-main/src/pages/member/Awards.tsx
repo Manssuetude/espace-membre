@@ -68,7 +68,13 @@ const Awards = () => {
   const commissionOptions = (commissionsData?.data || []).map((c) => ({ value: c.id, label: c.name })).sort(byLabel);
 
   const hasPublished = categories?.some((c) => c.status === "results_published") ?? false;
-  const phase = useMemo(() => computeEditionPhase(settings, hasPublished), [settings, hasPublished]);
+  // Re-evaluated every 30s so the page switches phase by itself (e.g. vote opening) without a reload.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30_000);
+    return () => clearInterval(id);
+  }, []);
+  const phase = useMemo(() => computeEditionPhase(settings, hasPublished, now), [settings, hasPublished, now]);
 
   useEffect(() => {
     if (phase !== "published") return;

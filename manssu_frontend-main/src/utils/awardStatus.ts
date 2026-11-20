@@ -1,4 +1,5 @@
 import { AwardCategory, AwardEditionPhase } from "../types/award";
+import { parseApiDate } from "./awardWindow";
 
 export const AWARD_STATUS_BADGES: Record<AwardCategory["status"], { label: string; className: string }> = {
   nomination: { label: "Nominations ouvertes", className: "bg-accent/10 text-accent" },
@@ -47,19 +48,20 @@ export const computeEditionPhase = (
   // An unset milestone does not force "not_started": a cycle that started before this
   // teasing/phase system existed (teasingStartAt left null) but already has a
   // nominationStartAt in the past must resolve past "teasing", not get stuck before it.
-  const t = settings.teasingStartAt ? new Date(settings.teasingStartAt) : null;
+  // The API sends naive UTC datetimes: parseApiDate reads them as UTC (new Date() would read local time).
+  const t = parseApiDate(settings.teasingStartAt);
   if (t && now < t) return "not_started";
   if (!t && !settings.nominationStartAt) return "not_started";
-  const ns = settings.nominationStartAt ? new Date(settings.nominationStartAt) : null;
+  const ns = parseApiDate(settings.nominationStartAt);
   if (ns && now < ns) return "teasing";
   if (!ns) return "teasing";
-  const ne = settings.nominationEndAt ? new Date(settings.nominationEndAt) : null;
+  const ne = parseApiDate(settings.nominationEndAt);
   if (ne && now < ne) return "nomination";
   if (!ne) return "nomination";
-  const vs = settings.voteStartAt ? new Date(settings.voteStartAt) : null;
+  const vs = parseApiDate(settings.voteStartAt);
   if (vs && now < vs) return "selection";
   if (!vs) return "selection";
-  const ve = settings.voteEndAt ? new Date(settings.voteEndAt) : null;
+  const ve = parseApiDate(settings.voteEndAt);
   if (ve && now < ve) return "vote";
   if (!ve) return "vote";
   return hasPublishedCategory ? "published" : "ceremony_pending";

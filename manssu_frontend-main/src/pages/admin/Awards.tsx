@@ -402,7 +402,7 @@ const AdminAwards = () => {
                       {category.name}
                     </td>
                     <td className="p-3 whitespace-nowrap text-xs text-gray-500">
-                      {category.revealAt ? new Date(category.revealAt).toLocaleDateString("fr-FR") : "—"}
+                      {parseApiDate(category.revealAt)?.toLocaleDateString("fr-FR") ?? "—"}
                     </td>
                     <td className="p-3 whitespace-nowrap text-xs">
                       {category.targetType === "member" ? "Membre" : "Commission"}
