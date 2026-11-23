@@ -136,13 +136,19 @@ class UserService:
             administrators = self.db.query(User).filter(
                 User.role.in_(["admin", "super_admin"])
             ).count()
-            pending = self.db.query(User).filter(User.status == "suspended").count()
-            
+            # Suspended members/admins (guests are counted separately)
+            inactive = self.db.query(User).filter(
+                User.status == "suspended",
+                User.role != "guest"
+            ).count()
+            guests = self.db.query(User).filter(User.role == "guest").count()
+
             stats = {
                 "totalMembers": total_members,
                 "activeMembers": active_members,
                 "administrators": administrators,
-                "pending": pending
+                "inactive": inactive,
+                "guests": guests
             }
         
         # Batch calculate sessions count for all users to avoid N+1 queries

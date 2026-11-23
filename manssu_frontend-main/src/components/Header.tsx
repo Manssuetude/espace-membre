@@ -74,7 +74,7 @@ const Header = ({
         </div>
         <div className="flex items-center space-x-2 lg:space-x-3">
           <Link
-            to="/profil"
+            to={user?.role === "guest" ? "/sessions" : "/profil"}
             className="flex items-center space-x-2 lg:space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
           >
             {avatarUrl ? (

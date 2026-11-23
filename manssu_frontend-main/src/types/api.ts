@@ -17,7 +17,8 @@ export interface UserListStats {
   totalMembers?: number;
   activeMembers?: number;
   administrators?: number;
-  pending?: number;
+  inactive?: number;
+  guests?: number;
 }
 
 export interface PaginatedUsersResponse<T> extends PaginatedResponse<T> {

@@ -83,7 +83,8 @@ export const membersApi = {
       totalMembers: response.data.stats.totalMembers ?? 0,
       activeMembers: response.data.stats.activeMembers ?? 0,
       administrators: response.data.stats.administrators ?? 0,
-      inactive: response.data.stats.pending ?? 0,
+      inactive: response.data.stats.inactive ?? 0,
+      guests: response.data.stats.guests ?? 0,
     };
 
     return {

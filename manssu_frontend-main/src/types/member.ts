@@ -85,6 +85,7 @@ export interface MemberStats {
   activeMembers: number;
   administrators: number;
   inactive: number;
+  guests: number;
 }
 
 export interface MembersResponse {

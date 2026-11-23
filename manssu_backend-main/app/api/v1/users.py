@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 from app.database import get_db
-from app.dependencies import get_current_user, get_current_admin
+from app.dependencies import get_current_user, get_current_admin, block_guests
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
 from app.schemas.common import APIResponse, PaginatedResponse
 from app.services.user_service import UserService
@@ -76,7 +76,7 @@ async def update_my_profile(
     )
 
 
-@router.get("", response_model=APIResponse)
+@router.get("", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def get_users(
     status: Optional[str] = Query("all", description="Filter by status: all, active, suspended"),
     search: Optional[str] = Query(None, description="Search in name/email"),
@@ -112,7 +112,7 @@ async def get_users(
     )
 
 
-@router.get("/{user_id}", response_model=APIResponse)
+@router.get("/{user_id}", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def get_user(
     user_id: str,
     db: Session = Depends(get_db),
@@ -137,7 +137,7 @@ async def get_user(
     )
 
 
-@router.post("", response_model=APIResponse)
+@router.post("", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def create_user(
     data: UserCreate,
     db: Session = Depends(get_db),
@@ -156,7 +156,7 @@ async def create_user(
     )
 
 
-@router.patch("/{user_id}", response_model=APIResponse)
+@router.patch("/{user_id}", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def update_user(
     user_id: str,
     data: UserUpdate,
@@ -189,7 +189,7 @@ async def update_user(
         )
 
 
-@router.post("/{user_id}/suspend", response_model=APIResponse)
+@router.post("/{user_id}/suspend", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def suspend_user(
     user_id: str,
     db: Session = Depends(get_db),
@@ -221,7 +221,7 @@ async def suspend_user(
         )
 
 
-@router.post("/{user_id}/unsuspend", response_model=APIResponse)
+@router.post("/{user_id}/unsuspend", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def unsuspend_user(
     user_id: str,
     db: Session = Depends(get_db),
@@ -253,7 +253,7 @@ async def unsuspend_user(
         )
 
 
-@router.post("/{user_id}/upgrade", response_model=APIResponse)
+@router.post("/{user_id}/upgrade", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def upgrade_guest_to_member(
     user_id: str,
     db: Session = Depends(get_db),
@@ -285,7 +285,7 @@ async def upgrade_guest_to_member(
         )
 
 
-@router.delete("/{user_id}", response_model=APIResponse)
+@router.delete("/{user_id}", response_model=APIResponse, dependencies=[Depends(block_guests)])
 async def delete_user(
     user_id: str,
     db: Session = Depends(get_db),

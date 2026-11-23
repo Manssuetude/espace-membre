@@ -5,6 +5,7 @@ from typing import Optional, Any
 from app.database import get_db
 from app.core.security import verify_token
 from app.core.exceptions import UnauthorizedException, ForbiddenException
+from app.services.session_service import SessionService, GUEST_ACCESS_ENDED_MESSAGE
 
 # HTTP Bearer token scheme
 security = HTTPBearer()
@@ -42,6 +43,10 @@ def get_current_user(
     
     if user.status != "active":
         raise UnauthorizedException("User account is not active")
+    
+    # Guests lose access shortly after their last session ends
+    if user.role == "guest" and not SessionService(db).guest_has_access(str(user.id)):
+        raise UnauthorizedException(GUEST_ACCESS_ENDED_MESSAGE)
     
     return user
 
@@ -111,7 +116,23 @@ def get_optional_user(
         if user is None or user.status != "active":
             return None
         
+        if user.role == "guest" and not SessionService(db).guest_has_access(str(user.id)):
+            return None
+        
         return user
     except Exception:
         return None
 
+
+
+def block_guests(
+    current_user = Depends(get_optional_user)
+):
+    """
+    Dependency that keeps guests out of the member area.
+    Guests may only use auth, their own profile (/users/me) and the sessions they were invited to.
+    Public endpoints keep working: requests without a user (or with an expired guest) pass through,
+    and the route's own auth dependency decides.
+    """
+    if current_user is not None and current_user.role == "guest":
+        raise ForbiddenException("Espace réservé aux membres")

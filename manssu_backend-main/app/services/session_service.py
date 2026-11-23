@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 from typing import Optional, List, Dict
-from datetime import datetime, date, time, timezone
+from datetime import datetime, date, time, timezone, timedelta
+from zoneinfo import ZoneInfo
 import random
 import string
 
@@ -19,6 +20,15 @@ from app.schemas.session import (
 from app.schemas.common import PaginatedResponse
 from app.core.cache import list_cache, dashboard_cache
 from app.services.email_service import ResendEmailService
+
+
+# Guests keep access until shortly after the end of their last session.
+SESSION_TIMEZONE = ZoneInfo("Europe/Paris")
+GUEST_ACCESS_GRACE = timedelta(hours=2)
+GUEST_ACCESS_ENDED_MESSAGE = (
+    "Votre accès invité a pris fin après votre dernière séance. "
+    "Contactez l'association pour être invité à une nouvelle séance."
+)
 
 
 class SessionService:
@@ -94,14 +104,32 @@ class SessionService:
         # Default: keep current status
         return session.status
 
-    def _is_future_session(self, session: Session) -> bool:
+    def guest_has_access(self, user_id: str) -> bool:
         """
-        Return True when a session should be considered future/accessible to guests.
-        Future includes upcoming or ongoing sessions.
+        A guest keeps access while at least one of their sessions is upcoming,
+        ongoing, or ended less than GUEST_ACCESS_GRACE ago. Access is derived
+        from registrations, so a new invite (or an admin adding a session)
+        restores it automatically.
         """
-        calculated_status = self._calculate_session_status(session)
-        return calculated_status in ["upcoming", "ongoing"]
-    
+        now = datetime.now(SESSION_TIMEZONE)
+        sessions = self.db.query(Session).join(
+            SessionRegistration, SessionRegistration.session_id == Session.id
+        ).filter(
+            SessionRegistration.user_id == user_id,
+            Session.status != "cancelled",
+            or_(Session.date.is_(None), Session.date >= (now - GUEST_ACCESS_GRACE).date())
+        ).all()
+
+        for session in sessions:
+            if session.date is None:
+                return True  # Not scheduled yet: still upcoming
+            # Without an end time, the session is considered to last the whole day
+            end_time = session.end_time or time(23, 59)
+            end = datetime.combine(session.date, end_time, tzinfo=SESSION_TIMEZONE)
+            if now <= end + GUEST_ACCESS_GRACE:
+                return True
+        return False
+
     def get_sessions(
         self,
         status: Optional[str] = None,
@@ -130,28 +158,15 @@ class SessionService:
         
         query = self.db.query(Session)
         
-        # For guests, show:
-        # - sessions they're registered for
-        # - all future sessions (upcoming/ongoing)
+        # Guests only see the sessions they were invited to (registered for)
         if is_guest and user_id:
-            today = datetime.now(timezone.utc).date()
-            future_clause = or_(
-                Session.status.in_(["upcoming", "ongoing"]),
-                Session.date >= today
-            )
-
-            query = query.outerjoin(
+            query = query.join(
                 SessionRegistration,
                 and_(
                     Session.id == SessionRegistration.session_id,
                     SessionRegistration.user_id == user_id
                 )
-            ).filter(
-                or_(
-                    SessionRegistration.user_id.isnot(None),
-                    future_clause
-                )
-            ).distinct()
+            )
         
         if status and status != "all":
             query = query.filter(Session.status == status)
@@ -212,22 +227,18 @@ class SessionService:
         if not session:
             return None
         
-        # Check if user is a guest - guests can access registered sessions
-        # and all future sessions (upcoming/ongoing)
-        from app.models.user import User
+        # Guests can only access the sessions they were invited to (registered for)
         if user_id:
             user = self.db.query(User).filter(User.id == user_id).first()
             if user and user.role == "guest":
-                if not self._is_future_session(session):
-                    # For non-future sessions, guest must be registered
-                    registration = self.db.query(SessionRegistration).filter(
-                        and_(
-                            SessionRegistration.session_id == session_id,
-                            SessionRegistration.user_id == user_id
-                        )
-                    ).first()
-                    if not registration:
-                        return None
+                registration = self.db.query(SessionRegistration).filter(
+                    and_(
+                        SessionRegistration.session_id == session_id,
+                        SessionRegistration.user_id == user_id
+                    )
+                ).first()
+                if not registration:
+                    return None
         
         # Update status based on date/time if needed
         calculated_status = self._calculate_session_status(session)
@@ -244,7 +255,10 @@ class SessionService:
     def create_session(self, data: CreateSessionRequest, created_by: str) -> SessionResponse:
         """Create a new session (Admin only)"""
         # Get count of active members at creation time
-        active_members_count = self.db.query(User).filter(User.status == "active").count()
+        active_members_count = self.db.query(User).filter(
+            User.status == "active",
+            User.role != "guest"
+        ).count()
         
         session = Session(
             title=data.title,

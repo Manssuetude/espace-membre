@@ -1,7 +1,11 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "../Sidebar";
 import Header from "../Header";
+import { useAuth } from "../../contexts/AuthContext";
+
+// Guests only see their invited sessions: the list and the detail page
+const GUEST_ALLOWED_PATH = /^\/sessions(\/[^/]+)?\/?$/;
 
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/": { title: "Tableau de bord", subtitle: "Bienvenue dans votre espace membre" },
@@ -45,6 +49,11 @@ const MemberLayout = () => {
   const location = useLocation();
   const pathname = location.pathname;
   const pageInfo = getPageInfo(pathname);
+  const { user } = useAuth();
+
+  if (user?.role === "guest" && !GUEST_ALLOWED_PATH.test(pathname)) {
+    return <Navigate to="/sessions" replace />;
+  }
 
   return (
     <div className="bg-gradient-to-br from-gray-50 via-gray-100 to-slate-100 font-inter min-h-screen">
