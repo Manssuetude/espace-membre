@@ -8,12 +8,13 @@ const MembersStats = () => {
     activeMembers: 0,
     administrators: 0,
     inactive: 0,
+    guests: 0,
   };
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {[1, 2, 3, 4].map((i) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
             className="bg-white/90 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-gray-100 animate-pulse"
@@ -27,7 +28,7 @@ const MembersStats = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
       <div className="bg-white/90 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-primary/20 transition-all group">
         <div className="flex items-center justify-between">
           <div className="flex-1">
@@ -72,6 +73,18 @@ const MembersStats = () => {
           </div>
           <div className="w-14 h-14 bg-gradient-to-br from-warning/10 to-yellow-500/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
             <i className="fa-solid fa-user-slash text-warning text-2xl"></i>
+          </div>
+        </div>
+      </div>
+      <div className="bg-white/90 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-accent/20 transition-all group">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Invités</p>
+            <p className="text-3xl font-bold text-gray-900">{stats.guests}</p>
+            <p className="text-xs text-gray-400 mt-1">Non comptés comme membres</p>
+          </div>
+          <div className="w-14 h-14 bg-gradient-to-br from-accent/10 to-blue-600/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <i className="fa-solid fa-user-clock text-accent text-2xl"></i>
           </div>
         </div>
       </div>

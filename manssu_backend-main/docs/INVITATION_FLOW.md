@@ -78,7 +78,7 @@ Content-Type: application/json
 - Invite expires in 7 days
 
 **Error Responses:**
-- **400 Bad Request**: Session not found, email already has pending invite, or user already exists as member/admin
+- **400 Bad Request**: Session not found, email already has a pending invite for the same session, or user already exists as member/admin
 - **401 Unauthorized**: Invalid or missing JWT token
 - **403 Forbidden**: User is not an admin
 

@@ -4,7 +4,7 @@ import time
 import json
 from datetime import datetime
 from pathlib import Path
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -12,6 +12,7 @@ from starlette.types import Message
 from starlette.responses import StreamingResponse
 import io
 from app.core.config import settings
+from app.dependencies import block_guests
 
 # Configure console logging (captured by Vercel's function logs in production)
 console_handler = logging.StreamHandler()
@@ -335,22 +336,26 @@ app.add_middleware(LoggingMiddleware)
 # This ensures they're processed before any route matching occurs
 
 # Include routers
+# Guests only reach auth, their own profile (/users/me), their invited sessions and invite validation.
+# Every other domain is closed to them.
+members_only = [Depends(block_guests)]
+
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["Sessions"])
-app.include_router(themes.router, prefix="/api/v1/themes", tags=["Themes"])
-app.include_router(resources.router, prefix="/api/v1/resources", tags=["Resources"])
-app.include_router(polls.router, prefix="/api/v1/polls", tags=["Polls"])
-app.include_router(feedbacks.router, prefix="/api/v1/feedbacks", tags=["Feedbacks"])
-app.include_router(locations.router, prefix="/api/v1/locations", tags=["Locations"])
-app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["Dashboard"])
+app.include_router(themes.router, prefix="/api/v1/themes", tags=["Themes"], dependencies=members_only)
+app.include_router(resources.router, prefix="/api/v1/resources", tags=["Resources"], dependencies=members_only)
+app.include_router(polls.router, prefix="/api/v1/polls", tags=["Polls"], dependencies=members_only)
+app.include_router(feedbacks.router, prefix="/api/v1/feedbacks", tags=["Feedbacks"], dependencies=members_only)
+app.include_router(locations.router, prefix="/api/v1/locations", tags=["Locations"], dependencies=members_only)
+app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["Dashboard"], dependencies=members_only)
 app.include_router(invites.router, prefix="/api/v1/invites", tags=["Invites"])
-app.include_router(activity_templates.router, prefix="/api/v1/activity-templates", tags=["Activity Templates"])
-app.include_router(questionnaires.router, prefix="/api/v1/questionnaires", tags=["Questionnaires"])
-app.include_router(commissions.router, prefix="/api/v1/commissions", tags=["Commissions"])
-app.include_router(library.router, prefix="/api/v1/library", tags=["Library"])
-app.include_router(awards.router, prefix="/api/v1/awards", tags=["Awards"])
-app.include_router(user_awards.router, prefix="/api/v1/award-wins", tags=["Award Wins"])
+app.include_router(activity_templates.router, prefix="/api/v1/activity-templates", tags=["Activity Templates"], dependencies=members_only)
+app.include_router(questionnaires.router, prefix="/api/v1/questionnaires", tags=["Questionnaires"], dependencies=members_only)
+app.include_router(commissions.router, prefix="/api/v1/commissions", tags=["Commissions"], dependencies=members_only)
+app.include_router(library.router, prefix="/api/v1/library", tags=["Library"], dependencies=members_only)
+app.include_router(awards.router, prefix="/api/v1/awards", tags=["Awards"], dependencies=members_only)
+app.include_router(user_awards.router, prefix="/api/v1/award-wins", tags=["Award Wins"], dependencies=members_only)
 
 
 # Root endpoint

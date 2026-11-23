@@ -47,17 +47,19 @@ class InviteService:
         if existing_user and existing_user.role in ["member", "admin", "super_admin"]:
             raise ValueError("Un utilisateur avec cet email existe déjà en tant que membre ou administrateur")
         
-        # Check if there's already a pending invite for this email
+        # Check if there's already a pending invite for this email and session
+        # (a guest can be invited to several different sessions)
         pending_invite = self.db.query(SessionInvite).filter(
             and_(
                 SessionInvite.email == email,
+                SessionInvite.session_id == session_id,
                 SessionInvite.status == "pending",
                 SessionInvite.expires_at > datetime.utcnow()
             )
         ).first()
         
         if pending_invite:
-            raise ValueError("Une invitation en attente existe déjà pour cet email")
+            raise ValueError("Une invitation en attente existe déjà pour cet email sur cette séance")
         
         # Generate invite code
         code = self._generate_invite_code()

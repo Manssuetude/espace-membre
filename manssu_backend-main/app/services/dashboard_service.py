@@ -39,8 +39,9 @@ class DashboardService:
         
         # Stats
         active_members = self.db.query(User).filter(
-            User.status == "active"
-        ).count()  # All active users (members + admins)
+            User.status == "active",
+            User.role != "guest"
+        ).count()  # Active members + admins (guests are not members)
         
         # Total completed sessions count (only completed, not cancelled)
         completed_sessions = self.db.query(Session).filter(
@@ -308,7 +309,9 @@ class DashboardService:
             func.date(Feedback.submitted_at) >= seven_days_ago.date()
         ).count()
         
-        total_members = self.db.query(User).count()  # All users (members + admins)
+        total_members = self.db.query(User).filter(
+            User.role != "guest"
+        ).count()  # Members + admins (guests are not members)
         
         # Pending themes (top 3-5)
         pending_themes_list = self.db.query(Theme).filter(
@@ -365,7 +368,10 @@ class DashboardService:
             voter_counts = {str(poll_id): count for poll_id, count in voter_counts_data}
         
         # Calculate total members once
-        total_members = self.db.query(User).filter(User.status == "active").count()
+        total_members = self.db.query(User).filter(
+            User.status == "active",
+            User.role != "guest"
+        ).count()
         
         active_polls_data = []
         for poll in active_polls:

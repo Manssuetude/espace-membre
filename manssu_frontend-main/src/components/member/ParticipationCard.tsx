@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useRegisterForSession, useUnregisterFromSession } from "../../services/hooks/useSessions";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface ParticipationCardProps {
   isMobile?: boolean;
@@ -13,6 +14,8 @@ const ParticipationCard = ({
   isPastSession = false,
 }: ParticipationCardProps) => {
   const { id } = useParams();
+  const { user } = useAuth();
+  const isGuest = user?.role === "guest";
   const registerForSession = useRegisterForSession();
   const unregisterFromSession = useUnregisterFromSession();
 
@@ -65,6 +68,12 @@ const ParticipationCard = ({
             )}
           </button>
         </>
+      ) : isGuest ? (
+        <div className="bg-white/20 backdrop-blur-xl rounded-xl p-4">
+          <p className="text-sm text-white/90">
+            L'inscription aux séances est réservée aux membres. Pour participer, une invitation est nécessaire.
+          </p>
+        </div>
       ) : (
         <>
           <div className="bg-white/20 backdrop-blur-xl rounded-xl p-4 mb-4">

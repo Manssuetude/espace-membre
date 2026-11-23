@@ -138,6 +138,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Membres totaux</p>
+              <p className="text-[11px] text-gray-400 -mt-1 mb-1">Hors invités</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalMembers}</p>
             </div>
             <div className="w-12 h-12 bg-gradient-to-br from-success/10 to-emerald-600/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">

@@ -48,204 +48,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
         <nav className="flex-1 overflow-y-auto mt-6">
           <div className="px-4 pb-4 space-y-1">
-            {/* Tableau de bord - standalone */}
-            {!isGuest && (
-              <NavLink
-                to="/"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-chart-pie w-5 mr-3"></i>
-                Tableau de bord
-              </NavLink>
-            )}
-
-            {/* Association - section repliable */}
-            <CollapsibleSection title="Association" icon="fa-users">
-              <NavLink
-                to="/association/valeurs"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-heart w-4 mr-2"></i>
-                Valeurs
-              </NavLink>
-              <NavLink
-                to="/association/reglement"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-gavel w-4 mr-2"></i>
-                Règlement
-              </NavLink>
-              <NavLink
-                to="/association/membres"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-address-book w-4 mr-2"></i>
-                Membres
-              </NavLink>
-              <NavLink
-                to="/association/commissions"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-people-group w-4 mr-2"></i>
-                Commissions
-              </NavLink>
-              {!isGuest && (
-                <NavLink
-                  to="/association/bibliotheque"
-                  onClick={onClose}
-                  className={({ isActive }) =>
-                    `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                      isActive
-                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                    }`
-                  }
-                >
-                  <i className="fa-solid fa-book-open w-4 mr-2"></i>
-                  Bibliothèque
-                </NavLink>
-              )}
-            </CollapsibleSection>
-
-            {/* Activités - section repliable */}
-            <CollapsibleSection title="Activités" icon="fa-calendar-check">
+            {isGuest ? (
               <NavLink
                 to="/sessions"
                 onClick={onClose}
                 className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-calendar-days w-4 mr-2"></i>
-                Sessions
-              </NavLink>
-              {!isGuest && (
-                <NavLink
-                  to="/sondages"
-                  onClick={onClose}
-                  className={({ isActive }) =>
-                    `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                      isActive
-                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                    }`
-                  }
-                >
-                  <i className="fa-solid fa-poll w-4 mr-2"></i>
-                  Sondages
-                </NavLink>
-              )}
-              {!isGuest && (
-                <NavLink
-                  to="/questionnaires"
-                  onClick={onClose}
-                  className={({ isActive }) =>
-                    `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                      isActive
-                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                    }`
-                  }
-                >
-                  <i className="fa-solid fa-clipboard-question w-4 mr-2"></i>
-                  Questionnaires
-                </NavLink>
-              )}
-              <NavLink
-                to="/formats"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-shapes w-4 mr-2"></i>
-                Formats
-              </NavLink>
-            </CollapsibleSection>
-
-            {/* Contenus - section repliable */}
-            <CollapsibleSection title="Contenus" icon="fa-folder-open">
-              {!isGuest && (
-                <NavLink
-                  to="/proposer-theme"
-                  onClick={onClose}
-                  className={({ isActive }) =>
-                    `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                      isActive
-                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                    }`
-                  }
-                >
-                  <i className="fa-solid fa-lightbulb w-4 mr-2"></i>
-                  Proposer un thème
-                </NavLink>
-              )}
-              <NavLink
-                to="/ressources"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-file w-4 mr-2"></i>
-                Ressources
-              </NavLink>
-            </CollapsibleSection>
-
-            {/* Awards - standalone */}
-            {!isGuest && (
-              <NavLink
-                to="/awards"
-                onClick={onClose}
-                className={({ isActive }) =>
                   `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
                     isActive
                       ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
@@ -253,44 +60,256 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   }`
                 }
               >
-                <i className="fa-solid fa-trophy w-5 mr-3"></i>
-                Awards
+                <i className="fa-solid fa-calendar-days w-5 mr-3"></i>
+                Mes séances
               </NavLink>
-            )}
+            ) : (
+              <>
+                {/* Tableau de bord - standalone */}
+                {!isGuest && (
+                  <NavLink
+                    to="/"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-chart-pie w-5 mr-3"></i>
+                    Tableau de bord
+                  </NavLink>
+                )}
 
-            {/* Feedback - standalone */}
-            {!isGuest && (
-              <NavLink
-                to="/feedback"
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
-                    isActive
-                      ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                  }`
-                }
-              >
-                <i className="fa-solid fa-comment-dots w-5 mr-3"></i>
-                Feedback
-              </NavLink>
-            )}
+                {/* Association - section repliable */}
+                <CollapsibleSection title="Association" icon="fa-users">
+                  <NavLink
+                    to="/association/valeurs"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-heart w-4 mr-2"></i>
+                    Valeurs
+                  </NavLink>
+                  <NavLink
+                    to="/association/reglement"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-gavel w-4 mr-2"></i>
+                    Règlement
+                  </NavLink>
+                  <NavLink
+                    to="/association/membres"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-address-book w-4 mr-2"></i>
+                    Membres
+                  </NavLink>
+                  <NavLink
+                    to="/association/commissions"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-people-group w-4 mr-2"></i>
+                    Commissions
+                  </NavLink>
+                  {!isGuest && (
+                    <NavLink
+                      to="/association/bibliotheque"
+                      onClick={onClose}
+                      className={({ isActive }) =>
+                        `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                          isActive
+                            ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                            : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                        }`
+                      }
+                    >
+                      <i className="fa-solid fa-book-open w-4 mr-2"></i>
+                      Bibliothèque
+                    </NavLink>
+                  )}
+                </CollapsibleSection>
 
-            {/* Profil - standalone */}
-            <NavLink
-              to="/profil"
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
-                  isActive
-                    ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
-                    : "text-gray-300 hover:text-white hover:bg-gray-700/50"
-                }`
-              }
-            >
-              <i className="fa-solid fa-user w-5 mr-3"></i>
-              Profil
-            </NavLink>
+                {/* Activités - section repliable */}
+                <CollapsibleSection title="Activités" icon="fa-calendar-check">
+                  <NavLink
+                    to="/sessions"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-calendar-days w-4 mr-2"></i>
+                    Sessions
+                  </NavLink>
+                  {!isGuest && (
+                    <NavLink
+                      to="/sondages"
+                      onClick={onClose}
+                      className={({ isActive }) =>
+                        `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                          isActive
+                            ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                            : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                        }`
+                      }
+                    >
+                      <i className="fa-solid fa-poll w-4 mr-2"></i>
+                      Sondages
+                    </NavLink>
+                  )}
+                  {!isGuest && (
+                    <NavLink
+                      to="/questionnaires"
+                      onClick={onClose}
+                      className={({ isActive }) =>
+                        `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                          isActive
+                            ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                            : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                        }`
+                      }
+                    >
+                      <i className="fa-solid fa-clipboard-question w-4 mr-2"></i>
+                      Questionnaires
+                    </NavLink>
+                  )}
+                  <NavLink
+                    to="/formats"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-shapes w-4 mr-2"></i>
+                    Formats
+                  </NavLink>
+                </CollapsibleSection>
+
+                {/* Contenus - section repliable */}
+                <CollapsibleSection title="Contenus" icon="fa-folder-open">
+                  {!isGuest && (
+                    <NavLink
+                      to="/proposer-theme"
+                      onClick={onClose}
+                      className={({ isActive }) =>
+                        `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                          isActive
+                            ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                            : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                        }`
+                      }
+                    >
+                      <i className="fa-solid fa-lightbulb w-4 mr-2"></i>
+                      Proposer un thème
+                    </NavLink>
+                  )}
+                  <NavLink
+                    to="/ressources"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-file w-4 mr-2"></i>
+                    Ressources
+                  </NavLink>
+                </CollapsibleSection>
+
+                {/* Awards - standalone */}
+                {!isGuest && (
+                  <NavLink
+                    to="/awards"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-trophy w-5 mr-3"></i>
+                    Awards
+                  </NavLink>
+                )}
+
+                {/* Feedback - standalone */}
+                {!isGuest && (
+                  <NavLink
+                    to="/feedback"
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
+                        isActive
+                          ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                          : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      }`
+                    }
+                  >
+                    <i className="fa-solid fa-comment-dots w-5 mr-3"></i>
+                    Feedback
+                  </NavLink>
+                )}
+
+                {/* Profil - standalone */}
+                <NavLink
+                  to="/profil"
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-3 rounded-xl mb-2 transition-all ${
+                      isActive
+                        ? "text-white bg-gradient-to-r from-primary to-red-500 font-medium shadow-lg shadow-red-500/30"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                    }`
+                  }
+                >
+                  <i className="fa-solid fa-user w-5 mr-3"></i>
+                  Profil
+                </NavLink>
+              </>
+            )}
           </div>
         </nav>
         <div className="px-4 pb-4 border-t border-gray-700 pt-4 flex-shrink-0 space-y-2">

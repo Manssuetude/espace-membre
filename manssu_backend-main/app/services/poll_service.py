@@ -116,7 +116,7 @@ class PollService:
         ).order_by(Poll.created_at.desc()).offset(offset).limit(limit).all()
         
         # Calculate total_members once (used for all polls)
-        total_members = self.db.query(User).filter(User.status == "active").count()
+        total_members = self.db.query(User).filter(User.status == "active", User.role != "guest").count()
         
         # Batch calculate unique_voters for all polls at once
         poll_ids = [p.id for p in polls]
@@ -661,7 +661,7 @@ class PollService:
         
         # Update participation based on unique voters
         # totalMembers is always total active users
-        total_members = self.db.query(User).filter(User.status == "active").count()
+        total_members = self.db.query(User).filter(User.status == "active", User.role != "guest").count()
         
         if total_members > 0 and unique_voters > 0:
             poll.participation = (unique_voters / total_members) * 100
@@ -931,7 +931,7 @@ class PollService:
                 )
         
         # Calculate totalMembers - always total active users
-        total_members = self.db.query(User).filter(User.status == "active").count()
+        total_members = self.db.query(User).filter(User.status == "active", User.role != "guest").count()
         
         # Calculate total_responses as number of unique voters (not total votes)
         unique_voters = self.db.query(func.count(func.distinct(PollVote.user_id))).filter(

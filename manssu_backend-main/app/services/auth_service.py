@@ -12,6 +12,7 @@ from app.core.security import generate_otp, get_otp_expiry, create_access_token
 from app.schemas.auth import SendOTPResponse, VerifyOTPResponse, UserInfo
 from app.services.email_service import ResendEmailService
 from app.services.invite_service import InviteService
+from app.services.session_service import SessionService, GUEST_ACCESS_ENDED_MESSAGE
 
 
 class AuthService:
@@ -40,6 +41,10 @@ class AuthService:
         # Check if user is active
         if user.status != "active":
             raise ValueError("Compte utilisateur suspendu. Veuillez contacter un administrateur.")
+        
+        # Guests whose last session is over can only come back through a new invite link
+        if user.role == "guest" and not SessionService(self.db).guest_has_access(str(user.id)):
+            raise ValueError(GUEST_ACCESS_ENDED_MESSAGE)
         
         # Generate OTP
         otp_code = generate_otp()

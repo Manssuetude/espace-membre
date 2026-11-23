@@ -16,6 +16,7 @@ from app.schemas.session import (
 )
 from app.schemas.common import APIResponse, PaginatedResponse
 from app.services.session_service import SessionService
+from app.core.exceptions import ForbiddenException
 
 router = APIRouter()
 
@@ -34,9 +35,7 @@ async def get_sessions(
 ):
     """
     Get all sessions with filtering and pagination.
-    Requires authentication. Guests can see:
-    - sessions they're registered for
-    - all future sessions (upcoming/ongoing)
+    Requires authentication. Guests only see the sessions they were invited to.
     
     Time filtering:
     - dateFrom: Filter sessions from this date onwards
@@ -70,9 +69,7 @@ async def get_session(
 ):
     """
     Get session by ID with details (work groups, polls, resources).
-    Requires authentication. Guests can access:
-    - sessions they're registered for
-    - future sessions (upcoming/ongoing)
+    Requires authentication. Guests can only access the sessions they were invited to.
     If user is authenticated, includes isRegistered field.
     If user is admin, includes ratings information.
     """
@@ -198,7 +195,11 @@ async def register_for_session(
 ):
     """
     Register for a session.
+    Guests cannot self-register: they get access to a session through an invite only.
     """
+    if current_user.role == "guest":
+        raise ForbiddenException("Les invités ne peuvent pas s'inscrire eux-mêmes à une séance")
+    
     service = SessionService(db)
     success = service.register_for_session(session_id, str(current_user.id))
     

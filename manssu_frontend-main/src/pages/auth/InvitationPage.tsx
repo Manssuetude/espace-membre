@@ -8,7 +8,7 @@ import { getErrorMessage } from "../../utils/errorUtils";
 const InvitationPage = () => {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated, sendOTPForInvite, registerGuest } = useAuth();
+  const { isAuthenticated, user, sendOTPForInvite, registerGuest } = useAuth();
   const { data: validation, isLoading: isValidating } = useValidateInvite(code || "");
 
   const [step, setStep] = useState<"info" | "otp">("info");
@@ -21,12 +21,14 @@ const InvitationPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated, except guests: they may be accepting
+  // an invite to another session while still logged in
+  const isGuest = user?.role === "guest";
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isGuest) {
       navigate("/", { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isGuest, navigate]);
 
   // Handle invalid invite
   useEffect(() => {
@@ -134,7 +136,7 @@ const InvitationPage = () => {
     try {
       await registerGuest(code, firstName.trim(), lastName.trim(), otpString);
       toast.success("Inscription réussie !");
-      navigate("/", { replace: true });
+      navigate(validation?.sessionId ? `/sessions/${validation.sessionId}` : "/sessions", { replace: true });
     } catch (error) {
       toast.error(getErrorMessage(error, "Erreur lors de l'inscription"));
     } finally {

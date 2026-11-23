@@ -89,6 +89,50 @@ Guest users have **limited access** compared to regular members. They can only a
 - **Behavior**: Only accessible if guest is registered for that session
 - **Returns**: 404 Not Found if guest tries to access unregistered session
 
+**POST `/api/v1/sessions/{session_id}/register`**
+- **Guest Access**: ❌ Forbidden (403)
+- **Behavior**: Guests cannot self-register. They get a session only through an invite link
+  or when an admin adds it (`POST /api/v1/invites/guests/{guest_id}/sessions`).
+
+---
+
+## Member Area Closed to Guests (current behavior)
+
+> This section supersedes the per-domain notes below: guests no longer create resources,
+> vote on polls or browse resources/commissions/members.
+
+A guest only sees **the sessions they were invited to** (list + detail page, with the
+resources/polls embedded in the session detail) and can rate them. Everything else is closed:
+
+- **API** — every router except `auth`, `sessions`, `invites` (invite validation) and `users/me`
+  is mounted with `Depends(block_guests)` (`app/main.py`, `app/dependencies.py`) and answers
+  **403** to a guest. Requests without a user pass through, so public endpoints keep working.
+- **Frontend** — `MemberLayout` redirects a guest to `/sessions` from any other page; the sidebar
+  only shows "Mes séances"; the header avatar no longer links to the profile.
+- A guest already logged in can still open a new invite link (`/invitation/:code`) and lands on
+  the invited session afterwards.
+
+---
+
+## End of Guest Access
+
+A guest keeps access while at least one of their (non-cancelled) sessions is upcoming,
+ongoing, or ended less than **2 hours** ago (`GUEST_ACCESS_GRACE`, times in Europe/Paris;
+a session without end time counts until the end of its day). After that:
+
+- Every authenticated request returns **401** with a message explaining that guest access ended
+  (`get_current_user` in `app/dependencies.py`).
+- `POST /api/v1/auth/send-otp` refuses the e-mail login with the same message.
+- The account, its registrations and history are kept.
+
+Access is computed from the guest's session registrations, not stored as a flag. Inviting the
+same person to another session (new invite link, or admin adding a session) restores access
+automatically. A guest can have several pending invites at once, as long as they target
+different sessions.
+
+Guests are never counted as members in statistics (active members, poll participation,
+admin dashboard). The admin Members page shows them in a separate "Invités" card.
+
 ---
 
 ### Resources API
